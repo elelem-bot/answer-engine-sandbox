@@ -115,7 +115,21 @@ export default function Home() {
                 Watch Demo
               </Button>
             </div>
-          </motion.div>
+
+            {/* Trusted By Section */}
+            <div className="mt-16 text-center">
+              <p className="text-slate-500 text-sm uppercase tracking-wider mb-6">
+                Trusted by the world's leading content creators and their agencies
+              </p>
+              <div className="flex items-center justify-center">
+                <img 
+                  src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/6943f2bf67610e14801b112b/515d10b09_image.png"
+                  alt="Trusted by leading brands"
+                  className="max-w-full h-auto opacity-50 hover:opacity-70 transition-opacity"
+                />
+              </div>
+            </div>
+            </motion.div>
 
           {/* Stats */}
           <motion.div 
