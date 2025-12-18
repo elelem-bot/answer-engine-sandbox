@@ -137,17 +137,12 @@ After the response, provide analysis in JSON format:
   };
 
   const calculateVisibility = (promptsData, companyData) => {
-    let totalCitations = 0;
-    let totalBrandMentions = 0;
     let ownCitations = 0;
     let ownMentions = 0;
     const brandCounts = {};
     const topicCounts = {};
 
     promptsData.forEach(p => {
-      totalCitations += p.citations_count || 0;
-      totalBrandMentions += p.brand_mentions_count || 0;
-
       (p.cited_brands || []).forEach(cb => {
         brandCounts[cb.brand] = (brandCounts[cb.brand] || 0) + cb.mentions;
         if (cb.brand.toLowerCase().includes(companyData.name.toLowerCase())) {
@@ -161,13 +156,15 @@ After the response, provide analysis in JSON format:
       });
     });
 
+    const totalBrandCitations = Object.values(brandCounts).reduce((sum, count) => sum + count, 0);
+
     const topBrands = Object.entries(brandCounts)
       .sort(([,a], [,b]) => b - a)
       .slice(0, 10)
       .map(([name, citations]) => ({
         name,
         citations,
-        share: totalBrandMentions > 0 ? Math.round((citations / totalBrandMentions) * 100) : 0,
+        share: totalBrandCitations > 0 ? Math.round((citations / totalBrandCitations) * 100) : 0,
         change: 0
       }));
 
@@ -180,10 +177,10 @@ After the response, provide analysis in JSON format:
     const trendData = [];
 
     setVisibilityData({
-      totalVisibility: totalCitations + totalBrandMentions,
-      shareOfCitations: totalCitations > 0 ? Math.round((ownCitations / totalCitations) * 100) : 0,
-      totalBrandMentions: totalBrandMentions,
-      brandMentionShare: totalBrandMentions > 0 ? Math.round((ownMentions / totalBrandMentions) * 100) : 0,
+      totalVisibility: totalBrandCitations,
+      shareOfCitations: totalBrandCitations > 0 ? Math.round((ownCitations / totalBrandCitations) * 100) : 0,
+      totalBrandMentions: totalBrandCitations,
+      brandMentionShare: totalBrandCitations > 0 ? Math.round((ownMentions / totalBrandCitations) * 100) : 0,
       citationsBySource: topBrands.slice(0, 5).map(b => ({ name: b.name, value: b.citations })),
       topCitedBrands: topBrands,
       brandMentionsBreakdown: topBrands.slice(0, 6).map(b => ({ name: b.name, value: b.citations })),
@@ -282,6 +279,7 @@ After the response, provide analysis in JSON format:
             <BrandTable 
               data={visibilityData.topCitedBrands}
               title="Top Cited Competitive Domains"
+              companyName={company?.name}
             />
           </div>
         </div>
@@ -295,11 +293,9 @@ After the response, provide analysis in JSON format:
               title="Brand Mention Distribution"
             />
             <BrandTable 
-              data={visibilityData.topCitedBrands.map(b => ({
-                ...b,
-                citations: Math.floor(b.citations * 0.8)
-              }))}
+              data={visibilityData.topCitedBrands}
               title="Top Performing Brands by Mentions"
+              companyName={company?.name}
             />
           </div>
         </div>

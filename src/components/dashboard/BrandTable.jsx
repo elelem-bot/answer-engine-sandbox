@@ -3,7 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { TrendingUp, TrendingDown, Minus } from "lucide-react";
 
-export default function BrandTable({ data, title, showChange = true }) {
+export default function BrandTable({ data, title, showChange = true, companyName = "" }) {
   return (
     <Card className="bg-slate-800/50 border-slate-700/50">
       <CardHeader>
@@ -23,37 +23,42 @@ export default function BrandTable({ data, title, showChange = true }) {
               </tr>
             </thead>
             <tbody>
-              {data.map((item, i) => (
-                <tr key={i} className="border-b border-slate-700/50 last:border-0">
-                  <td className="py-3">
-                    <span className="text-white">{item.name}</span>
-                  </td>
-                  <td className="text-right">
-                    <span className="text-slate-300">{item.citations}</span>
-                  </td>
-                  <td className="text-right">
-                    <Badge variant="outline" className="text-teal-400 border-teal-500/30">
-                      {item.share}%
-                    </Badge>
-                  </td>
-                  {showChange && (
+              {data.map((item, i) => {
+                const isCompany = companyName && item.name.toLowerCase().includes(companyName.toLowerCase());
+                return (
+                  <tr key={i} className="border-b border-slate-700/50 last:border-0">
+                    <td className="py-3">
+                      <span className={`${isCompany ? "text-teal-400 font-semibold" : "text-white"}`}>
+                        {item.name}
+                      </span>
+                      </td>
                     <td className="text-right">
-                      <div className={`flex items-center justify-end gap-1 ${
-                        item.change > 0 ? "text-emerald-400" : item.change < 0 ? "text-red-400" : "text-slate-400"
-                      }`}>
-                        {item.change > 0 ? (
-                          <TrendingUp className="w-4 h-4" />
-                        ) : item.change < 0 ? (
-                          <TrendingDown className="w-4 h-4" />
-                        ) : (
-                          <Minus className="w-4 h-4" />
-                        )}
-                        <span>{item.change > 0 ? "+" : ""}{item.change}%</span>
-                      </div>
+                      <span className="text-slate-300">{item.citations}</span>
                     </td>
-                  )}
-                </tr>
-              ))}
+                    <td className="text-right">
+                      <Badge variant="outline" className="text-teal-400 border-teal-500/30">
+                        {item.share}%
+                      </Badge>
+                    </td>
+                    {showChange && (
+                      <td className="text-right">
+                        <div className={`flex items-center justify-end gap-1 ${
+                          item.change > 0 ? "text-emerald-400" : item.change < 0 ? "text-red-400" : "text-slate-400"
+                        }`}>
+                          {item.change > 0 ? (
+                            <TrendingUp className="w-4 h-4" />
+                          ) : item.change < 0 ? (
+                            <TrendingDown className="w-4 h-4" />
+                          ) : (
+                            <Minus className="w-4 h-4" />
+                          )}
+                          <span>{item.change > 0 ? "+" : ""}{item.change}%</span>
+                        </div>
+                      </td>
+                    )}
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
         </div>
