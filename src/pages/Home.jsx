@@ -125,7 +125,7 @@ export default function Home() {
                 <img 
                   src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/6943f2bf67610e14801b112b/515d10b09_image.png"
                   alt="Trusted by leading brands"
-                  className="max-w-full h-auto opacity-50 hover:opacity-70 transition-opacity"
+                  className="max-w-full h-auto brightness-0 invert opacity-50 hover:opacity-70 transition-opacity"
                 />
               </div>
             </div>
