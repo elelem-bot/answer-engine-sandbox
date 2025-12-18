@@ -4,7 +4,8 @@ import { createPageUrl } from "@/utils";
 import { motion } from "framer-motion";
 import { base44 } from "@/api/base44Client";
 import { 
-  ArrowRight, 
+  ArrowRight,
+  ArrowLeft, 
   Loader2,
   Building2,
   Users,
@@ -65,12 +66,18 @@ export default function Approvals() {
     setIsGenerating(true);
     
     try {
+      const countryContext = companyData.location ? `\nCountry: ${companyData.location}` : "";
       const prompt = `Based on the following company information, generate comprehensive AI search optimization suggestions:
 
 Company: ${companyData.name}
 Website: ${companyData.website_url}
 Industry: ${companyData.company_type}
-ICP Description: ${companyData.icp_description}
+ICP Description: ${companyData.icp_description}${countryContext}
+
+IMPORTANT: Consider the country/location context when generating:
+- Use local competitors and brands relevant to ${companyData.location || "the region"}
+- Include region-specific search patterns and buyer behaviors
+- Adapt keywords and prompts to local market terminology and preferences
 
 Generate the following in JSON format:
 1. brand_mentions: Array of 5-8 different ways this brand might be mentioned or searched for (variations of name, common misspellings, product names, etc.)
@@ -514,15 +521,25 @@ Generate the following in JSON format:
 
               {/* Approve Button */}
               <div className="flex justify-between items-center pt-6">
-                <Button 
-                  variant="outline" 
-                  className="border-slate-700 text-slate-300"
-                  onClick={() => generateAISuggestions(company)}
-                  disabled={isGenerating}
-                >
-                  <RefreshCw className={`w-4 h-4 mr-2 ${isGenerating ? "animate-spin" : ""}`} />
-                  Regenerate
-                </Button>
+                <div className="flex gap-3">
+                  <Button 
+                    variant="outline" 
+                    className="border-slate-700 text-slate-300"
+                    onClick={() => navigate(createPageUrl(`Setup`))}
+                  >
+                    <ArrowLeft className="w-4 h-4 mr-2" />
+                    Back to Setup
+                  </Button>
+                  <Button 
+                    variant="outline" 
+                    className="border-slate-700 text-slate-300"
+                    onClick={() => generateAISuggestions(company)}
+                    disabled={isGenerating}
+                  >
+                    <RefreshCw className={`w-4 h-4 mr-2 ${isGenerating ? "animate-spin" : ""}`} />
+                    Regenerate
+                  </Button>
+                </div>
                 <Button 
                   onClick={handleApprove}
                   disabled={isSaving}

@@ -5,6 +5,7 @@ import { motion } from "framer-motion";
 import { base44 } from "@/api/base44Client";
 import { 
   ArrowRight, 
+  ArrowLeft,
   Building2, 
   User, 
   Mail, 
@@ -13,7 +14,8 @@ import {
   MapPin,
   Globe,
   Target,
-  Loader2
+  Loader2,
+  Sparkles
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -28,9 +30,17 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
+const COUNTRIES = [
+  "United States", "United Kingdom", "Canada", "Australia", "Germany", "France", "Spain", "Italy", "Netherlands", 
+  "Switzerland", "Belgium", "Austria", "Sweden", "Norway", "Denmark", "Finland", "Ireland", "Portugal", "Poland",
+  "Czech Republic", "Greece", "Hungary", "Romania", "Israel", "United Arab Emirates", "Saudi Arabia", "Singapore",
+  "Japan", "South Korea", "China", "India", "Brazil", "Mexico", "Argentina", "Chile", "Colombia", "New Zealand"
+];
+
 export default function Setup() {
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
+  const [isAnalyzingWebsite, setIsAnalyzingWebsite] = useState(false);
   const [formData, setFormData] = useState({
     contact_name: "",
     name: "",
@@ -45,6 +55,37 @@ export default function Setup() {
 
   const handleChange = (field, value) => {
     setFormData(prev => ({ ...prev, [field]: value }));
+    
+    // Auto-suggest ICP when website URL is entered
+    if (field === "website_url" && value && value.startsWith("http")) {
+      analyzeWebsite(value);
+    }
+  };
+
+  const analyzeWebsite = async (url) => {
+    if (formData.icp_description) return; // Don't overwrite if user already has text
+    
+    setIsAnalyzingWebsite(true);
+    try {
+      const response = await base44.integrations.Core.InvokeLLM({
+        prompt: `Analyze this website URL and generate an Ideal Customer Profile (ICP) description: ${url}
+        
+Include:
+- Who their ideal customer is (role, industry, company size)
+- What challenges/problems the customer faces
+- What the company solves for them
+- Target market characteristics
+
+Keep it concise and practical (2-3 sentences).`,
+        add_context_from_internet: true
+      });
+      
+      setFormData(prev => ({ ...prev, icp_description: response }));
+    } catch (error) {
+      console.error("Error analyzing website:", error);
+    } finally {
+      setIsAnalyzingWebsite(false);
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -154,13 +195,17 @@ export default function Setup() {
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label className="text-slate-300">Location</Label>
-                  <Input
-                    placeholder="London, UK"
-                    value={formData.location}
-                    onChange={(e) => handleChange("location", e.target.value)}
-                    className="bg-slate-900 border-slate-700 text-white placeholder:text-slate-500"
-                  />
+                  <Label className="text-slate-300">Country</Label>
+                  <Select value={formData.location} onValueChange={(v) => handleChange("location", v)}>
+                    <SelectTrigger className="bg-slate-900 border-slate-700 text-white">
+                      <SelectValue placeholder="Select country" />
+                    </SelectTrigger>
+                    <SelectContent className="max-h-60">
+                      {COUNTRIES.map(country => (
+                        <SelectItem key={country} value={country}>{country}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </div>
               </CardContent>
             </Card>
@@ -241,21 +286,38 @@ export default function Setup() {
                 </CardDescription>
               </CardHeader>
               <CardContent>
+                {isAnalyzingWebsite && (
+                  <div className="mb-4 flex items-center gap-2 text-teal-400 text-sm">
+                    <Sparkles className="w-4 h-4 animate-pulse" />
+                    <span>Analyzing your website to suggest ICP...</span>
+                  </div>
+                )}
                 <Textarea
                   placeholder="e.g., Our ideal customer is an HR manager in B2B tech that is struggling to manage remote teams, payment and management. They typically have 50-200 employees and are looking for solutions to streamline their HR processes..."
                   value={formData.icp_description}
                   onChange={(e) => handleChange("icp_description", e.target.value)}
                   className="bg-slate-900 border-slate-700 text-white placeholder:text-slate-500 min-h-[150px]"
                   required
+                  disabled={isAnalyzingWebsite}
                 />
               </CardContent>
             </Card>
 
-            <div className="flex justify-end">
+            <div className="flex justify-between items-center">
+              <Button 
+                type="button"
+                variant="outline"
+                size="lg"
+                onClick={() => navigate(createPageUrl("Home"))}
+                className="border-slate-700 text-slate-300"
+              >
+                <ArrowLeft className="mr-2 w-5 h-5" />
+                Back to Home
+              </Button>
               <Button 
                 type="submit"
                 size="lg"
-                disabled={isLoading}
+                disabled={isLoading || isAnalyzingWebsite}
                 className="bg-gradient-to-r from-teal-500 to-cyan-500 hover:from-teal-600 hover:to-cyan-600 text-white px-8"
               >
                 {isLoading ? (
