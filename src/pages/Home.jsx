@@ -54,11 +54,12 @@ export default function Home() {
       {/* Navigation */}
       <nav className="fixed top-0 w-full z-50 bg-slate-950/80 backdrop-blur-xl border-b border-slate-800/50">
         <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <div className="w-8 h-8 bg-gradient-to-br from-teal-400 to-cyan-500 rounded-lg flex items-center justify-center">
-              <span className="text-white font-bold text-lg">e</span>
-            </div>
-            <span className="text-white font-semibold text-xl tracking-tight">elelem</span>
+          <div className="flex items-center">
+            <img 
+              src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/6943f2bf67610e14801b112b/de87d19e0_elelem2025logoPrimary.png"
+              alt="elelem"
+              className="h-8 brightness-0 invert"
+            />
           </div>
           <div className="hidden md:flex items-center gap-8">
             <a href="#features" className="text-slate-400 hover:text-white transition-colors text-sm">Features</a>
@@ -254,11 +255,12 @@ export default function Home() {
       {/* Footer */}
       <footer className="py-12 px-6 border-t border-slate-800">
         <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6">
-          <div className="flex items-center gap-2">
-            <div className="w-8 h-8 bg-gradient-to-br from-teal-400 to-cyan-500 rounded-lg flex items-center justify-center">
-              <span className="text-white font-bold text-lg">e</span>
-            </div>
-            <span className="text-white font-semibold text-xl tracking-tight">elelem</span>
+          <div className="flex items-center">
+            <img 
+              src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/6943f2bf67610e14801b112b/de87d19e0_elelem2025logoPrimary.png"
+              alt="elelem"
+              className="h-8 brightness-0 invert"
+            />
           </div>
           <div className="text-slate-500 text-sm">
             © 2024 elelem. All rights reserved.

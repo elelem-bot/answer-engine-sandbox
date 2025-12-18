@@ -36,11 +36,12 @@ export default function Layout({ children, currentPageName }) {
       {/* Desktop Sidebar */}
       <aside className="hidden lg:flex w-64 bg-slate-900 border-r border-slate-800 flex-col">
         <div className="p-6 border-b border-slate-800">
-          <Link to={createPageUrl("Home")} className="flex items-center gap-2">
-            <div className="w-8 h-8 bg-gradient-to-br from-teal-400 to-cyan-500 rounded-lg flex items-center justify-center">
-              <span className="text-white font-bold text-lg">e</span>
-            </div>
-            <span className="text-white font-semibold text-xl tracking-tight">elelem</span>
+          <Link to={createPageUrl("Home")} className="flex items-center">
+            <img 
+              src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/6943f2bf67610e14801b112b/de87d19e0_elelem2025logoPrimary.png"
+              alt="elelem"
+              className="h-8 brightness-0 invert"
+            />
           </Link>
         </div>
         
@@ -75,11 +76,12 @@ export default function Layout({ children, currentPageName }) {
       {/* Mobile Header */}
       <div className="lg:hidden fixed top-0 left-0 right-0 z-50 bg-slate-900/95 backdrop-blur-xl border-b border-slate-800">
         <div className="flex items-center justify-between p-4">
-          <Link to={createPageUrl("Home")} className="flex items-center gap-2">
-            <div className="w-8 h-8 bg-gradient-to-br from-teal-400 to-cyan-500 rounded-lg flex items-center justify-center">
-              <span className="text-white font-bold text-lg">e</span>
-            </div>
-            <span className="text-white font-semibold text-xl tracking-tight">elelem</span>
+          <Link to={createPageUrl("Home")} className="flex items-center">
+            <img 
+              src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/6943f2bf67610e14801b112b/de87d19e0_elelem2025logoPrimary.png"
+              alt="elelem"
+              className="h-7 brightness-0 invert"
+            />
           </Link>
           
           <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
@@ -90,11 +92,12 @@ export default function Layout({ children, currentPageName }) {
             </SheetTrigger>
             <SheetContent side="right" className="bg-slate-900 border-slate-800 p-0">
               <div className="p-6 border-b border-slate-800">
-                <div className="flex items-center gap-2">
-                  <div className="w-8 h-8 bg-gradient-to-br from-teal-400 to-cyan-500 rounded-lg flex items-center justify-center">
-                    <span className="text-white font-bold text-lg">e</span>
-                  </div>
-                  <span className="text-white font-semibold text-xl tracking-tight">elelem</span>
+                <div className="flex items-center">
+                  <img 
+                    src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/6943f2bf67610e14801b112b/de87d19e0_elelem2025logoPrimary.png"
+                    alt="elelem"
+                    className="h-8 brightness-0 invert"
+                  />
                 </div>
               </div>
               <nav className="p-4 space-y-1">

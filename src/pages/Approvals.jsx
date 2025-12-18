@@ -234,11 +234,12 @@ Generate the following in JSON format:
       {/* Header */}
       <div className="border-b border-slate-800 bg-slate-950/80 backdrop-blur-xl sticky top-0 z-10">
         <div className="max-w-6xl mx-auto px-6 py-6">
-          <div className="flex items-center gap-3 mb-6">
-            <div className="w-8 h-8 bg-gradient-to-br from-teal-400 to-cyan-500 rounded-lg flex items-center justify-center">
-              <span className="text-white font-bold text-lg">e</span>
-            </div>
-            <span className="text-white font-semibold text-xl tracking-tight">elelem</span>
+          <div className="flex items-center mb-6">
+            <img 
+              src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/6943f2bf67610e14801b112b/de87d19e0_elelem2025logoPrimary.png"
+              alt="elelem"
+              className="h-8 brightness-0 invert"
+            />
           </div>
           
           {/* Progress Steps */}
