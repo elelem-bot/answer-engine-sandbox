@@ -69,27 +69,31 @@ export default function Approvals() {
       const countryContext = companyData.location ? `\nCountry: ${companyData.location}` : "";
       const prompt = `Based on the following company information, generate comprehensive AI search optimization suggestions:
 
-Company: ${companyData.name}
-Website: ${companyData.website_url}
-Industry: ${companyData.company_type}
-ICP Description: ${companyData.icp_description}${countryContext}
+      Company: ${companyData.name}
+      Website: ${companyData.website_url}
+      Industry: ${companyData.company_type}
+      ICP Description: ${companyData.icp_description}${countryContext}
 
-IMPORTANT: Consider the country/location context when generating:
-- Use local competitors and brands relevant to ${companyData.location || "the region"}
-- Include region-specific search patterns and buyer behaviors
-- Adapt keywords and prompts to local market terminology and preferences
+      IMPORTANT: Consider the country/location context when generating:
+      - Use local competitors and brands relevant to ${companyData.location || "the region"}
+      - Include region-specific search patterns and buyer behaviors
+      - Adapt keywords and prompts to local market terminology and preferences
 
-Generate the following in JSON format:
-1. brand_mentions: Array of 5-8 different ways this brand might be mentioned or searched for (variations of name, common misspellings, product names, etc.)
-2. competitors: Array of 5-8 likely business competitors in the same space
-3. icp_insights: Object with:
-   - buyer_persona: Detailed description of the ideal buyer
-   - intent_signals: Array of 5-7 buying intent signals
-   - challenges: Array of 5-7 key challenges the customer solves
-4. target_keywords: Array of 15-20 high-intent keywords relevant to the business
-5. buyer_prompts: Array of 10 buyer-centric prompts that potential customers would ask AI assistants, each with:
-   - prompt: The actual question/prompt
-   - keywords: Array of keywords from target_keywords that appear in this prompt`;
+      Generate the following in JSON format:
+      1. brand_mentions: Array of 5-8 different ways this brand might be mentioned or searched for (variations of name, common misspellings, product names, etc.)
+      2. competitors: Array of 5-8 likely business competitors in the same space
+      3. icp_insights: Object with:
+      - buyer_persona: Detailed description of the ideal buyer
+      - intent_signals: Array of 5-7 buying intent signals
+      - challenges: Array of 5-7 key challenges the customer solves
+      4. target_keywords: Array of 15-20 high-intent keywords relevant to the business
+      5. buyer_prompts: Array of ONLY the TOP 10 buyer-centric prompts with the HIGHEST estimated search volume/interest that potential customers would ask AI assistants. For each prompt:
+      - Estimate the relative search volume/interest for potential prompts
+      - Select only the 10 prompts with the highest search volume potential
+      - Each prompt should include:
+      * prompt: The actual question/prompt
+      * keywords: Array of keywords from target_keywords that appear in this prompt
+      * estimated_search_volume: Your estimate (low/medium/high)`;
 
       const response = await base44.integrations.Core.InvokeLLM({
         prompt,
@@ -113,7 +117,8 @@ Generate the following in JSON format:
                 type: "object",
                 properties: {
                   prompt: { type: "string" },
-                  keywords: { type: "array", items: { type: "string" } }
+                  keywords: { type: "array", items: { type: "string" } },
+                  estimated_search_volume: { type: "string" }
                 }
               }
             }
