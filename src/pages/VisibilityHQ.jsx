@@ -143,12 +143,11 @@ After the response, provide analysis in JSON format:
     let ownMentions = 0;
     const brandCounts = {};
     const topicCounts = {};
-    const sourceCounts = {};
 
     promptsData.forEach(p => {
       totalCitations += p.citations_count || 0;
       totalBrandMentions += p.brand_mentions_count || 0;
-      
+
       (p.cited_brands || []).forEach(cb => {
         brandCounts[cb.brand] = (brandCounts[cb.brand] || 0) + cb.mentions;
         if (cb.brand.toLowerCase().includes(companyData.name.toLowerCase())) {
@@ -156,7 +155,7 @@ After the response, provide analysis in JSON format:
           ownMentions += cb.mentions;
         }
       });
-      
+
       (p.topics || []).forEach(topic => {
         topicCounts[topic] = (topicCounts[topic] || 0) + 1;
       });
@@ -169,7 +168,7 @@ After the response, provide analysis in JSON format:
         name,
         citations,
         share: totalBrandMentions > 0 ? Math.round((citations / totalBrandMentions) * 100) : 0,
-        change: Math.floor(Math.random() * 20) - 5
+        change: 0
       }));
 
     const topTopics = Object.entries(topicCounts)
@@ -177,18 +176,14 @@ After the response, provide analysis in JSON format:
       .slice(0, 8)
       .map(([name, value]) => ({ name, value }));
 
-    const trendData = Array.from({ length: 7 }, (_, i) => ({
-      date: new Date(Date.now() - (6 - i) * 24 * 60 * 60 * 1000).toLocaleDateString('en-US', { weekday: 'short' }),
-      visibility: Math.floor(Math.random() * 30) + 20,
-      citations: Math.floor(Math.random() * 50) + 30,
-      mentions: Math.floor(Math.random() * 40) + 20
-    }));
+    // No trend data on day one - only show when we have historical data
+    const trendData = [];
 
     setVisibilityData({
       totalVisibility: totalCitations + totalBrandMentions,
-      shareOfCitations: totalCitations > 0 ? Math.round((ownCitations / totalCitations) * 100) : 24.6,
-      totalBrandMentions: totalBrandMentions || 3032,
-      brandMentionShare: totalBrandMentions > 0 ? Math.round((ownMentions / totalBrandMentions) * 100) : 26,
+      shareOfCitations: totalCitations > 0 ? Math.round((ownCitations / totalCitations) * 100) : 0,
+      totalBrandMentions: totalBrandMentions,
+      brandMentionShare: totalBrandMentions > 0 ? Math.round((ownMentions / totalBrandMentions) * 100) : 0,
       citationsBySource: topBrands.slice(0, 5).map(b => ({ name: b.name, value: b.citations })),
       topCitedBrands: topBrands,
       brandMentionsBreakdown: topBrands.slice(0, 6).map(b => ({ name: b.name, value: b.citations })),
@@ -257,29 +252,21 @@ After the response, provide analysis in JSON format:
           <StatCard 
             title="Total Visibility" 
             value={visibilityData.totalVisibility.toLocaleString()} 
-            change="+9%" 
-            changeType="positive"
             icon={Eye}
           />
           <StatCard 
             title="Share of Citations" 
             value={`${visibilityData.shareOfCitations}%`} 
-            change="+1.8%" 
-            changeType="positive"
             icon={Quote}
           />
           <StatCard 
             title="Total Brand Mentions" 
             value={visibilityData.totalBrandMentions.toLocaleString()} 
-            change="+0.3%" 
-            changeType="positive"
             icon={MessageSquare}
           />
           <StatCard 
             title="Brand Mention Share" 
             value={`${visibilityData.brandMentionShare}%`} 
-            change="+5%" 
-            changeType="positive"
             icon={TrendingUp}
           />
         </div>
@@ -317,72 +304,74 @@ After the response, provide analysis in JSON format:
           </div>
         </div>
 
-        {/* Trend Charts */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-          <Card className="bg-slate-800/50 border-slate-700/50">
-            <CardHeader>
-              <CardTitle className="text-white text-lg">Citation Trend Over Time</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="h-64">
-                <ResponsiveContainer width="100%" height="100%">
-                  <LineChart data={visibilityData.trendData}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="#334155" />
-                    <XAxis dataKey="date" stroke="#94a3b8" />
-                    <YAxis stroke="#94a3b8" />
-                    <Tooltip 
-                      contentStyle={{ 
-                        backgroundColor: '#1e293b', 
-                        border: '1px solid #334155',
-                        borderRadius: '8px',
-                        color: '#fff'
-                      }}
-                    />
-                    <Line 
-                      type="monotone" 
-                      dataKey="citations" 
-                      stroke="#14b8a6" 
-                      strokeWidth={2}
-                      dot={{ fill: '#14b8a6' }}
-                    />
-                  </LineChart>
-                </ResponsiveContainer>
-              </div>
-            </CardContent>
-          </Card>
+        {/* Trend Charts - Only show when we have trend data */}
+        {visibilityData.trendData.length > 0 && (
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+            <Card className="bg-slate-800/50 border-slate-700/50">
+              <CardHeader>
+                <CardTitle className="text-white text-lg">Citation Trend Over Time</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="h-64">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <LineChart data={visibilityData.trendData}>
+                      <CartesianGrid strokeDasharray="3 3" stroke="#334155" />
+                      <XAxis dataKey="date" stroke="#94a3b8" />
+                      <YAxis stroke="#94a3b8" />
+                      <Tooltip 
+                        contentStyle={{ 
+                          backgroundColor: '#1e293b', 
+                          border: '1px solid #334155',
+                          borderRadius: '8px',
+                          color: '#fff'
+                        }}
+                      />
+                      <Line 
+                        type="monotone" 
+                        dataKey="citations" 
+                        stroke="#14b8a6" 
+                        strokeWidth={2}
+                        dot={{ fill: '#14b8a6' }}
+                      />
+                    </LineChart>
+                  </ResponsiveContainer>
+                </div>
+              </CardContent>
+            </Card>
 
-          <Card className="bg-slate-800/50 border-slate-700/50">
-            <CardHeader>
-              <CardTitle className="text-white text-lg">Mention Trend Over Time</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="h-64">
-                <ResponsiveContainer width="100%" height="100%">
-                  <LineChart data={visibilityData.trendData}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="#334155" />
-                    <XAxis dataKey="date" stroke="#94a3b8" />
-                    <YAxis stroke="#94a3b8" />
-                    <Tooltip 
-                      contentStyle={{ 
-                        backgroundColor: '#1e293b', 
-                        border: '1px solid #334155',
-                        borderRadius: '8px',
-                        color: '#fff'
-                      }}
-                    />
-                    <Line 
-                      type="monotone" 
-                      dataKey="mentions" 
-                      stroke="#22d3ee" 
-                      strokeWidth={2}
-                      dot={{ fill: '#22d3ee' }}
-                    />
-                  </LineChart>
-                </ResponsiveContainer>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
+            <Card className="bg-slate-800/50 border-slate-700/50">
+              <CardHeader>
+                <CardTitle className="text-white text-lg">Mention Trend Over Time</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="h-64">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <LineChart data={visibilityData.trendData}>
+                      <CartesianGrid strokeDasharray="3 3" stroke="#334155" />
+                      <XAxis dataKey="date" stroke="#94a3b8" />
+                      <YAxis stroke="#94a3b8" />
+                      <Tooltip 
+                        contentStyle={{ 
+                          backgroundColor: '#1e293b', 
+                          border: '1px solid #334155',
+                          borderRadius: '8px',
+                          color: '#fff'
+                        }}
+                      />
+                      <Line 
+                        type="monotone" 
+                        dataKey="mentions" 
+                        stroke="#22d3ee" 
+                        strokeWidth={2}
+                        dot={{ fill: '#22d3ee' }}
+                      />
+                    </LineChart>
+                  </ResponsiveContainer>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        )}
 
         {/* Top Topics */}
         <Card className="bg-slate-800/50 border-slate-700/50">
