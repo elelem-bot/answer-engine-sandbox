@@ -90,11 +90,18 @@ export default function Home() {
                 <Sparkles className="w-4 h-4 text-teal-400" />
                 <span className="text-teal-400 text-sm font-medium">Generative Engine Optimization Platform</span>
               </div>
-              <img 
-                src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/6943f2bf67610e14801b112b/234a5fc95_BlueModernBestTeamLinkedInPost.jpg"
-                alt="Most Influential Companies of 2026"
-                className="h-16 w-16 rounded-lg shadow-lg"
-              />
+              <div className="flex items-center gap-3">
+                <img 
+                  src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/6943f2bf67610e14801b112b/234a5fc95_BlueModernBestTeamLinkedInPost.jpg"
+                  alt="Most Influential Companies of 2026"
+                  className="h-16 w-16 rounded-lg shadow-lg"
+                />
+                <img 
+                  src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/6943f2bf67610e14801b112b/970a9d617_ELELEMhasbeennamedastheMostInnovativeGenAlOptimizationPlatformattheAlGlobalExcellenceAwards.png"
+                  alt="AI Global Excellence Awards"
+                  className="h-16 w-auto"
+                />
+              </div>
             </div>
             
             <h1 className="text-5xl md:text-7xl font-bold text-white leading-tight mb-6">
