@@ -69,18 +69,23 @@ export default function Setup() {
     try {
       const response = await base44.integrations.Core.InvokeLLM({
         prompt: `Analyze this website URL and generate an Ideal Customer Profile (ICP) description: ${url}
-        
-Include:
-- Who their ideal customer is (role, industry, company size)
-- What challenges/problems the customer faces
-- What the company solves for them
-- Target market characteristics
 
-Keep it concise and practical (2-3 sentences).`,
+      Include:
+      - Who their ideal customer is (role, industry, company size)
+      - What challenges/problems the customer faces
+      - What the company solves for them
+      - Target market characteristics
+
+      Keep it concise and practical (2-3 sentences).
+
+      IMPORTANT: Do NOT include any source URLs, citations, or references in your response. Only provide the ICP description text.`,
         add_context_from_internet: true
       });
-      
-      setFormData(prev => ({ ...prev, icp_description: response }));
+
+      // Clean up any URLs that might still appear
+      const cleanResponse = response.replace(/\s*\([^)]*https?:\/\/[^)]*\)/g, '').trim();
+
+      setFormData(prev => ({ ...prev, icp_description: cleanResponse }));
     } catch (error) {
       console.error("Error analyzing website:", error);
     } finally {
