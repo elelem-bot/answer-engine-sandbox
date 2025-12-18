@@ -87,13 +87,40 @@ export default function Approvals() {
       - intent_signals: Array of 5-7 buying intent signals
       - challenges: Array of 5-7 key challenges the customer solves
       4. target_keywords: Array of 15-20 high-intent keywords relevant to the business
-      5. buyer_prompts: Array of ONLY the TOP 10 buyer-centric prompts with the HIGHEST estimated search volume/interest that potential customers would ask AI assistants. For each prompt:
-      - Estimate the relative search volume/interest for potential prompts
-      - Select only the 10 prompts with the highest search volume potential
-      - Each prompt should include:
-      * prompt: The actual question/prompt
-      * keywords: Array of keywords from target_keywords that appear in this prompt
-      * estimated_search_volume: Your estimate (low/medium/high)`;
+      5. buyer_prompts: Array of ONLY the TOP 10 buyer-centric prompts with the HIGHEST estimated search volume/interest.
+
+      CRITICAL - BUYER-INTENT PSYCHOGRAPHIC ANALYSIS FOR PROMPTS:
+      You are a buyer-intent psychographic analyst. Think like a real decision-maker, not a marketer.
+
+      First, build a Psychographic Buyer Model:
+      - Identify the buyer's core job-to-be-done, career risks, emotional anxieties
+      - Internal pressures (board, leadership, budget, time)
+      - Fear of choosing the wrong solution
+      - Assume they are already aware of the category, but unsure who or what to trust
+
+      Surface Real-Life Pain Scenarios where:
+      - Something is not working
+      - A previous approach failed
+      - Results are unclear or declining
+      - They are being asked to justify decisions internally
+
+      Generate prompts that are:
+      - Written in natural, human language (as questions or first-person statements)
+      - Sound like something typed late at night, before a meeting, or under pressure
+      - Reflect diagnosis, comparison, risk, and validation, not feature shopping
+      - NO marketing buzzwords, NO SEO phrasing, NO vendor names unless realistic
+      - Map to distinct pain, doubt, or decision moments
+      - Think "What would I ask if my job depended on getting this right?"
+
+      QUALITY BAR: If a prompt sounds like a blog post title or vendor landing page headline, it is WRONG.
+      It must sound like a real person thinking out loud.
+
+      For each of the TOP 10 prompts (sorted by estimated search volume):
+      - prompt: The buyer-style AI prompt (natural, human, under pressure)
+      - underlying_pain: The core pain or fear behind this question
+      - decision_stage: One of: "Awareness", "Diagnosis", "Comparison", "Validation", "Pre-Purchase"
+      - keywords: Array of keywords from target_keywords that appear in this prompt
+      - estimated_search_volume: Your estimate (low/medium/high) based on how common this pain point is`;
 
       const response = await base44.integrations.Core.InvokeLLM({
         prompt,
@@ -117,6 +144,8 @@ export default function Approvals() {
                 type: "object",
                 properties: {
                   prompt: { type: "string" },
+                  underlying_pain: { type: "string" },
+                  decision_stage: { type: "string" },
                   keywords: { type: "array", items: { type: "string" } },
                   estimated_search_volume: { type: "string" }
                 }
@@ -490,24 +519,46 @@ export default function Approvals() {
                 <CardContent>
                   <div className="space-y-3 mb-4">
                     {buyerPrompts.map((item, i) => (
-                      <div key={i} className="bg-slate-900/50 rounded-lg p-4 border border-slate-700/50">
-                        <div className="flex items-start justify-between gap-4">
-                          <div className="flex-1">
-                            <p className="text-white mb-2">{item.prompt}</p>
-                            <div className="flex flex-wrap gap-1">
-                              {item.keywords?.map((kw, j) => (
-                                <Badge key={j} variant="outline" className="text-xs text-teal-400 border-teal-500/30">
-                                  {kw}
-                                </Badge>
-                              ))}
+                            <div key={i} className="bg-slate-900/50 rounded-lg p-4 border border-slate-700/50">
+                              <div className="flex items-start justify-between gap-4">
+                                <div className="flex-1">
+                                  <div className="flex items-center gap-2 mb-2">
+                                    <p className="text-white flex-1">{item.prompt}</p>
+                                    {item.estimated_search_volume && (
+                                      <Badge 
+                                        variant="outline" 
+                                        className={`text-xs ${
+                                          item.estimated_search_volume === 'high' ? 'text-green-400 border-green-500/30' :
+                                          item.estimated_search_volume === 'medium' ? 'text-yellow-400 border-yellow-500/30' :
+                                          'text-slate-400 border-slate-500/30'
+                                        }`}
+                                      >
+                                        {item.estimated_search_volume} volume
+                                      </Badge>
+                                    )}
+                                  </div>
+                                  {item.underlying_pain && (
+                                    <p className="text-slate-400 text-sm mb-2 italic">"{item.underlying_pain}"</p>
+                                  )}
+                                  <div className="flex flex-wrap gap-1">
+                                    {item.decision_stage && (
+                                      <Badge variant="outline" className="text-xs text-cyan-400 border-cyan-500/30">
+                                        {item.decision_stage}
+                                      </Badge>
+                                    )}
+                                    {item.keywords?.map((kw, j) => (
+                                      <Badge key={j} variant="outline" className="text-xs text-teal-400 border-teal-500/30">
+                                        {kw}
+                                      </Badge>
+                                    ))}
+                                  </div>
+                                </div>
+                                <button onClick={() => removeItem("prompt", i)} className="text-slate-500 hover:text-red-400">
+                                  <X className="w-4 h-4" />
+                                </button>
+                              </div>
                             </div>
-                          </div>
-                          <button onClick={() => removeItem("prompt", i)} className="text-slate-500 hover:text-red-400">
-                            <X className="w-4 h-4" />
-                          </button>
-                        </div>
-                      </div>
-                    ))}
+                          ))}
                   </div>
                   <div className="flex gap-2">
                     <Input
