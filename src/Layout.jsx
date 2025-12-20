@@ -13,19 +13,20 @@ import {
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 
-const platformPages = ["VisibilityHQ", "OptimizeContent", "NewContent", "Tracking"];
+const platformPages = ["VisibilityHQ", "OptimizeContent", "NewContent", "Tracking", "LandingPage"];
 
-export default function Layout({ children, currentPageName }) {
-  const [mobileOpen, setMobileOpen] = React.useState(false);
+  export default function Layout({ children, currentPageName }) {
+    const [mobileOpen, setMobileOpen] = React.useState(false);
 
-  const showPlatformNav = platformPages.includes(currentPageName);
+    const showPlatformNav = platformPages.includes(currentPageName);
 
-  const navItems = [
-    { name: "VisibilityHQ", label: "Visibility HQ", icon: LayoutDashboard },
-    { name: "OptimizeContent", label: "Optimize Content", icon: FileEdit },
-    { name: "NewContent", label: "New Content", icon: FilePlus },
-    { name: "Tracking", label: "Tracking", icon: LineChart },
-  ];
+    const navItems = [
+      { name: "VisibilityHQ", label: "Visibility HQ", icon: LayoutDashboard },
+      { name: "OptimizeContent", label: "Optimize Content", icon: FileEdit },
+      { name: "NewContent", label: "New Content", icon: FilePlus },
+      { name: "Tracking", label: "Tracking", icon: LineChart },
+      { name: "LandingPage", label: "Landing Page", icon: LayoutDashboard },
+    ];
 
   if (!showPlatformNav) {
     return <>{children}</>;
