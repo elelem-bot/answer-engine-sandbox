@@ -13,7 +13,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 
-const platformPages = ["VisibilityHQ", "OptimizeContent", "NewContent", "Tracking", "LandingPage"];
+const platformPages = ["VisibilityHQ", "OptimizeContent", "NewContent", "Tracking", "LandingPage", "LandingPage2"];
 
   export default function Layout({ children, currentPageName }) {
     const [mobileOpen, setMobileOpen] = React.useState(false);
@@ -26,6 +26,7 @@ const platformPages = ["VisibilityHQ", "OptimizeContent", "NewContent", "Trackin
       { name: "NewContent", label: "New Content", icon: FilePlus },
       { name: "Tracking", label: "Tracking", icon: LineChart },
       { name: "LandingPage", label: "Landing Page", icon: LayoutDashboard },
+      { name: "LandingPage2", label: "Landing Page 2", icon: LayoutDashboard },
     ];
 
   if (!showPlatformNav) {
