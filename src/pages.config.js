@@ -5,6 +5,7 @@ import OptimizeContent from './pages/OptimizeContent';
 import Setup from './pages/Setup';
 import Tracking from './pages/Tracking';
 import VisibilityHQ from './pages/VisibilityHQ';
+import LandingPage from './pages/LandingPage';
 import __Layout from './Layout.jsx';
 
 
@@ -16,6 +17,7 @@ export const PAGES = {
     "Setup": Setup,
     "Tracking": Tracking,
     "VisibilityHQ": VisibilityHQ,
+    "LandingPage": LandingPage,
 }
 
 export const pagesConfig = {
