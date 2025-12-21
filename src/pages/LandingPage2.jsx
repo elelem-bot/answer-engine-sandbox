@@ -249,31 +249,6 @@ export default function LandingPage2() {
       <section className="py-20 px-6 relative">
         <div className="absolute inset-0 bg-gradient-to-b from-slate-900/50 to-transparent" />
         <div className="max-w-5xl mx-auto relative">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            viewport={{ once: true }}
-          >
-            <h2 className="text-4xl md:text-5xl font-bold text-white mb-8 text-center">
-              AI Is Already Using Your Content —
-              <br />
-              <span className="text-teal-400">You Just Can't See How</span>
-            </h2>
-          </motion.div>
-          
-          <motion.div 
-            className="text-center mb-12 max-w-3xl mx-auto"
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            transition={{ duration: 0.6, delay: 0.2 }}
-            viewport={{ once: true }}
-          >
-            <p className="text-xl text-slate-300 mb-8 leading-relaxed">
-              LLMs generate answers about your technology every day using product pages, documentation, help content, FAQs, and knowledge bases.
-            </p>
-          </motion.div>
-
           <div className="mb-12">
             <motion.p 
               className="text-white font-semibold mb-6 text-center text-xl"
@@ -311,9 +286,9 @@ export default function LandingPage2() {
             whileHover={{ scale: 1.02 }}
           >
             <p className="text-2xl text-white font-semibold">
-              When you can't see this, you can't fix it —
+              Without that understanding,
               <br />
-              <span className="text-teal-400">and visibility erodes quietly.</span>
+              <span className="text-teal-400">optimization becomes guesswork.</span>
             </p>
           </motion.div>
         </div>
@@ -511,12 +486,11 @@ export default function LandingPage2() {
                 <Card className="bg-slate-800/80 border-slate-700/50 backdrop-blur-sm h-full relative">
                   <CardContent className="p-8">
                     <motion.h3 
-                      className="text-2xl font-bold text-white mb-2"
+                      className="text-2xl font-bold text-white mb-6"
                       whileHover={{ scale: 1.05 }}
                     >
                       {surface.title}
                     </motion.h3>
-                    <p className="text-slate-400 italic mb-6 text-sm">{surface.subtitle}</p>
                     
                     <div className="mb-6">
                       <p className="text-slate-300 font-medium mb-3">elelem helps you:</p>
