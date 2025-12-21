@@ -35,11 +35,11 @@ export default function LandingPage2() {
   ];
 
   const elelemEnables = [
-    "measure semantic clarity across content sets",
-    "understand relevance relative to competitors",
-    "detect ambiguity that leads to misrepresentation",
-    "identify missing coverage that causes invisibility",
-    "explain selection behavior with evidence"
+    "understand meaning beyond keywords",
+    "explain why content is selected, ignored, or misrepresented",
+    "compare performance against competitors",
+    "detect gaps and ambiguity that reduce visibility",
+    "track how selection behavior changes over time"
   ];
 
   const geoComparison = [
@@ -51,36 +51,42 @@ export default function LandingPage2() {
   const visibilitySurfaces = [
     {
       title: "Public LLM Visibility",
-      subtitle: "Understand how your content appears in public AI answers.",
+      subtitle: "",
       color: "from-teal-500 to-cyan-500",
       items: [
-        "whether your content is included or excluded",
-        "how your product is described or compared",
-        "where competitors displace you"
+        "see whether your content appears in public AI answers",
+        "understand how your product is described and compared",
+        "identify where competitor content displaces yours",
+        "detect gaps, inaccuracies, and outdated content",
+        "prioritize improvements that increase inclusion"
       ],
-      benefit: "protect how your technology is explained to the market, based on evidence rather than assumptions."
+      benefit: "protect and improve how your technology is explained to the market, based on evidence rather than assumptions."
     },
     {
       title: "Client LLM Visibility",
-      subtitle: "Understand how your content performs inside customer AI experiences.",
+      subtitle: "",
       color: "from-amber-500 to-orange-500",
       items: [
-        "which customer questions your content supports",
-        "where answers break or hallucinate",
-        "which gaps increase confusion and escalations"
+        "understand what customers actually ask AI systems",
+        "evaluate how chatbots and assistants use your content",
+        "identify broken answers, hallucinations, and gaps",
+        "see which content issues cause confusion or escalation",
+        "improve source content to support accurate answers"
       ],
-      benefit: "improve accuracy and trust in customer-facing AI at scale."
+      benefit: "improve accuracy, trust, and efficiency in customer-facing AI experiences."
     },
     {
       title: "Agentic LLM Visibility",
-      subtitle: "Understand how usable your content is for AI systems that evaluate technologies.",
+      subtitle: "",
       color: "from-orange-500 to-red-500",
       items: [
-        "whether agents can reliably use your content",
-        "where missing clarity causes silent exclusion",
-        "which competitor content agents rely on instead"
+        "understand whether your content is usable by AI agents",
+        "identify where missing clarity or structure causes exclusion",
+        "see which competitor content agents rely on instead",
+        "prepare content for evaluation and filtering scenarios",
+        "improve machine usability without losing control"
       ],
-      benefit: "prepare your content for AI-driven evaluation and filtering before exclusion becomes the default."
+      benefit: "ensure your content is eligible and competitive as AI systems increasingly evaluate technologies."
     }
   ];
 
@@ -172,7 +178,7 @@ export default function LandingPage2() {
               <p className="text-lg text-slate-300 leading-relaxed">
                 <span className="text-white font-semibold">elelem</span> is the LLM Visibility Platform for technology companies.
                 <br />
-                We help teams understand how their content is actually used by LLMs — and improve it through a continuous, evidence-based optimization loop powered by Content Intelligence.
+                We help teams understand how their content is actually used by LLMs and improve it through a continuous, evidence-based optimization loop powered by content intelligence.
               </p>
             </motion.div>
           </motion.div>
@@ -349,9 +355,7 @@ export default function LandingPage2() {
                     animate={{ scale: [1, 1.05, 1] }}
                     transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
                   >
-                    It's about understanding how AI systems behave at scale —
-                    <br />
-                    and optimizing based on that behavior.
+                    It's about understanding how AI systems evaluate and use content before an answer is generated.
                   </motion.p>
                 </div>
               </CardContent>
@@ -370,10 +374,10 @@ export default function LandingPage2() {
             transition={{ duration: 0.6 }}
             viewport={{ once: true }}
           >
-            Powered by Content Intelligence —
+            Powered by
             <br />
             <span className="bg-gradient-to-r from-teal-400 to-cyan-400 bg-clip-text text-transparent">
-              Not Prompt Tricks
+              Content Intelligence
             </span>
           </motion.h2>
           
@@ -384,67 +388,39 @@ export default function LandingPage2() {
             transition={{ duration: 0.6, delay: 0.2 }}
             viewport={{ once: true }}
           >
-            elelem is built on a Content Intelligence Engine designed to solve problems LLMs cannot solve on their own.
+            elelem is built on a content intelligence engine designed to model how LLMs represent, compare, and select text.
           </motion.p>
 
-          <div className="grid md:grid-cols-2 gap-8 mb-12">
-            <motion.div
-              initial={{ opacity: 0, x: -30 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.6 }}
-              viewport={{ once: true }}
-            >
-              <Card className="bg-slate-800/80 border-slate-700/50 h-full">
-                <CardContent className="p-8">
-                  <h3 className="text-xl font-bold text-white mb-6">LLMs can generate language.</h3>
-                  <p className="text-slate-400 mb-4">They cannot:</p>
-                  <div className="space-y-3">
-                    {llmCannotDo.map((item, i) => (
-                      <motion.div 
-                        key={i} 
-                        className="flex items-start gap-3"
-                        initial={{ opacity: 0, x: -10 }}
-                        whileInView={{ opacity: 1, x: 0 }}
-                        transition={{ delay: 0.3 + i * 0.1 }}
-                        viewport={{ once: true }}
-                      >
-                        <X className="w-5 h-5 text-red-400 mt-0.5 flex-shrink-0" />
-                        <span className="text-slate-300">{item}</span>
-                      </motion.div>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
-            </motion.div>
-
-            <motion.div
-              initial={{ opacity: 0, x: 30 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.6 }}
-              viewport={{ once: true }}
-            >
-              <Card className="bg-gradient-to-br from-teal-500/10 to-cyan-500/10 border-teal-500/30 h-full">
-                <CardContent className="p-8">
-                  <h3 className="text-xl font-bold text-white mb-6">elelem enables teams to:</h3>
-                  <div className="space-y-3">
-                    {elelemEnables.map((item, i) => (
-                      <motion.div 
-                        key={i} 
-                        className="flex items-start gap-3"
-                        initial={{ opacity: 0, x: -10 }}
-                        whileInView={{ opacity: 1, x: 0 }}
-                        transition={{ delay: 0.3 + i * 0.1 }}
-                        viewport={{ once: true }}
-                      >
-                        <Check className="w-5 h-5 text-teal-400 mt-0.5 flex-shrink-0" />
-                        <span className="text-slate-300">{item}</span>
-                      </motion.div>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
-            </motion.div>
-          </div>
+          <motion.div
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            transition={{ duration: 0.6, delay: 0.3 }}
+            viewport={{ once: true }}
+            className="mb-12"
+          >
+            <Card className="bg-gradient-to-br from-teal-500/10 to-cyan-500/10 border-teal-500/30">
+              <CardContent className="p-8">
+                <p className="text-white font-semibold mb-6 text-center text-lg">
+                  Using techniques such as vector embeddings, semantic comparison, and passage-level analysis, elelem helps teams:
+                </p>
+                <div className="grid md:grid-cols-2 gap-4">
+                  {elelemEnables.map((item, i) => (
+                    <motion.div 
+                      key={i} 
+                      className="flex items-start gap-3"
+                      initial={{ opacity: 0, x: -10 }}
+                      whileInView={{ opacity: 1, x: 0 }}
+                      transition={{ delay: 0.3 + i * 0.1 }}
+                      viewport={{ once: true }}
+                    >
+                      <Check className="w-5 h-5 text-teal-400 mt-0.5 flex-shrink-0" />
+                      <span className="text-slate-300">{item}</span>
+                    </motion.div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          </motion.div>
 
           <motion.p 
             className="text-center text-teal-400 font-semibold text-2xl"
@@ -453,7 +429,7 @@ export default function LandingPage2() {
             transition={{ duration: 0.6, delay: 0.8 }}
             viewport={{ once: true }}
           >
-            This is why elelem goes beyond GEO tools.
+            This allows optimization based on how AI actually works, not assumptions.
           </motion.p>
         </div>
       </section>
@@ -473,79 +449,34 @@ export default function LandingPage2() {
             <span className="text-teal-400">GEO Tool</span>
           </motion.h2>
 
-          <div className="grid md:grid-cols-2 gap-8 mb-12">
-            <motion.div
-              initial={{ opacity: 0, x: -30 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.6 }}
-              viewport={{ once: true }}
-            >
-              <Card className="bg-slate-800/50 border-slate-700/50 h-full">
-                <CardContent className="p-8">
-                  <h3 className="text-2xl font-bold text-slate-400 mb-2">GEO tools</h3>
-                  <p className="text-lg text-white mb-4">focus on how to rewrite content for AI</p>
-                </CardContent>
-              </Card>
-            </motion.div>
-
-            <motion.div
-              initial={{ opacity: 0, x: 30 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.6 }}
-              viewport={{ once: true }}
-            >
-              <Card className="bg-gradient-to-br from-teal-500/10 to-cyan-500/10 border-teal-500/30 h-full">
-                <CardContent className="p-8">
-                  <h3 className="text-2xl font-bold text-teal-400 mb-2">elelem</h3>
-                  <p className="text-lg text-white mb-4">focuses on how AI actually uses content</p>
-                </CardContent>
-              </Card>
-            </motion.div>
-          </div>
-
           <motion.div
             initial={{ opacity: 0 }}
             whileInView={{ opacity: 1 }}
-            transition={{ duration: 0.6, delay: 0.3 }}
+            transition={{ duration: 0.6, delay: 0.2 }}
             viewport={{ once: true }}
+            className="max-w-3xl mx-auto"
           >
-            <Card className="bg-slate-800/80 border-slate-700/50">
-              <CardContent className="p-8">
-                <h4 className="text-white font-semibold mb-6 text-center text-xl">The difference:</h4>
-                <div className="space-y-4">
-                  {geoComparison.map((item, i) => (
-                    <motion.div
-                      key={i}
-                      className="grid md:grid-cols-2 gap-4"
-                      initial={{ opacity: 0, y: 20 }}
-                      whileInView={{ opacity: 1, y: 0 }}
-                      transition={{ delay: i * 0.1 }}
-                      viewport={{ once: true }}
-                    >
-                      <div className="flex items-center gap-3 text-slate-400">
-                        <span className="text-sm font-medium">GEO tools</span>
-                        <span>{item.geo}</span>
-                      </div>
-                      <div className="flex items-center gap-3 text-teal-400">
-                        <span className="text-sm font-medium">elelem</span>
-                        <span>{item.elelem}</span>
-                      </div>
-                    </motion.div>
-                  ))}
-                </div>
+            <Card className="bg-slate-800/80 border-slate-700/50 mb-8">
+              <CardContent className="p-8 text-center">
+                <p className="text-xl text-slate-300 mb-4">
+                  GEO tools focus on monitoring AI answers using simulated prompts.
+                </p>
+                <p className="text-xl text-white font-semibold">
+                  elelem focuses on improving how AI selects and uses your content for real, targeted customers.
+                </p>
               </CardContent>
             </Card>
-          </motion.div>
 
-          <motion.div 
-            className="text-center mt-12 space-y-2"
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            transition={{ duration: 0.6, delay: 0.6 }}
-            viewport={{ once: true }}
-          >
-            <p className="text-slate-400 text-lg">One is content guidance.</p>
-            <p className="text-white font-bold text-2xl">The other is visibility intelligence.</p>
+            <Card className="bg-gradient-to-br from-teal-500/10 to-cyan-500/10 border-teal-500/30">
+              <CardContent className="p-8 text-center">
+                <p className="text-xl text-slate-300 mb-2">
+                  GEO tools observe outputs.
+                </p>
+                <p className="text-xl text-teal-400 font-semibold">
+                  elelem explains and optimizes the selection behavior behind them.
+                </p>
+              </CardContent>
+            </Card>
           </motion.div>
         </div>
       </section>
@@ -588,7 +519,7 @@ export default function LandingPage2() {
                     <p className="text-slate-400 italic mb-6 text-sm">{surface.subtitle}</p>
                     
                     <div className="mb-6">
-                      <p className="text-slate-300 font-medium mb-3">elelem shows:</p>
+                      <p className="text-slate-300 font-medium mb-3">elelem helps you:</p>
                       <div className="space-y-3">
                         {surface.items.map((item, j) => (
                           <motion.div 
@@ -599,7 +530,7 @@ export default function LandingPage2() {
                             transition={{ delay: 0.3 + j * 0.1 }}
                             viewport={{ once: true }}
                           >
-                            <div className={`w-1.5 h-1.5 rounded-full bg-gradient-to-br ${surface.color} mt-2 flex-shrink-0`} />
+                            <Check className="w-4 h-4 text-teal-400 mt-0.5 flex-shrink-0" />
                             <span className="text-slate-300 text-sm leading-relaxed">{item}</span>
                           </motion.div>
                         ))}
@@ -801,7 +732,7 @@ export default function LandingPage2() {
                   {[
                     "See how AI actually uses your content.",
                     "Understand why visibility is won or lost.",
-                    "Optimize with evidence — not assumptions."
+                    "Optimize with evidence, not assumptions."
                   ].map((text, i) => (
                     <motion.p
                       key={i}
