@@ -235,9 +235,18 @@ export default function Approvals() {
       
       // Create prompt analyses
       for (const bp of buyerPrompts) {
+        // Categorize by decision stage
+        let funnel_stage = "middle";
+        if (bp.decision_stage === "Awareness" || bp.decision_stage === "Diagnosis") {
+          funnel_stage = "top";
+        } else if (bp.decision_stage === "Validation" || bp.decision_stage === "Pre-Purchase") {
+          funnel_stage = "bottom";
+        }
+
         await base44.entities.PromptAnalysis.create({
           company_id: companyId,
           prompt: bp.prompt,
+          funnel_stage: funnel_stage,
           keywords: bp.keywords,
           search_signal_score: Math.floor(Math.random() * 100),
           elelem_score: Math.floor(Math.random() * 100),

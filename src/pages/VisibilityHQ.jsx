@@ -32,6 +32,8 @@ export default function VisibilityHQ() {
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [prompts, setPrompts] = useState([]);
   const [company, setCompany] = useState(null);
+  const [funnelStage, setFunnelStage] = useState("top");
+  const [selectedPrompt, setSelectedPrompt] = useState(null);
   const [visibilityData, setVisibilityData] = useState({
     totalVisibility: 0,
     shareOfCitations: 0,
@@ -48,6 +50,13 @@ export default function VisibilityHQ() {
     loadData();
   }, []);
 
+  useEffect(() => {
+    if (prompts.length > 0) {
+      const filtered = prompts.filter(p => p.funnel_stage === funnelStage);
+      calculateVisibility(filtered, company);
+    }
+  }, [funnelStage]);
+
   const loadData = async () => {
     try {
       const companies = await base44.entities.Company.filter({ setup_complete: true });
@@ -59,7 +68,8 @@ export default function VisibilityHQ() {
         if (promptsData.length > 0 && !promptsData[0].gemini_response) {
           await analyzePrompts(promptsData, companies[0]);
         } else {
-          calculateVisibility(promptsData, companies[0]);
+          const filtered = promptsData.filter(p => p.funnel_stage === funnelStage);
+          calculateVisibility(filtered, companies[0]);
         }
       }
     } catch (error) {
@@ -132,7 +142,8 @@ After the response, provide analysis in JSON format:
     }
 
     setPrompts(updatedPrompts);
-    calculateVisibility(updatedPrompts, companyData);
+    const filtered = updatedPrompts.filter(p => p.funnel_stage === funnelStage);
+    calculateVisibility(filtered, companyData);
     setIsAnalyzing(false);
   };
 
@@ -204,32 +215,54 @@ After the response, provide analysis in JSON format:
     <div className="min-h-screen bg-slate-950 p-6 lg:p-8">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
-        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-8">
-          <div>
-            <h1 className="text-2xl font-bold text-white">GEO Dashboard</h1>
-            <p className="text-slate-400">Track performance across AI search engines and optimize your content strategy</p>
+        <div className="flex flex-col gap-6 mb-8">
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+            <div>
+              <h1 className="text-2xl font-bold text-white">GEO Dashboard</h1>
+              <p className="text-slate-400">Track performance across AI search engines and optimize your content strategy</p>
+            </div>
+            <div className="flex items-center gap-3">
+              <Select defaultValue="7d">
+                <SelectTrigger className="w-40 bg-slate-800 border-slate-700 text-white">
+                  <SelectValue placeholder="Time period" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="24h">Last 24 hours</SelectItem>
+                  <SelectItem value="7d">Last 7 days</SelectItem>
+                  <SelectItem value="30d">Last 30 days</SelectItem>
+                  <SelectItem value="90d">Last 90 days</SelectItem>
+                </SelectContent>
+              </Select>
+              <Button 
+                variant="outline" 
+                className="border-slate-700 text-slate-300"
+                onClick={() => company && analyzePrompts(prompts, company)}
+                disabled={isAnalyzing}
+              >
+                <RefreshCw className={`w-4 h-4 mr-2 ${isAnalyzing ? "animate-spin" : ""}`} />
+                Refresh
+              </Button>
+            </div>
           </div>
+
+          {/* Funnel Stage Filter */}
           <div className="flex items-center gap-3">
-            <Select defaultValue="7d">
-              <SelectTrigger className="w-40 bg-slate-800 border-slate-700 text-white">
-                <SelectValue placeholder="Time period" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="24h">Last 24 hours</SelectItem>
-                <SelectItem value="7d">Last 7 days</SelectItem>
-                <SelectItem value="30d">Last 30 days</SelectItem>
-                <SelectItem value="90d">Last 90 days</SelectItem>
-              </SelectContent>
-            </Select>
-            <Button 
-              variant="outline" 
-              className="border-slate-700 text-slate-300"
-              onClick={() => company && analyzePrompts(prompts, company)}
-              disabled={isAnalyzing}
-            >
-              <RefreshCw className={`w-4 h-4 mr-2 ${isAnalyzing ? "animate-spin" : ""}`} />
-              Refresh
-            </Button>
+            <span className="text-slate-400 text-sm">Funnel Stage:</span>
+            <div className="flex gap-2">
+              {["top", "middle", "bottom"].map((stage) => (
+                <Button
+                  key={stage}
+                  onClick={() => setFunnelStage(stage)}
+                  className={`${
+                    funnelStage === stage
+                      ? "bg-gradient-to-r from-teal-500 to-cyan-500 text-white"
+                      : "bg-slate-800 text-slate-300 hover:bg-slate-700"
+                  }`}
+                >
+                  {stage.charAt(0).toUpperCase() + stage.slice(1)} of Funnel
+                </Button>
+              ))}
+            </div>
           </div>
         </div>
 
@@ -368,6 +401,90 @@ After the response, provide analysis in JSON format:
             </Card>
           </div>
         )}
+
+        {/* AI Responses with Citations */}
+        <Card className="bg-slate-800/50 border-slate-700/50 mb-8">
+          <CardHeader>
+            <CardTitle className="text-white text-lg">AI Responses for {funnelStage.charAt(0).toUpperCase() + funnelStage.slice(1)} of Funnel Prompts</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              {prompts.filter(p => p.funnel_stage === funnelStage && p.gemini_response).map((prompt, i) => (
+                <div key={i} className="border border-slate-700/50 rounded-lg p-4 bg-slate-900/50">
+                  <div className="flex items-start justify-between gap-4 mb-3">
+                    <div className="flex-1">
+                      <p className="text-white font-semibold mb-1">{prompt.prompt}</p>
+                      <div className="flex gap-2 flex-wrap">
+                        {prompt.cited_brands?.slice(0, 3).map((cb, j) => (
+                          <Badge 
+                            key={j}
+                            className={`${
+                              cb.brand.toLowerCase().includes(company?.name.toLowerCase())
+                                ? "bg-teal-500/20 text-teal-400 border-teal-500/30"
+                                : "bg-slate-700/50 text-slate-300 border-slate-600/30"
+                            }`}
+                          >
+                            {cb.brand} ({cb.mentions})
+                          </Badge>
+                        ))}
+                      </div>
+                    </div>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setSelectedPrompt(selectedPrompt?.id === prompt.id ? null : prompt)}
+                      className="border-slate-700 text-slate-300"
+                    >
+                      {selectedPrompt?.id === prompt.id ? "Hide" : "View"} Response
+                    </Button>
+                  </div>
+
+                  <AnimatePresence>
+                    {selectedPrompt?.id === prompt.id && (
+                      <motion.div
+                        initial={{ height: 0, opacity: 0 }}
+                        animate={{ height: "auto", opacity: 1 }}
+                        exit={{ height: 0, opacity: 0 }}
+                        transition={{ duration: 0.3 }}
+                        className="overflow-hidden"
+                      >
+                        <div className="mt-4 pt-4 border-t border-slate-700/50">
+                          <p className="text-slate-300 text-sm leading-relaxed whitespace-pre-wrap">
+                            {prompt.gemini_response}
+                          </p>
+
+                          {prompt.cited_brands && prompt.cited_brands.length > 0 && (
+                            <div className="mt-4 pt-4 border-t border-slate-700/50">
+                              <p className="text-slate-400 text-xs font-semibold mb-2">Brands Cited:</p>
+                              <div className="flex flex-wrap gap-2">
+                                {prompt.cited_brands.map((cb, j) => (
+                                  <Badge 
+                                    key={j}
+                                    className={`${
+                                      cb.brand.toLowerCase().includes(company?.name.toLowerCase())
+                                        ? "bg-teal-500/20 text-teal-400 border-teal-500/30"
+                                        : "bg-slate-700/50 text-slate-300 border-slate-600/30"
+                                    }`}
+                                  >
+                                    {cb.brand}: {cb.mentions} mention{cb.mentions > 1 ? "s" : ""}
+                                  </Badge>
+                                ))}
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
+              ))}
+
+              {prompts.filter(p => p.funnel_stage === funnelStage && p.gemini_response).length === 0 && (
+                <p className="text-slate-400 text-center py-8">No responses available for this funnel stage yet.</p>
+              )}
+            </div>
+          </CardContent>
+        </Card>
 
         {/* Top Topics */}
         <Card className="bg-slate-800/50 border-slate-700/50">
