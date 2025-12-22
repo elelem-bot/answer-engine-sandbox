@@ -9,6 +9,7 @@ import OptimizeContent from './pages/OptimizeContent';
 import Setup from './pages/Setup';
 import Tracking from './pages/Tracking';
 import VisibilityHQ from './pages/VisibilityHQ';
+import Prompts from './pages/Prompts';
 import __Layout from './Layout.jsx';
 
 
@@ -24,6 +25,7 @@ export const PAGES = {
     "Setup": Setup,
     "Tracking": Tracking,
     "VisibilityHQ": VisibilityHQ,
+    "Prompts": Prompts,
 }
 
 export const pagesConfig = {

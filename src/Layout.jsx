@@ -6,6 +6,7 @@ import {
   FileEdit, 
   FilePlus, 
   LineChart,
+  MessageSquare,
   Menu,
   X,
   LogOut
@@ -13,7 +14,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 
-const platformPages = ["VisibilityHQ", "CustomerVisibility", "AgentVisibility", "OptimizeContent", "NewContent", "Tracking", "LandingPage", "LandingPage2"];
+const platformPages = ["VisibilityHQ", "CustomerVisibility", "AgentVisibility", "Prompts", "OptimizeContent", "NewContent", "Tracking", "LandingPage", "LandingPage2"];
 
   export default function Layout({ children, currentPageName }) {
     const [mobileOpen, setMobileOpen] = React.useState(false);
@@ -22,6 +23,7 @@ const platformPages = ["VisibilityHQ", "CustomerVisibility", "AgentVisibility", 
 
     const navItems = [
       { name: "VisibilityHQ", label: "Visibility HQ", icon: LayoutDashboard },
+      { name: "Prompts", label: "Prompts", icon: MessageSquare },
       { name: "OptimizeContent", label: "Optimize Content", icon: FileEdit },
       { name: "NewContent", label: "New Content", icon: FilePlus },
       { name: "Tracking", label: "Tracking", icon: LineChart },
