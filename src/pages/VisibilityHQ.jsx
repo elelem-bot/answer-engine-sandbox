@@ -32,6 +32,7 @@ export default function VisibilityHQ() {
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [prompts, setPrompts] = useState([]);
   const [company, setCompany] = useState(null);
+  const [viewType, setViewType] = useState("prospect");
   const [funnelStage, setFunnelStage] = useState("top");
   const [selectedPrompt, setSelectedPrompt] = useState(null);
   const [visibilityData, setVisibilityData] = useState({
@@ -214,6 +215,25 @@ After the response, provide analysis in JSON format:
   return (
     <div className="min-h-screen bg-slate-950 p-6 lg:p-8">
       <div className="max-w-7xl mx-auto">
+        {/* View Type Submenu */}
+        <div className="mb-6 border-b border-slate-800">
+          <div className="flex gap-1">
+            {["prospect", "customer", "agent"].map((type) => (
+              <button
+                key={type}
+                onClick={() => setViewType(type)}
+                className={`px-6 py-3 text-sm font-medium transition-all ${
+                  viewType === type
+                    ? "text-teal-400 border-b-2 border-teal-400"
+                    : "text-slate-400 hover:text-slate-300"
+                }`}
+              >
+                {type.charAt(0).toUpperCase() + type.slice(1)}
+              </button>
+            ))}
+          </div>
+        </div>
+
         {/* Header */}
         <div className="flex flex-col gap-6 mb-8">
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
