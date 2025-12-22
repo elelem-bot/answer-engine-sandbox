@@ -245,7 +245,7 @@ After the response, provide analysis in JSON format:
         <div className="flex flex-col gap-6 mb-8">
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
             <div>
-              <h1 className="text-2xl font-bold text-white">GEO Dashboard</h1>
+              <h1 className="text-2xl font-bold text-white">Prospect Visibility Dashboard</h1>
               <p className="text-slate-400">Track performance across AI search engines and optimize your content strategy</p>
             </div>
             <div className="flex items-center gap-3">
