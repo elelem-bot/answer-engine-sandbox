@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { createPageUrl } from "@/utils";
 import { base44 } from "@/api/base44Client";
 import { motion } from "framer-motion";
 import { 
@@ -28,11 +30,11 @@ import BrandTable from "@/components/dashboard/BrandTable";
 const COLORS = ['#14b8a6', '#22d3ee', '#84cc16', '#10b981', '#06b6d4', '#a3e635', '#2dd4bf', '#0ea5e9'];
 
 export default function VisibilityHQ() {
+  const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(true);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [prompts, setPrompts] = useState([]);
   const [company, setCompany] = useState(null);
-  const [viewType, setViewType] = useState("prospect");
   const [funnelStage, setFunnelStage] = useState("top");
   const [selectedPrompt, setSelectedPrompt] = useState(null);
   const [visibilityData, setVisibilityData] = useState({
@@ -218,19 +220,24 @@ After the response, provide analysis in JSON format:
         {/* View Type Submenu */}
         <div className="mb-6 border-b border-slate-800">
           <div className="flex gap-1">
-            {["prospect", "customer", "agent"].map((type) => (
-              <button
-                key={type}
-                onClick={() => setViewType(type)}
-                className={`px-6 py-3 text-sm font-medium transition-all ${
-                  viewType === type
-                    ? "text-teal-400 border-b-2 border-teal-400"
-                    : "text-slate-400 hover:text-slate-300"
-                }`}
-              >
-                {type.charAt(0).toUpperCase() + type.slice(1)}
-              </button>
-            ))}
+            <button
+              onClick={() => navigate(createPageUrl("VisibilityHQ"))}
+              className="px-6 py-3 text-sm font-medium transition-all text-teal-400 border-b-2 border-teal-400"
+            >
+              Prospect
+            </button>
+            <button
+              onClick={() => navigate(createPageUrl("CustomerVisibility"))}
+              className="px-6 py-3 text-sm font-medium transition-all text-slate-400 hover:text-slate-300"
+            >
+              Customer
+            </button>
+            <button
+              onClick={() => navigate(createPageUrl("AgentVisibility"))}
+              className="px-6 py-3 text-sm font-medium transition-all text-slate-400 hover:text-slate-300"
+            >
+              Agent
+            </button>
           </div>
         </div>
 

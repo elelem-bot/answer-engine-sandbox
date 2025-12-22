@@ -7,6 +7,8 @@ import OptimizeContent from './pages/OptimizeContent';
 import Setup from './pages/Setup';
 import Tracking from './pages/Tracking';
 import VisibilityHQ from './pages/VisibilityHQ';
+import CustomerVisibility from './pages/CustomerVisibility';
+import AgentVisibility from './pages/AgentVisibility';
 import __Layout from './Layout.jsx';
 
 
@@ -20,6 +22,8 @@ export const PAGES = {
     "Setup": Setup,
     "Tracking": Tracking,
     "VisibilityHQ": VisibilityHQ,
+    "CustomerVisibility": CustomerVisibility,
+    "AgentVisibility": AgentVisibility,
 }
 
 export const pagesConfig = {
