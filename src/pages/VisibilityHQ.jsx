@@ -34,8 +34,10 @@ export default function VisibilityHQ() {
   const [isLoading, setIsLoading] = useState(true);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [prompts, setPrompts] = useState([]);
+  const [allPrompts, setAllPrompts] = useState([]);
   const [company, setCompany] = useState(null);
   const [funnelStage, setFunnelStage] = useState("top");
+  const [promptType, setPromptType] = useState("branded");
   const [selectedPrompt, setSelectedPrompt] = useState(null);
   const [visibilityData, setVisibilityData] = useState({
     totalVisibility: 0,
@@ -54,11 +56,25 @@ export default function VisibilityHQ() {
   }, []);
 
   useEffect(() => {
-    if (prompts.length > 0) {
-      const filtered = prompts.filter(p => p.funnel_stage === funnelStage);
+    if (allPrompts.length > 0 && company) {
+      const filtered = filterPrompts(allPrompts, funnelStage, promptType, company);
+      setPrompts(filtered);
       calculateVisibility(filtered, company);
     }
-  }, [funnelStage]);
+  }, [funnelStage, promptType]);
+
+  const filterPrompts = (promptsData, stage, type, companyData) => {
+    return promptsData.filter(p => {
+      const matchesStage = p.funnel_stage === stage;
+      const companyName = companyData.name.toLowerCase();
+      const promptText = p.prompt.toLowerCase();
+      const isBranded = promptText.includes(companyName);
+      
+      const matchesType = type === "branded" ? isBranded : !isBranded;
+      
+      return matchesStage && matchesType;
+    });
+  };
 
   const loadData = async () => {
     try {
@@ -66,12 +82,14 @@ export default function VisibilityHQ() {
       if (companies.length > 0) {
         setCompany(companies[0]);
         const promptsData = await base44.entities.PromptAnalysis.filter({ company_id: companies[0].id });
-        setPrompts(promptsData);
+        setAllPrompts(promptsData);
+        
+        const filtered = filterPrompts(promptsData, funnelStage, promptType, companies[0]);
+        setPrompts(filtered);
         
         if (promptsData.length > 0 && !promptsData[0].gemini_response) {
           await analyzePrompts(promptsData, companies[0]);
         } else {
-          const filtered = promptsData.filter(p => p.funnel_stage === funnelStage);
           calculateVisibility(filtered, companies[0]);
         }
       }
@@ -144,8 +162,9 @@ After the response, provide analysis in JSON format:
       }
     }
 
-    setPrompts(updatedPrompts);
-    const filtered = updatedPrompts.filter(p => p.funnel_stage === funnelStage);
+    setAllPrompts(updatedPrompts);
+    const filtered = filterPrompts(updatedPrompts, funnelStage, promptType, companyData);
+    setPrompts(filtered);
     calculateVisibility(filtered, companyData);
     setIsAnalyzing(false);
   };
@@ -272,24 +291,46 @@ After the response, provide analysis in JSON format:
             </div>
           </div>
 
-          {/* Funnel Stage Filter */}
-          <div className="flex flex-col sm:flex-row sm:items-center gap-3">
-            <span className="text-slate-400 text-sm">Funnel Stage:</span>
-            <div className="flex gap-2 flex-wrap">
-              {["top", "middle", "bottom"].map((stage) => (
-                <Button
-                  key={stage}
-                  onClick={() => setFunnelStage(stage)}
-                  size="sm"
-                  className={`flex-1 sm:flex-none ${
-                    funnelStage === stage
-                      ? "bg-gradient-to-r from-teal-500 to-cyan-500 text-white"
-                      : "bg-slate-800 text-slate-300 hover:bg-slate-700"
-                  }`}
-                >
-                  {stage.charAt(0).toUpperCase() + stage.slice(1)}
-                </Button>
-              ))}
+          {/* Filters */}
+          <div className="flex flex-col gap-4">
+            <div className="flex flex-col sm:flex-row sm:items-center gap-3">
+              <span className="text-slate-400 text-sm">Prompt Type:</span>
+              <div className="flex gap-2 flex-wrap">
+                {["branded", "unbranded"].map((type) => (
+                  <Button
+                    key={type}
+                    onClick={() => setPromptType(type)}
+                    size="sm"
+                    className={`flex-1 sm:flex-none ${
+                      promptType === type
+                        ? "bg-gradient-to-r from-purple-500 to-pink-500 text-white"
+                        : "bg-slate-800 text-slate-300 hover:bg-slate-700"
+                    }`}
+                  >
+                    {type.charAt(0).toUpperCase() + type.slice(1)}
+                  </Button>
+                ))}
+              </div>
+            </div>
+
+            <div className="flex flex-col sm:flex-row sm:items-center gap-3">
+              <span className="text-slate-400 text-sm">Funnel Stage:</span>
+              <div className="flex gap-2 flex-wrap">
+                {["top", "middle", "bottom"].map((stage) => (
+                  <Button
+                    key={stage}
+                    onClick={() => setFunnelStage(stage)}
+                    size="sm"
+                    className={`flex-1 sm:flex-none ${
+                      funnelStage === stage
+                        ? "bg-gradient-to-r from-teal-500 to-cyan-500 text-white"
+                        : "bg-slate-800 text-slate-300 hover:bg-slate-700"
+                    }`}
+                  >
+                    {stage.charAt(0).toUpperCase() + stage.slice(1)}
+                  </Button>
+                ))}
+              </div>
             </div>
           </div>
         </div>
