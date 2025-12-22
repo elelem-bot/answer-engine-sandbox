@@ -30,12 +30,14 @@ import {
 
 export default function OptimizeContent() {
   const [prompts, setPrompts] = useState([]);
+  const [allPrompts, setAllPrompts] = useState([]);
   const [selectedPrompt, setSelectedPrompt] = useState(null);
   const [selectedPage, setSelectedPage] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isOptimizing, setIsOptimizing] = useState(false);
   const [optimization, setOptimization] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
+  const [funnelStage, setFunnelStage] = useState("top");
 
   useEffect(() => {
     loadPrompts();
@@ -59,7 +61,8 @@ export default function OptimizeContent() {
           ]
         }));
         
-        setPrompts(enrichedPrompts);
+        setAllPrompts(enrichedPrompts);
+        setPrompts(enrichedPrompts.filter(p => p.funnel_stage === "top"));
       }
     } catch (error) {
       console.error("Error loading prompts:", error);
@@ -67,6 +70,15 @@ export default function OptimizeContent() {
       setIsLoading(false);
     }
   };
+
+  useEffect(() => {
+    if (allPrompts.length > 0) {
+      setPrompts(allPrompts.filter(p => p.funnel_stage === funnelStage));
+      setSelectedPrompt(null);
+      setSelectedPage(null);
+      setOptimization(null);
+    }
+  }, [funnelStage]);
 
   const handleOptimize = async () => {
     if (!selectedPage) return;
@@ -170,8 +182,33 @@ Format as JSON with:
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-2xl font-bold text-white">Optimize Content</h1>
-          <p className="text-slate-400">Select a prompt and optimize your pages for AI search visibility</p>
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-4">
+            <div>
+              <h1 className="text-2xl font-bold text-white">Optimize Content</h1>
+              <p className="text-slate-400">Select a prompt and optimize your pages for AI search visibility</p>
+            </div>
+          </div>
+
+          {/* Funnel Stage Filter */}
+          <div className="flex flex-col sm:flex-row sm:items-center gap-3">
+            <span className="text-slate-400 text-sm">Funnel Stage:</span>
+            <div className="flex gap-2 flex-wrap">
+              {["top", "middle", "bottom"].map((stage) => (
+                <Button
+                  key={stage}
+                  onClick={() => setFunnelStage(stage)}
+                  size="sm"
+                  className={`flex-1 sm:flex-none ${
+                    funnelStage === stage
+                      ? "bg-gradient-to-r from-teal-500 to-cyan-500 text-white"
+                      : "bg-slate-800 text-slate-300 hover:bg-slate-700"
+                  }`}
+                >
+                  {stage.charAt(0).toUpperCase() + stage.slice(1)}
+                </Button>
+              ))}
+            </div>
+          </div>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">

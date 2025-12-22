@@ -26,6 +26,7 @@ export default function NewContent() {
   const [isGenerating, setIsGenerating] = useState(false);
   const [generatedContent, setGeneratedContent] = useState(null);
   const [copied, setCopied] = useState(false);
+  const [funnelStage, setFunnelStage] = useState("top");
 
   const pillars = [
     { key: "freshness", label: "Freshness & Technical", weight: "10%", color: "bg-green-500" },
@@ -46,6 +47,7 @@ export default function NewContent() {
 
 Create a comprehensive article for this target prompt/query: "${prompt}"
 ${title ? `Article title: "${title}"` : ""}
+Target Funnel Stage: ${funnelStage} of funnel (adjust depth and intent accordingly)
 
 The content must be optimized based on elelem's 5 pillars of AI Search Visibility:
 
@@ -130,8 +132,33 @@ Format as JSON with:
       <div className="max-w-6xl mx-auto">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-2xl font-bold text-white">New Content</h1>
-          <p className="text-slate-400">Generate AI-optimized content from scratch</p>
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-4">
+            <div>
+              <h1 className="text-2xl font-bold text-white">New Content</h1>
+              <p className="text-slate-400">Generate AI-optimized content from scratch</p>
+            </div>
+          </div>
+
+          {/* Funnel Stage Filter */}
+          <div className="flex flex-col sm:flex-row sm:items-center gap-3">
+            <span className="text-slate-400 text-sm">Target Funnel Stage:</span>
+            <div className="flex gap-2 flex-wrap">
+              {["top", "middle", "bottom"].map((stage) => (
+                <Button
+                  key={stage}
+                  onClick={() => setFunnelStage(stage)}
+                  size="sm"
+                  className={`flex-1 sm:flex-none ${
+                    funnelStage === stage
+                      ? "bg-gradient-to-r from-teal-500 to-cyan-500 text-white"
+                      : "bg-slate-800 text-slate-300 hover:bg-slate-700"
+                  }`}
+                >
+                  {stage.charAt(0).toUpperCase() + stage.slice(1)}
+                </Button>
+              ))}
+            </div>
+          </div>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
