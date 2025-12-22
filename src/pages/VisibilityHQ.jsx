@@ -246,20 +246,21 @@ After the response, provide analysis in JSON format:
           </div>
 
           {/* Funnel Stage Filter */}
-          <div className="flex items-center gap-3">
+          <div className="flex flex-col sm:flex-row sm:items-center gap-3">
             <span className="text-slate-400 text-sm">Funnel Stage:</span>
-            <div className="flex gap-2">
+            <div className="flex gap-2 flex-wrap">
               {["top", "middle", "bottom"].map((stage) => (
                 <Button
                   key={stage}
                   onClick={() => setFunnelStage(stage)}
-                  className={`${
+                  size="sm"
+                  className={`flex-1 sm:flex-none ${
                     funnelStage === stage
                       ? "bg-gradient-to-r from-teal-500 to-cyan-500 text-white"
                       : "bg-slate-800 text-slate-300 hover:bg-slate-700"
                   }`}
                 >
-                  {stage.charAt(0).toUpperCase() + stage.slice(1)} of Funnel
+                  {stage.charAt(0).toUpperCase() + stage.slice(1)}
                 </Button>
               ))}
             </div>
