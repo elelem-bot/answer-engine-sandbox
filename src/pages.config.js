@@ -1,4 +1,6 @@
+import AgentVisibility from './pages/AgentVisibility';
 import Approvals from './pages/Approvals';
+import CustomerVisibility from './pages/CustomerVisibility';
 import Home from './pages/Home';
 import LandingPage from './pages/LandingPage';
 import LandingPage2 from './pages/LandingPage2';
@@ -7,13 +9,13 @@ import OptimizeContent from './pages/OptimizeContent';
 import Setup from './pages/Setup';
 import Tracking from './pages/Tracking';
 import VisibilityHQ from './pages/VisibilityHQ';
-import CustomerVisibility from './pages/CustomerVisibility';
-import AgentVisibility from './pages/AgentVisibility';
 import __Layout from './Layout.jsx';
 
 
 export const PAGES = {
+    "AgentVisibility": AgentVisibility,
     "Approvals": Approvals,
+    "CustomerVisibility": CustomerVisibility,
     "Home": Home,
     "LandingPage": LandingPage,
     "LandingPage2": LandingPage2,
@@ -22,8 +24,6 @@ export const PAGES = {
     "Setup": Setup,
     "Tracking": Tracking,
     "VisibilityHQ": VisibilityHQ,
-    "CustomerVisibility": CustomerVisibility,
-    "AgentVisibility": AgentVisibility,
 }
 
 export const pagesConfig = {

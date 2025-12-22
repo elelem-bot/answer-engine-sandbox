@@ -15,6 +15,8 @@ import {
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
 import {
   Select,
   SelectContent,
@@ -293,24 +295,13 @@ After the response, provide analysis in JSON format:
 
           {/* Filters */}
           <div className="flex flex-col gap-4">
-            <div className="flex flex-col sm:flex-row sm:items-center gap-3">
-              <span className="text-slate-400 text-sm">Prompt Type:</span>
-              <div className="flex gap-2 flex-wrap">
-                {["branded", "unbranded"].map((type) => (
-                  <Button
-                    key={type}
-                    onClick={() => setPromptType(type)}
-                    size="sm"
-                    className={`flex-1 sm:flex-none ${
-                      promptType === type
-                        ? "bg-gradient-to-r from-purple-500 to-pink-500 text-white"
-                        : "bg-slate-800 text-slate-300 hover:bg-slate-700"
-                    }`}
-                  >
-                    {type.charAt(0).toUpperCase() + type.slice(1)}
-                  </Button>
-                ))}
-              </div>
+            <div className="flex items-center gap-3">
+              <span className="text-slate-400 text-sm">Unbranded</span>
+              <Switch
+                checked={promptType === "branded"}
+                onCheckedChange={(checked) => setPromptType(checked ? "branded" : "unbranded")}
+              />
+              <span className="text-slate-400 text-sm">Branded</span>
             </div>
 
             <div className="flex flex-col sm:flex-row sm:items-center gap-3">
