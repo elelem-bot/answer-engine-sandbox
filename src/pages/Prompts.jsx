@@ -59,8 +59,8 @@ export default function Prompts() {
   const filterPrompts = () => {
     let filtered = [...prompts];
 
-    // Filter by view type (prospect = all, customer/agent = could have additional filtering)
-    // For now, all show all prompts but this can be customized per view type
+    // Filter by view type
+    filtered = filtered.filter(p => p.view_type === viewType);
 
     // Filter by funnel stage
     if (funnelStage !== "all") {

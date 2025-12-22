@@ -87,9 +87,13 @@ export default function Approvals() {
       - intent_signals: Array of 5-7 buying intent signals
       - challenges: Array of 5-7 key challenges the customer solves
       4. target_keywords: Array of 15-20 high-intent keywords relevant to the business
-      5. buyer_prompts: Array of ONLY the TOP 10 buyer-centric prompts with the HIGHEST estimated search volume/interest.
+      5. prospect_prompts_branded: Array of EXACTLY 10 buyer-centric prompts that explicitly mention the brand name ${companyData.name}
+      6. prospect_prompts_unbranded: Array of EXACTLY 10 buyer-centric prompts that DO NOT mention any brand names (generic category questions)
+      7. customer_service_prompts: Array of EXACTLY 20 customer service/support questions existing customers would ask AI about using the product
+      8. agent_prompts_branded: Array of EXACTLY 10 prompts an AI agent researching this company would use (mentioning ${companyData.name})
+      9. agent_prompts_unbranded: Array of EXACTLY 10 prompts an AI agent would use for category research (no brand names)
 
-      CRITICAL - BUYER-INTENT PSYCHOGRAPHIC ANALYSIS FOR PROMPTS:
+      CRITICAL - BUYER-INTENT PSYCHOGRAPHIC ANALYSIS FOR PROSPECT PROMPTS:
       You are a buyer-intent psychographic analyst. Think like a real decision-maker, not a marketer.
 
       First, build a Psychographic Buyer Model:
@@ -115,12 +119,22 @@ export default function Approvals() {
       QUALITY BAR: If a prompt sounds like a blog post title or vendor landing page headline, it is WRONG.
       It must sound like a real person thinking out loud.
 
-      For each of the TOP 10 prompts (sorted by estimated search volume):
+      For prospect_prompts_branded and prospect_prompts_unbranded:
       - prompt: The buyer-style AI prompt (natural, human, under pressure)
       - underlying_pain: The core pain or fear behind this question
       - decision_stage: One of: "Awareness", "Diagnosis", "Comparison", "Validation", "Pre-Purchase"
       - keywords: Array of keywords from target_keywords that appear in this prompt
-      - estimated_search_volume: Your estimate (low/medium/high) based on how common this pain point is`;
+      - estimated_search_volume: Your estimate (low/medium/high) based on how common this pain point is
+
+      For customer_service_prompts (existing customers asking about product usage):
+      - prompt: Natural question about how to do something, troubleshoot, or understand a feature
+      - category: One of: "How-To", "Troubleshooting", "Feature Understanding", "Best Practices", "Integration"
+      - keywords: Array of relevant keywords
+
+      For agent_prompts (branded and unbranded - AI agents gathering information):
+      - prompt: Analytical question an AI agent would ask to gather data or compare solutions
+      - research_intent: What the agent is trying to learn or compare
+      - keywords: Array of relevant keywords`;
 
       const response = await base44.integrations.Core.InvokeLLM({
         prompt,
@@ -138,7 +152,7 @@ export default function Approvals() {
               }
             },
             target_keywords: { type: "array", items: { type: "string" } },
-            buyer_prompts: {
+            prospect_prompts_branded: {
               type: "array",
               items: {
                 type: "object",
@@ -150,6 +164,52 @@ export default function Approvals() {
                   estimated_search_volume: { type: "string" }
                 }
               }
+            },
+            prospect_prompts_unbranded: {
+              type: "array",
+              items: {
+                type: "object",
+                properties: {
+                  prompt: { type: "string" },
+                  underlying_pain: { type: "string" },
+                  decision_stage: { type: "string" },
+                  keywords: { type: "array", items: { type: "string" } },
+                  estimated_search_volume: { type: "string" }
+                }
+              }
+            },
+            customer_service_prompts: {
+              type: "array",
+              items: {
+                type: "object",
+                properties: {
+                  prompt: { type: "string" },
+                  category: { type: "string" },
+                  keywords: { type: "array", items: { type: "string" } }
+                }
+              }
+            },
+            agent_prompts_branded: {
+              type: "array",
+              items: {
+                type: "object",
+                properties: {
+                  prompt: { type: "string" },
+                  research_intent: { type: "string" },
+                  keywords: { type: "array", items: { type: "string" } }
+                }
+              }
+            },
+            agent_prompts_unbranded: {
+              type: "array",
+              items: {
+                type: "object",
+                properties: {
+                  prompt: { type: "string" },
+                  research_intent: { type: "string" },
+                  keywords: { type: "array", items: { type: "string" } }
+                }
+              }
             }
           }
         }
@@ -159,7 +219,16 @@ export default function Approvals() {
       setCompetitors(response.competitors || []);
       setIcpInsights(response.icp_insights || { buyer_persona: "", intent_signals: [], challenges: [] });
       setTargetKeywords(response.target_keywords || []);
-      setBuyerPrompts(response.buyer_prompts || []);
+      
+      // Combine all prompts with their view type
+      const allPrompts = [
+        ...(response.prospect_prompts_branded || []).map(p => ({ ...p, view_type: 'prospect', is_branded: true })),
+        ...(response.prospect_prompts_unbranded || []).map(p => ({ ...p, view_type: 'prospect', is_branded: false })),
+        ...(response.customer_service_prompts || []).map(p => ({ ...p, view_type: 'customer' })),
+        ...(response.agent_prompts_branded || []).map(p => ({ ...p, view_type: 'agent', is_branded: true })),
+        ...(response.agent_prompts_unbranded || []).map(p => ({ ...p, view_type: 'agent', is_branded: false }))
+      ];
+      setBuyerPrompts(allPrompts);
     } catch (error) {
       console.error("Error generating suggestions:", error);
     } finally {
@@ -235,17 +304,26 @@ export default function Approvals() {
       
       // Create prompt analyses
       for (const bp of buyerPrompts) {
-        // Categorize by decision stage
+        // Categorize by decision stage for prospect prompts
         let funnel_stage = "middle";
-        if (bp.decision_stage === "Awareness" || bp.decision_stage === "Diagnosis") {
+        if (bp.view_type === 'prospect') {
+          if (bp.decision_stage === "Awareness" || bp.decision_stage === "Diagnosis") {
+            funnel_stage = "top";
+          } else if (bp.decision_stage === "Validation" || bp.decision_stage === "Pre-Purchase") {
+            funnel_stage = "bottom";
+          }
+        } else if (bp.view_type === 'customer') {
+          // Customer service prompts are mostly middle/bottom funnel
+          funnel_stage = bp.category === "How-To" ? "middle" : "bottom";
+        } else if (bp.view_type === 'agent') {
+          // Agent prompts are research-focused
           funnel_stage = "top";
-        } else if (bp.decision_stage === "Validation" || bp.decision_stage === "Pre-Purchase") {
-          funnel_stage = "bottom";
         }
 
         await base44.entities.PromptAnalysis.create({
           company_id: companyId,
           prompt: bp.prompt,
+          view_type: bp.view_type,
           funnel_stage: funnel_stage,
           keywords: bp.keywords,
           search_signal_score: Math.floor(Math.random() * 100),
@@ -522,7 +600,7 @@ export default function Approvals() {
                     Buyer-Centric Prompts
                   </CardTitle>
                   <CardDescription className="text-slate-400">
-                    Questions your ideal customers would ask AI assistants
+                    {buyerPrompts.filter(p => p.view_type === 'prospect').length} prospect prompts, {buyerPrompts.filter(p => p.view_type === 'customer').length} customer service prompts, {buyerPrompts.filter(p => p.view_type === 'agent').length} agent prompts
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
@@ -532,6 +610,26 @@ export default function Approvals() {
                               <div className="flex items-start justify-between gap-4">
                                 <div className="flex-1">
                                   <div className="flex items-center gap-2 mb-2">
+                                    <Badge 
+                                      variant="outline"
+                                      className={`text-xs ${
+                                        item.view_type === 'prospect' ? 'text-blue-400 border-blue-500/30' :
+                                        item.view_type === 'customer' ? 'text-green-400 border-green-500/30' :
+                                        'text-purple-400 border-purple-500/30'
+                                      }`}
+                                    >
+                                      {item.view_type}
+                                    </Badge>
+                                    {item.is_branded !== undefined && (
+                                      <Badge 
+                                        variant="outline"
+                                        className={`text-xs ${
+                                          item.is_branded ? 'text-teal-400 border-teal-500/30' : 'text-slate-400 border-slate-500/30'
+                                        }`}
+                                      >
+                                        {item.is_branded ? 'Branded' : 'Unbranded'}
+                                      </Badge>
+                                    )}
                                     <p className="text-white flex-1">{item.prompt}</p>
                                     {item.estimated_search_volume && (
                                       <Badge 

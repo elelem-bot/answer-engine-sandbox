@@ -59,9 +59,11 @@ export default function AgentVisibility() {
       if (companies.length > 0) {
         setCompany(companies[0]);
         const promptsData = await base44.entities.PromptAnalysis.filter({ company_id: companies[0].id });
-        setPrompts(promptsData);
+        // Filter to only agent view type prompts
+        const agentPrompts = promptsData.filter(p => p.view_type === 'agent');
+        setPrompts(agentPrompts);
         
-        const filtered = promptsData.filter(p => p.funnel_stage === funnelStage);
+        const filtered = agentPrompts.filter(p => p.funnel_stage === funnelStage);
         calculateVisibility(filtered, companies[0]);
       }
     } catch (error) {

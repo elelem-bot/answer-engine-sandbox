@@ -59,9 +59,11 @@ export default function CustomerVisibility() {
       if (companies.length > 0) {
         setCompany(companies[0]);
         const promptsData = await base44.entities.PromptAnalysis.filter({ company_id: companies[0].id });
-        setPrompts(promptsData);
+        // Filter to only customer view type prompts
+        const customerPrompts = promptsData.filter(p => p.view_type === 'customer');
+        setPrompts(customerPrompts);
         
-        const filtered = promptsData.filter(p => p.funnel_stage === funnelStage);
+        const filtered = customerPrompts.filter(p => p.funnel_stage === funnelStage);
         calculateVisibility(filtered, companies[0]);
       }
     } catch (error) {

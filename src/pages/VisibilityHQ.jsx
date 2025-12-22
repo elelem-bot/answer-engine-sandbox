@@ -67,6 +67,9 @@ export default function VisibilityHQ() {
 
   const filterPrompts = (promptsData, stage, type, companyData) => {
     return promptsData.filter(p => {
+      // Only show prospect view type prompts
+      if (p.view_type !== 'prospect') return false;
+      
       const matchesStage = p.funnel_stage === stage;
       const companyName = companyData.name.toLowerCase();
       const promptText = p.prompt.toLowerCase();
