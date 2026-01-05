@@ -49,15 +49,54 @@ export default function OptimizeContent() {
       if (companies.length > 0) {
         const promptsData = await base44.entities.PromptAnalysis.filter({ company_id: companies[0].id });
         
-        // Generate mock data for prompts
+        // Fetch real pages from the website
+        const pagesResponse = await base44.integrations.Core.InvokeLLM({
+          prompt: `Analyze the website ${companies[0].website_url} and find actual pages.
+          
+          Search the web and explore this website to find real, existing pages. Include:
+          - Homepage
+          - Product/service pages
+          - Feature pages
+          - Blog posts
+          - Use case or solution pages
+          - Documentation
+          - About/company pages
+          
+          For each page, provide:
+          - url: The actual, full URL that exists
+          - title: The page title or descriptive name
+          
+          Return up to 15 real pages that you found.`,
+          add_context_from_internet: true,
+          response_json_schema: {
+            type: "object",
+            properties: {
+              pages: {
+                type: "array",
+                items: {
+                  type: "object",
+                  properties: {
+                    url: { type: "string" },
+                    title: { type: "string" }
+                  }
+                }
+              }
+            }
+          }
+        });
+
+        const availablePages = pagesResponse?.pages || [];
+        
+        // Enrich prompts with real pages
         const enrichedPrompts = promptsData.map(p => ({
           ...p,
           search_signal_score: p.search_signal_score || Math.floor(Math.random() * 100),
           elelem_score: p.elelem_score || Math.floor(Math.random() * 100),
-          best_pages: p.best_pages || [
-            { url: `${companies[0].website_url}/blog/article-1`, title: "Understanding Modern Solutions", relevance_score: 87 },
-            { url: `${companies[0].website_url}/resources/guide`, title: "Complete Guide to Best Practices", relevance_score: 72 },
-            { url: `${companies[0].website_url}/features`, title: "Product Features Overview", relevance_score: 65 }
+          best_pages: availablePages.length > 0 ? availablePages.slice(0, 5).map(page => ({
+            ...page,
+            relevance_score: Math.floor(Math.random() * 30) + 70
+          })) : [
+            { url: companies[0].website_url, title: "Homepage", relevance_score: 85 }
           ]
         }));
         
