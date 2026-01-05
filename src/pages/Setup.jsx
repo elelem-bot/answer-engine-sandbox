@@ -104,7 +104,7 @@ export default function Setup() {
   const removeArrayItem = (field, index) => {
     setFormData(prev => ({
       ...prev,
-      [field]: prev[field].filter((_, i) => i !== index)
+      [field]: (prev[field] || []).filter((_, i) => i !== index)
     }));
   };
 
@@ -308,7 +308,7 @@ export default function Setup() {
           <div className="space-y-2">
             <Label className="text-slate-300">Secondary or adjacent categories (optional)</Label>
             <div className="flex gap-2 mb-2 flex-wrap">
-              {formData.secondary_categories.map((cat, i) => (
+              {(formData.secondary_categories || []).map((cat, i) => (
                 <span key={i} className="bg-slate-700 text-slate-200 px-3 py-1 rounded-full text-sm flex items-center gap-2">
                   {cat}
                   <button onClick={() => removeArrayItem("secondary_categories", i)} className="hover:text-red-400">
@@ -334,7 +334,7 @@ export default function Setup() {
           <div className="space-y-2">
             <Label className="text-slate-300">Top three competitors you care about *</Label>
             <div className="flex gap-2 mb-2 flex-wrap">
-              {formData.top_competitors.map((comp, i) => (
+              {(formData.top_competitors || []).map((comp, i) => (
                 <span key={i} className="bg-slate-700 text-slate-200 px-3 py-1 rounded-full text-sm flex items-center gap-2">
                   {comp}
                   <button onClick={() => removeArrayItem("top_competitors", i)} className="hover:text-red-400">
@@ -379,7 +379,7 @@ export default function Setup() {
           <div className="space-y-2">
             <Label className="text-slate-300">Secondary buyer roles</Label>
             <div className="flex gap-2 mb-2 flex-wrap">
-              {formData.secondary_buyer_roles.map((role, i) => (
+              {(formData.secondary_buyer_roles || []).map((role, i) => (
                 <span key={i} className="bg-slate-700 text-slate-200 px-3 py-1 rounded-full text-sm flex items-center gap-2">
                   {role}
                   <button onClick={() => removeArrayItem("secondary_buyer_roles", i)} className="hover:text-red-400">
@@ -416,7 +416,7 @@ export default function Setup() {
           <div className="space-y-2">
             <Label className="text-slate-300">Primary industries (optional)</Label>
             <div className="flex gap-2 mb-2 flex-wrap">
-              {formData.primary_industries.map((ind, i) => (
+              {(formData.primary_industries || []).map((ind, i) => (
                 <span key={i} className="bg-slate-700 text-slate-200 px-3 py-1 rounded-full text-sm flex items-center gap-2">
                   {ind}
                   <button onClick={() => removeArrayItem("primary_industries", i)} className="hover:text-red-400">
@@ -450,7 +450,7 @@ export default function Setup() {
           <div className="space-y-2">
             <Label className="text-slate-300">Top three use cases customers buy for *</Label>
             <div className="flex gap-2 mb-2 flex-wrap">
-              {formData.top_use_cases.map((uc, i) => (
+              {(formData.top_use_cases || []).map((uc, i) => (
                 <span key={i} className="bg-slate-700 text-slate-200 px-3 py-1 rounded-full text-sm flex items-center gap-2">
                   {uc}
                   <button onClick={() => removeArrayItem("top_use_cases", i)} className="hover:text-red-400">
@@ -517,7 +517,7 @@ export default function Setup() {
           <div className="space-y-2">
             <Label className="text-slate-300">Three to five claims you stand behind *</Label>
             <div className="flex gap-2 mb-2 flex-wrap">
-              {formData.key_claims.map((claim, i) => (
+              {(formData.key_claims || []).map((claim, i) => (
                 <span key={i} className="bg-slate-700 text-slate-200 px-3 py-1 rounded-full text-sm flex items-center gap-2">
                   {claim}
                   <button onClick={() => removeArrayItem("key_claims", i)} className="hover:text-red-400">
@@ -544,7 +544,7 @@ export default function Setup() {
             <div className="space-y-2">
               <Label className="text-slate-300">Terms you want AI to use</Label>
               <div className="flex gap-2 mb-2 flex-wrap">
-                {formData.preferred_terms.map((term, i) => (
+                {(formData.preferred_terms || []).map((term, i) => (
                   <span key={i} className="bg-teal-900/50 text-teal-200 px-3 py-1 rounded-full text-sm flex items-center gap-2">
                     {term}
                     <button onClick={() => removeArrayItem("preferred_terms", i)} className="hover:text-red-400">
@@ -570,7 +570,7 @@ export default function Setup() {
             <div className="space-y-2">
               <Label className="text-slate-300">Terms you want AI to avoid</Label>
               <div className="flex gap-2 mb-2 flex-wrap">
-                {formData.avoid_terms.map((term, i) => (
+                {(formData.avoid_terms || []).map((term, i) => (
                   <span key={i} className="bg-red-900/50 text-red-200 px-3 py-1 rounded-full text-sm flex items-center gap-2">
                     {term}
                     <button onClick={() => removeArrayItem("avoid_terms", i)} className="hover:text-red-400">
@@ -618,7 +618,7 @@ export default function Setup() {
                 <div key={source} className="flex items-center gap-2">
                   <Checkbox
                     id={source}
-                    checked={formData.question_sources.includes(source)}
+                    checked={(formData.question_sources || []).includes(source)}
                     onCheckedChange={() => toggleCheckbox("question_sources", source)}
                   />
                   <label htmlFor={source} className="text-slate-300 cursor-pointer">{source}</label>
@@ -657,7 +657,7 @@ export default function Setup() {
                 <div key={priority} className="flex items-center gap-2">
                   <Checkbox
                     id={priority}
-                    checked={formData.visibility_priorities.includes(priority)}
+                    checked={(formData.visibility_priorities || []).includes(priority)}
                     onCheckedChange={() => toggleCheckbox("visibility_priorities", priority)}
                   />
                   <label htmlFor={priority} className="text-slate-300 cursor-pointer">{priority}</label>
@@ -712,7 +712,7 @@ export default function Setup() {
           <div className="space-y-2">
             <Label className="text-slate-300">Secondary markets</Label>
             <div className="flex gap-2 mb-2 flex-wrap">
-              {formData.secondary_markets.map((market, i) => (
+              {(formData.secondary_markets || []).map((market, i) => (
                 <span key={i} className="bg-slate-700 text-slate-200 px-3 py-1 rounded-full text-sm flex items-center gap-2">
                   {market}
                   <button onClick={() => removeArrayItem("secondary_markets", i)} className="hover:text-red-400">
@@ -738,7 +738,7 @@ export default function Setup() {
           <div className="space-y-2">
             <Label className="text-slate-300">Primary languages *</Label>
             <div className="flex gap-2 mb-2 flex-wrap">
-              {formData.primary_languages.map((lang, i) => (
+              {(formData.primary_languages || []).map((lang, i) => (
                 <span key={i} className="bg-slate-700 text-slate-200 px-3 py-1 rounded-full text-sm flex items-center gap-2">
                   {lang}
                   <button onClick={() => removeArrayItem("primary_languages", i)} className="hover:text-red-400">
@@ -772,7 +772,7 @@ export default function Setup() {
           <div className="space-y-2">
             <Label className="text-slate-300">Audiences you don't sell to</Label>
             <div className="flex gap-2 mb-2 flex-wrap">
-              {formData.excluded_audiences.map((aud, i) => (
+              {(formData.excluded_audiences || []).map((aud, i) => (
                 <span key={i} className="bg-slate-700 text-slate-200 px-3 py-1 rounded-full text-sm flex items-center gap-2">
                   {aud}
                   <button onClick={() => removeArrayItem("excluded_audiences", i)} className="hover:text-red-400">
@@ -798,7 +798,7 @@ export default function Setup() {
           <div className="space-y-2">
             <Label className="text-slate-300">Competitors you don't care about</Label>
             <div className="flex gap-2 mb-2 flex-wrap">
-              {formData.irrelevant_competitors.map((comp, i) => (
+              {(formData.irrelevant_competitors || []).map((comp, i) => (
                 <span key={i} className="bg-slate-700 text-slate-200 px-3 py-1 rounded-full text-sm flex items-center gap-2">
                   {comp}
                   <button onClick={() => removeArrayItem("irrelevant_competitors", i)} className="hover:text-red-400">
@@ -824,7 +824,7 @@ export default function Setup() {
           <div className="space-y-2">
             <Label className="text-slate-300">Legacy names or outdated terms</Label>
             <div className="flex gap-2 mb-2 flex-wrap">
-              {formData.legacy_terms.map((term, i) => (
+              {(formData.legacy_terms || []).map((term, i) => (
                 <span key={i} className="bg-slate-700 text-slate-200 px-3 py-1 rounded-full text-sm flex items-center gap-2">
                   {term}
                   <button onClick={() => removeArrayItem("legacy_terms", i)} className="hover:text-red-400">
