@@ -131,18 +131,54 @@ export default function Setup() {
     setIsAutoPopulating(true);
     
     try {
-      // Fetch website content and search results
       const websiteData = await base44.integrations.Core.InvokeLLM({
-        prompt: `Analyze this website: ${url}
+        prompt: `Analyze this website comprehensively: ${url}
         
-        Extract and provide the following information in JSON format:
+        Research the company through web search and extract ALL of the following information in JSON format:
+        
+        PRODUCT BASICS:
         - product_name: Main product/service name
-        - product_description: One-sentence description
-        - primary_category: Main category/industry
-        - top_use_cases: Array of 3 main use cases (strings)
-        - positioning_statement: Key value proposition
-        - primary_market: Main geographic market
-        - primary_languages: Array of languages (strings)`,
+        - product_description: One-sentence description in their own words
+        - primary_category: Main category (e.g., "Customer Analytics", "Project Management Software")
+        - secondary_categories: Array of 2-3 secondary or adjacent categories
+        - top_competitors: Array of 3 main competitors
+        
+        WHO ASKS ABOUT THE PRODUCT:
+        - primary_buyer_role: Primary buyer role (e.g., "Head of Product", "VP Marketing")
+        - secondary_buyer_roles: Array of 2-3 secondary buyer roles
+        - typical_company_size: Typical company size they sell to (e.g., "50-500 employees")
+        - primary_industries: Array of 2-3 primary industries
+        
+        WHY CUSTOMERS CHOOSE THEM:
+        - top_use_cases: Array of 3 main use cases customers buy for
+        - misunderstood_use_case: One use case often misunderstood
+        - not_good_fit_for: What they're not a good fit for
+        
+        MESSAGING ANCHORS:
+        - positioning_statement: Key positioning statement
+        - key_claims: Array of 3-5 claims they stand behind
+        - preferred_terms: Array of 3-5 terms they want AI to use
+        - avoid_terms: Array of 2-3 terms to avoid
+        
+        CUSTOMER QUESTIONS:
+        - question_sources: Array from: ["Website chatbot", "Support chat or tickets", "Sales calls", "Site search", "FAQs", "Reddit", "Quora"]
+        - customer_confusion_points: What customers get confused about most
+        
+        VISIBILITY PRIORITIES:
+        - visibility_priorities: Array from: ["Public AI answers", "Product comparisons", "Customer support AI"]
+        - biggest_concern: One of: "Not appearing in AI answers", "Being misrepresented", "Losing to competitors", "Inaccurate answers"
+        
+        MARKETS AND LANGUAGE:
+        - primary_market: Main geographic market (e.g., "United States")
+        - secondary_markets: Array of 1-2 secondary markets
+        - primary_languages: Array of languages (e.g., ["English"])
+        
+        GUARDRAILS:
+        - excluded_audiences: Array of 1-2 audiences they don't sell to
+        - irrelevant_competitors: Array of 1-2 competitors they don't care about
+        - legacy_terms: Array of legacy names or outdated terms
+        
+        Be thorough and research the company to provide realistic, accurate information.`,
         add_context_from_internet: true,
         response_json_schema: {
           type: "object",
@@ -150,25 +186,65 @@ export default function Setup() {
             product_name: { type: "string" },
             product_description: { type: "string" },
             primary_category: { type: "string" },
+            secondary_categories: { type: "array", items: { type: "string" } },
+            top_competitors: { type: "array", items: { type: "string" } },
+            primary_buyer_role: { type: "string" },
+            secondary_buyer_roles: { type: "array", items: { type: "string" } },
+            typical_company_size: { type: "string" },
+            primary_industries: { type: "array", items: { type: "string" } },
             top_use_cases: { type: "array", items: { type: "string" } },
+            misunderstood_use_case: { type: "string" },
+            not_good_fit_for: { type: "string" },
             positioning_statement: { type: "string" },
+            key_claims: { type: "array", items: { type: "string" } },
+            preferred_terms: { type: "array", items: { type: "string" } },
+            avoid_terms: { type: "array", items: { type: "string" } },
+            question_sources: { type: "array", items: { type: "string" } },
+            customer_confusion_points: { type: "string" },
+            visibility_priorities: { type: "array", items: { type: "string" } },
+            biggest_concern: { type: "string" },
             primary_market: { type: "string" },
-            primary_languages: { type: "array", items: { type: "string" } }
+            secondary_markets: { type: "array", items: { type: "string" } },
+            primary_languages: { type: "array", items: { type: "string" } },
+            excluded_audiences: { type: "array", items: { type: "string" } },
+            irrelevant_competitors: { type: "array", items: { type: "string" } },
+            legacy_terms: { type: "array", items: { type: "string" } }
           }
         }
       });
 
-      // Update form with extracted data
       setFormData(prev => ({
         ...prev,
         product_name: websiteData.product_name || prev.product_name,
         product_description: websiteData.product_description || prev.product_description,
         primary_category: websiteData.primary_category || prev.primary_category,
+        secondary_categories: websiteData.secondary_categories || prev.secondary_categories,
+        top_competitors: websiteData.top_competitors || prev.top_competitors,
+        primary_buyer_role: websiteData.primary_buyer_role || prev.primary_buyer_role,
+        secondary_buyer_roles: websiteData.secondary_buyer_roles || prev.secondary_buyer_roles,
+        typical_company_size: websiteData.typical_company_size || prev.typical_company_size,
+        primary_industries: websiteData.primary_industries || prev.primary_industries,
         top_use_cases: websiteData.top_use_cases || prev.top_use_cases,
+        misunderstood_use_case: websiteData.misunderstood_use_case || prev.misunderstood_use_case,
+        not_good_fit_for: websiteData.not_good_fit_for || prev.not_good_fit_for,
         positioning_statement: websiteData.positioning_statement || prev.positioning_statement,
+        key_claims: websiteData.key_claims || prev.key_claims,
+        preferred_terms: websiteData.preferred_terms || prev.preferred_terms,
+        avoid_terms: websiteData.avoid_terms || prev.avoid_terms,
+        question_sources: websiteData.question_sources || prev.question_sources,
+        customer_confusion_points: websiteData.customer_confusion_points || prev.customer_confusion_points,
+        visibility_priorities: websiteData.visibility_priorities || prev.visibility_priorities,
+        biggest_concern: websiteData.biggest_concern || prev.biggest_concern,
         primary_market: websiteData.primary_market || prev.primary_market,
-        primary_languages: websiteData.primary_languages || prev.primary_languages
+        secondary_markets: websiteData.secondary_markets || prev.secondary_markets,
+        primary_languages: websiteData.primary_languages || prev.primary_languages,
+        excluded_audiences: websiteData.excluded_audiences || prev.excluded_audiences,
+        irrelevant_competitors: websiteData.irrelevant_competitors || prev.irrelevant_competitors,
+        legacy_terms: websiteData.legacy_terms || prev.legacy_terms
       }));
+      
+      // Auto-expand all sections after populating
+      setExpandedSections([0, 1, 2, 3, 4, 5, 6, 7]);
     } catch (error) {
       console.error("Error auto-populating:", error);
     } finally {
