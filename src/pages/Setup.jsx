@@ -32,6 +32,7 @@ export default function Setup() {
   const [isSaving, setIsSaving] = useState(false);
   const [expandedSections, setExpandedSections] = useState([0]);
   
+  const [isAutoPopulating, setIsAutoPopulating] = useState(false);
   const [formData, setFormData] = useState({
     // Contact info
     contact_name: "",
@@ -122,6 +123,57 @@ export default function Setup() {
     setExpandedSections(prev => 
       prev.includes(index) ? prev.filter(i => i !== index) : [...prev, index]
     );
+  };
+
+  const autoPopulateFromUrl = async (url) => {
+    if (!url || !url.startsWith('http')) return;
+    
+    setIsAutoPopulating(true);
+    
+    try {
+      // Fetch website content and search results
+      const websiteData = await base44.integrations.Core.InvokeLLM({
+        prompt: `Analyze this website: ${url}
+        
+        Extract and provide the following information in JSON format:
+        - product_name: Main product/service name
+        - product_description: One-sentence description
+        - primary_category: Main category/industry
+        - top_use_cases: Array of 3 main use cases (strings)
+        - positioning_statement: Key value proposition
+        - primary_market: Main geographic market
+        - primary_languages: Array of languages (strings)`,
+        add_context_from_internet: true,
+        response_json_schema: {
+          type: "object",
+          properties: {
+            product_name: { type: "string" },
+            product_description: { type: "string" },
+            primary_category: { type: "string" },
+            top_use_cases: { type: "array", items: { type: "string" } },
+            positioning_statement: { type: "string" },
+            primary_market: { type: "string" },
+            primary_languages: { type: "array", items: { type: "string" } }
+          }
+        }
+      });
+
+      // Update form with extracted data
+      setFormData(prev => ({
+        ...prev,
+        product_name: websiteData.product_name || prev.product_name,
+        product_description: websiteData.product_description || prev.product_description,
+        primary_category: websiteData.primary_category || prev.primary_category,
+        top_use_cases: websiteData.top_use_cases || prev.top_use_cases,
+        positioning_statement: websiteData.positioning_statement || prev.positioning_statement,
+        primary_market: websiteData.primary_market || prev.primary_market,
+        primary_languages: websiteData.primary_languages || prev.primary_languages
+      }));
+    } catch (error) {
+      console.error("Error auto-populating:", error);
+    } finally {
+      setIsAutoPopulating(false);
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -796,13 +848,30 @@ export default function Setup() {
               </div>
               <div className="space-y-2 md:col-span-2">
                 <Label className="text-slate-300">Website URL *</Label>
-                <Input
-                  type="url"
-                  value={formData.website_url}
-                  onChange={(e) => handleChange("website_url", e.target.value)}
-                  className="bg-slate-900 border-slate-700 text-white"
-                  required
-                />
+                <div className="flex gap-2">
+                  <Input
+                    type="url"
+                    value={formData.website_url}
+                    onChange={(e) => handleChange("website_url", e.target.value)}
+                    className="bg-slate-900 border-slate-700 text-white flex-1"
+                    required
+                  />
+                  <Button
+                    type="button"
+                    onClick={() => autoPopulateFromUrl(formData.website_url)}
+                    disabled={isAutoPopulating || !formData.website_url}
+                    className="bg-teal-600 hover:bg-teal-700"
+                  >
+                    {isAutoPopulating ? (
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                    ) : (
+                      "Auto-fill"
+                    )}
+                  </Button>
+                </div>
+                {isAutoPopulating && (
+                  <p className="text-teal-400 text-sm">Analyzing website and gathering information...</p>
+                )}
               </div>
             </CardContent>
           </Card>
