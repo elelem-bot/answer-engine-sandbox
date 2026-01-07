@@ -31,7 +31,7 @@ import BrandTable from "@/components/dashboard/BrandTable";
 
 const COLORS = ['#14b8a6', '#22d3ee', '#84cc16', '#10b981', '#06b6d4', '#a3e635', '#2dd4bf', '#0ea5e9'];
 
-export default function VisibilityHQ() {
+export default function AIVisibility() {
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(true);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
