@@ -3,8 +3,6 @@ import AnswerEngine from './pages/AnswerEngine';
 import AnswerEngineering from './pages/AnswerEngineering';
 import Approvals from './pages/Approvals';
 import Home from './pages/Home';
-import LandingPage from './pages/LandingPage';
-import LandingPage2 from './pages/LandingPage2';
 import NewContent from './pages/NewContent';
 import Prompts from './pages/Prompts';
 import Setup from './pages/Setup';
@@ -18,8 +16,6 @@ export const PAGES = {
     "AnswerEngineering": AnswerEngineering,
     "Approvals": Approvals,
     "Home": Home,
-    "LandingPage": LandingPage,
-    "LandingPage2": LandingPage2,
     "NewContent": NewContent,
     "Prompts": Prompts,
     "Setup": Setup,
