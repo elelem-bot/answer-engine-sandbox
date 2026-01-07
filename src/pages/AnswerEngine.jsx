@@ -51,26 +51,26 @@ export default function AnswerEngine() {
     try {
       // Crawl and index up to 100 pages
       const crawlResponse = await base44.integrations.Core.InvokeLLM({
-        prompt: `Crawl and index this website: ${websiteUrl}
+        prompt: `CRITICAL: You must comprehensively crawl and index this entire website: ${websiteUrl}
 
-INSTRUCTIONS:
-1. Start from the homepage: ${websiteUrl}
-2. Follow all internal links (same domain)
-3. Crawl up to 100 pages maximum
-4. For each page, extract:
-   - URL
-   - Page title
-   - Main content (remove navigation, footer, scripts)
-   - Key headings and text
+CRAWLING REQUIREMENTS:
+1. Start from homepage: ${websiteUrl}
+2. Systematically discover and visit ALL internal pages by following links
+3. Visit UP TO 100 PAGES (or all pages if fewer than 100)
+4. Include: /about, /products, /services, /blog, /resources, /pricing, /contact, etc.
+5. Extract ALL text content from every page visited
 
-5. Also extract company info:
-   - Company name from homepage
-   - All pages discovered
+For each page you visit:
+- Extract the full page content (paragraphs, headings, lists)
+- Remove only navigation menus, footers, and scripts
+- Keep all valuable information: product descriptions, features, FAQs, blog posts, etc.
+
+IMPORTANT: The content_summary must be COMPREHENSIVE and include content from ALL pages you crawled. This will be used to answer user questions, so more content = better answers.
 
 Return JSON with:
-- company_name: Brand/company name
-- pages_crawled: Number of pages indexed
-- content_summary: Combined text content from all pages (for answering questions)`,
+- company_name: Brand/company name from website
+- pages_crawled: ACTUAL number of pages you visited and indexed (should be close to 100 or all available pages)
+- content_summary: EXTENSIVE combined text from ALL crawled pages (should be very long with lots of details)`,
         add_context_from_internet: true,
         response_json_schema: {
           type: "object",
