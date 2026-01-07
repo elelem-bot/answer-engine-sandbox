@@ -226,55 +226,35 @@ Cite specific pages or sections when relevant.`,
         {/* Branded Chat Interface */}
         {isCrawled && brandData && (
           <div 
-            className="rounded-2xl overflow-hidden shadow-2xl"
+            className="rounded-2xl overflow-hidden shadow-2xl bg-white"
             style={{
-              backgroundColor: brandData.secondary_color || '#f8fafc',
               fontFamily: brandData.font_family || 'inherit'
             }}
           >
             {/* Branded Header */}
-            <div 
-              className="px-6 py-4 border-b flex items-center justify-between"
-              style={{
-                backgroundColor: brandData.primary_color || '#0f172a',
-                borderBottomColor: brandData.secondary_color || '#e2e8f0'
-              }}
-            >
+            <div className="px-6 py-4 border-b border-slate-200 flex items-center justify-between bg-white">
               <div className="flex items-center gap-3">
                 {brandData.logo_url && (
                   <img 
                     src={brandData.logo_url} 
                     alt={brandData.company_name}
-                    className="h-8 max-w-[200px] object-contain"
+                    className="h-10 max-w-[200px] object-contain"
                     onError={(e) => e.target.style.display = 'none'}
                   />
                 )}
                 {!brandData.logo_url && (
-                  <span 
-                    className="text-lg font-semibold"
-                    style={{ color: brandData.secondary_color || '#ffffff' }}
-                  >
+                  <span className="text-lg font-semibold text-slate-900">
                     {brandData.company_name || new URL(websiteUrl).hostname}
                   </span>
                 )}
               </div>
-              <Badge 
-                className="text-xs"
-                style={{
-                  backgroundColor: `${brandData.secondary_color || '#64748b'}20`,
-                  color: brandData.secondary_color || '#64748b',
-                  borderColor: `${brandData.secondary_color || '#64748b'}40`
-                }}
-              >
+              <Badge className="text-xs bg-slate-100 text-slate-600 border-slate-200">
                 Powered by AI
               </Badge>
             </div>
 
             {/* Messages Container */}
-            <div 
-              className="p-6 space-y-4 max-h-[600px] overflow-y-auto"
-              style={{ backgroundColor: '#ffffff' }}
-            >
+            <div className="p-6 space-y-4 max-h-[600px] overflow-y-auto bg-white">
               <AnimatePresence>
                 {messages.length === 0 ? (
                   <div className="text-center py-16">
@@ -345,13 +325,7 @@ Cite specific pages or sections when relevant.`,
             </div>
 
             {/* Input Footer */}
-            <div 
-              className="px-6 py-4 border-t"
-              style={{
-                backgroundColor: '#ffffff',
-                borderTopColor: '#e2e8f0'
-              }}
-            >
+            <div className="px-6 py-4 border-t border-slate-200 bg-white">
               <form onSubmit={handleAskQuestion} className="flex gap-3">
                 <Input
                   placeholder={`Ask ${brandData.company_name || 'us'} anything...`}
