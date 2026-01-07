@@ -105,17 +105,32 @@ Return JSON with:
 
     try {
       const response = await base44.integrations.Core.InvokeLLM({
-        prompt: `You are an expert assistant for ${companyName}.
+        prompt: `You are the official customer support assistant for ${companyName}. Answer questions as if you ARE ${companyName}.
 
-Website indexed content:
+Website content knowledge:
 ${indexedContent}
 
 User question: ${question}
 
-Provide a detailed, accurate answer based ONLY on the indexed website content above. If the information is not available, say so clearly.`,
+GUARDRAILS:
+- Answer naturally as ${companyName}, using "we" and "our" (not "they" or "the company")
+- DO NOT mention "indexed content", "website content", or any data sources
+- DO NOT include URLs, links, or source references
+- DO NOT use markdown formatting (**, __, etc.) - use plain text only
+- If you don't have the information, respond: "I'm afraid I can't answer that question at present. Would you like to speak with one of our sales representatives who can help?"
+- Be helpful, friendly, and professional
+
+Answer the question directly and conversationally.`,
       });
 
-      const assistantMessage = { role: "assistant", content: response };
+      // Clean up response - remove any remaining markdown and URLs
+      const cleanedResponse = response
+        .replace(/\*\*/g, '')
+        .replace(/__|~~|`/g, '')
+        .replace(/https?:\/\/[^\s]+/g, '')
+        .replace(/\[([^\]]+)\]\([^\)]+\)/g, '$1');
+
+      const assistantMessage = { role: "assistant", content: cleanedResponse };
       setMessages(prev => [...prev, assistantMessage]);
     } catch (error) {
       console.error("Error asking question:", error);
