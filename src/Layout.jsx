@@ -15,7 +15,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 
-const platformPages = ["VisibilityHQ", "Prompts", "OptimizeContent", "AnswerEngine", "LandingPage", "LandingPage2"];
+const platformPages = ["VisibilityHQ", "Prompts", "OptimizeContent", "AnswerEngine"];
 
   export default function Layout({ children, currentPageName }) {
     const [mobileOpen, setMobileOpen] = React.useState(false);
