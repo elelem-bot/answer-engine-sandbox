@@ -34,37 +34,38 @@ export default function AnswerEngine() {
     setCrawlError(null);
     
     try {
-      // Extract brand data by visiting the website
+      // Fetch website content
+      const websiteData = await fetch(`https://api.allorigins.win/raw?url=${encodeURIComponent(websiteUrl)}`);
+      const html = await websiteData.text();
+      
+      // Extract brand data using LLM to parse the HTML
       const brandResponse = await base44.integrations.Core.InvokeLLM({
-        prompt: `You must visit and crawl this website: ${websiteUrl}
+        prompt: `Analyze this website HTML and extract brand identity:
 
-CRITICAL: Actually visit the website and extract real data from it.
+URL: ${websiteUrl}
+HTML Content:
+${html.substring(0, 20000)}
 
-Extract the following brand identity information in JSON format:
+Extract in JSON format:
 
-1. logo_url: MOST IMPORTANT - Find the company logo image URL
-   - Look in the website header, navigation bar, or top of the page
-   - Find the <img> tag with the logo (usually has "logo" in class, id, alt, or src)
-   - MUST return the complete, absolute URL (starting with http:// or https://)
-   - If the URL is relative (starts with / or no protocol), convert it to absolute:
-     * For paths starting with /: prepend ${new URL(websiteUrl).origin}
-     * For relative paths: prepend ${websiteUrl}
-   - Examples of what to look for:
-     * <img src="/logo.png"> → ${new URL(websiteUrl).origin}/logo.png
-     * <img src="https://example.com/logo.svg"> → use as-is
-   - Return the actual logo URL you find on the website
+1. logo_url: Find the logo <img> tag (look for "logo" in class/id/alt/src in <header>, <nav>, or top of page)
+   - Extract the src attribute
+   - If src starts with "/", prepend: ${new URL(websiteUrl).origin}
+   - If src doesn't start with http, prepend: ${websiteUrl.replace(/\/$/, '')}/
+   - Return full absolute URL
 
-2. primary_color: Extract the main brand color (hex code like #1e40af)
-   - Look in navigation bar background, primary buttons, header
+2. primary_color: Main brand color (hex code)
+   - Look in header/nav background colors, primary buttons
+   - Find style attributes, inline styles, or extract from class names
+   - Return hex code like #1e40af
 
-3. secondary_color: Extract secondary/accent color (hex code)
+3. secondary_color: Secondary color (hex code)
 
-4. font_family: Identify the main font (e.g., Inter, Roboto, Arial)
+4. font_family: Main font from <link> tags (Google Fonts) or font-family styles
 
-5. company_name: Extract the company/brand name from the page
+5. company_name: Brand name from <title>, <h1>, or logo alt text
 
-IMPORTANT: Visit the actual website and return real extracted data, not placeholders.`,
-        add_context_from_internet: true,
+Return actual extracted data from the HTML provided.`,
         response_json_schema: {
           type: "object",
           properties: {
@@ -77,22 +78,24 @@ IMPORTANT: Visit the actual website and return real extracted data, not placehol
         }
       });
       
-      // Clean up URLs and validate data
+      // Clean up URLs
       let logoUrl = brandResponse.logo_url;
-      if (logoUrl && logoUrl.startsWith('/')) {
-        const baseUrl = new URL(websiteUrl);
-        logoUrl = `${baseUrl.origin}${logoUrl}`;
-      } else if (logoUrl && !logoUrl.startsWith('http')) {
-        // Handle relative URLs without leading slash
-        logoUrl = `${websiteUrl.replace(/\/$/, '')}/${logoUrl}`;
+      const baseUrl = new URL(websiteUrl);
+      
+      if (logoUrl) {
+        if (logoUrl.startsWith('/')) {
+          logoUrl = `${baseUrl.origin}${logoUrl}`;
+        } else if (!logoUrl.startsWith('http')) {
+          logoUrl = `${websiteUrl.replace(/\/$/, '')}/${logoUrl.replace(/^\.?\//, '')}`;
+        }
       }
       
       const cleanedBrandData = {
         logo_url: logoUrl?.startsWith('http') ? logoUrl : null,
-        primary_color: brandResponse.primary_color?.match(/#[0-9A-Fa-f]{6}|#[0-9A-Fa-f]{3}/)?.[0] || '#0f172a',
-        secondary_color: brandResponse.secondary_color?.match(/#[0-9A-Fa-f]{6}|#[0-9A-Fa-f]{3}/)?.[0] || '#f8fafc',
-        font_family: brandResponse.font_family || 'system-ui, -apple-system, sans-serif',
-        company_name: brandResponse.company_name || new URL(websiteUrl).hostname
+        primary_color: brandResponse.primary_color?.match(/#[0-9A-Fa-f]{6}|#[0-9A-Fa-f]{3}/)?.[0] || '#14b8a6',
+        secondary_color: brandResponse.secondary_color?.match(/#[0-9A-Fa-f]{6}|#[0-9A-Fa-f]{3}/)?.[0] || '#06b6d4',
+        font_family: brandResponse.font_family || 'system-ui, sans-serif',
+        company_name: brandResponse.company_name || baseUrl.hostname
       };
       
       console.log('Extracted brand data:', cleanedBrandData);
