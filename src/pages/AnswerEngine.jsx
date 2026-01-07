@@ -36,16 +36,42 @@ export default function AnswerEngine() {
     try {
       // Extract brand data and index the website
       const brandResponse = await base44.integrations.Core.InvokeLLM({
-        prompt: `Analyze this website: ${websiteUrl}
-        
-Extract the brand identity in JSON format:
-- logo_url: The main logo URL (full URL, not relative path)
-- primary_color: Primary brand color (hex code)
-- secondary_color: Secondary brand color if available (hex code)
-- font_family: Main font family name
-- company_name: Company/brand name
+        prompt: `Visit and analyze this website: ${websiteUrl}
 
-Also confirm the website is crawled and indexed for Q&A.`,
+CRITICAL: You must access the actual website and extract real brand elements from the HTML, CSS, and visible content.
+
+Extract the following brand identity information in JSON format:
+
+1. logo_url: Find the main logo image. Look for:
+   - <img> tags in header/nav with "logo" in class/id/alt
+   - SVG logos in the header
+   - Favicon if no other logo found
+   - MUST be a complete, absolute URL (start with http:// or https://)
+   - If relative URL found (starts with /), prepend ${websiteUrl}
+
+2. primary_color: Extract the primary brand color from:
+   - Main navigation background color
+   - Primary buttons (CTA buttons)
+   - Brand elements in the header
+   - Return as hex code (e.g., #1e40af)
+
+3. secondary_color: Secondary/accent color from:
+   - Secondary buttons
+   - Links
+   - Accent elements
+   - Return as hex code
+
+4. font_family: Main font used on the website from:
+   - body text font-family in CSS
+   - header/heading fonts
+   - Return the font name (e.g., "Inter", "Roboto", "Arial")
+
+5. company_name: The company/brand name from:
+   - Page title
+   - Logo alt text
+   - Header/nav brand text
+
+Return REAL data extracted from the actual website, not placeholder or example data.`,
         add_context_from_internet: true,
         response_json_schema: {
           type: "object",
@@ -54,13 +80,21 @@ Also confirm the website is crawled and indexed for Q&A.`,
             primary_color: { type: "string" },
             secondary_color: { type: "string" },
             font_family: { type: "string" },
-            company_name: { type: "string" },
-            status: { type: "string" }
+            company_name: { type: "string" }
           }
         }
       });
       
-      setBrandData(brandResponse);
+      // Validate and clean up the brand data
+      const cleanedBrandData = {
+        logo_url: brandResponse.logo_url?.startsWith('http') ? brandResponse.logo_url : null,
+        primary_color: brandResponse.primary_color?.startsWith('#') ? brandResponse.primary_color : '#0f172a',
+        secondary_color: brandResponse.secondary_color?.startsWith('#') ? brandResponse.secondary_color : '#f8fafc',
+        font_family: brandResponse.font_family || 'system-ui, -apple-system, sans-serif',
+        company_name: brandResponse.company_name || new URL(websiteUrl).hostname
+      };
+      
+      setBrandData(cleanedBrandData);
       setIsCrawled(true);
     } catch (error) {
       console.error("Error crawling website:", error);
