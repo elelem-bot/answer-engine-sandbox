@@ -34,45 +34,48 @@ export default function AnswerEngine() {
     setCrawlError(null);
     
     try {
-      // Extract brand data and index the website
+      // First, fetch the actual website HTML
+      const websiteContent = await fetch(`https://api.allorigins.win/raw?url=${encodeURIComponent(websiteUrl)}`)
+        .then(res => res.text());
+      
+      // Extract brand data from the actual HTML content
       const brandResponse = await base44.integrations.Core.InvokeLLM({
-        prompt: `Visit and analyze this website: ${websiteUrl}
+        prompt: `Analyze this website HTML and extract brand identity:
 
-CRITICAL: You must access the actual website and extract real brand elements from the HTML, CSS, and visible content.
+Website URL: ${websiteUrl}
+HTML Content:
+${websiteContent.substring(0, 15000)}
 
-Extract the following brand identity information in JSON format:
+Extract the following in JSON format:
 
-1. logo_url: Find the main logo image. Look for:
-   - <img> tags in header/nav with "logo" in class/id/alt
-   - SVG logos in the header
-   - Favicon if no other logo found
-   - MUST be a complete, absolute URL (start with http:// or https://)
-   - If relative URL found (starts with /), prepend ${websiteUrl}
+1. logo_url: Find the logo image URL from:
+   - <img> tags with "logo" in class/id/alt/src
+   - <svg> in header (if SVG, return null, we'll use company name)
+   - Look in <header>, <nav>, or top of <body>
+   - Convert relative URLs to absolute (prepend ${websiteUrl} if URL starts with /)
+   - Must be complete URL starting with http:// or https://
 
-2. primary_color: Extract the primary brand color from:
-   - Main navigation background color
-   - Primary buttons (CTA buttons)
-   - Brand elements in the header
-   - Return as hex code (e.g., #1e40af)
+2. primary_color: Extract main brand color:
+   - Look for style attributes with background-color or color
+   - Common in nav, header, primary buttons
+   - Extract hex code (e.g., #1e40af)
+   - Look for CSS variables like --primary-color
+   
+3. secondary_color: Secondary color:
+   - Accent colors in buttons, links
+   - Extract hex code
+   
+4. font_family: Main font:
+   - Look for <link> tags loading Google Fonts
+   - font-family in style attributes
+   - Common fonts like Inter, Roboto, etc.
+   
+5. company_name: Brand name from:
+   - <title> tag
+   - <h1> or logo alt text
+   - <meta property="og:site_name">
 
-3. secondary_color: Secondary/accent color from:
-   - Secondary buttons
-   - Links
-   - Accent elements
-   - Return as hex code
-
-4. font_family: Main font used on the website from:
-   - body text font-family in CSS
-   - header/heading fonts
-   - Return the font name (e.g., "Inter", "Roboto", "Arial")
-
-5. company_name: The company/brand name from:
-   - Page title
-   - Logo alt text
-   - Header/nav brand text
-
-Return REAL data extracted from the actual website, not placeholder or example data.`,
-        add_context_from_internet: true,
+Return actual extracted data from the HTML provided.`,
         response_json_schema: {
           type: "object",
           properties: {
@@ -85,11 +88,17 @@ Return REAL data extracted from the actual website, not placeholder or example d
         }
       });
       
-      // Validate and clean up the brand data
+      // Clean up URLs and validate data
+      let logoUrl = brandResponse.logo_url;
+      if (logoUrl && logoUrl.startsWith('/')) {
+        const baseUrl = new URL(websiteUrl);
+        logoUrl = `${baseUrl.origin}${logoUrl}`;
+      }
+      
       const cleanedBrandData = {
-        logo_url: brandResponse.logo_url?.startsWith('http') ? brandResponse.logo_url : null,
-        primary_color: brandResponse.primary_color?.startsWith('#') ? brandResponse.primary_color : '#0f172a',
-        secondary_color: brandResponse.secondary_color?.startsWith('#') ? brandResponse.secondary_color : '#f8fafc',
+        logo_url: logoUrl?.startsWith('http') ? logoUrl : null,
+        primary_color: brandResponse.primary_color?.match(/#[0-9A-Fa-f]{6}|#[0-9A-Fa-f]{3}/)?.[0] || '#0f172a',
+        secondary_color: brandResponse.secondary_color?.match(/#[0-9A-Fa-f]{6}|#[0-9A-Fa-f]{3}/)?.[0] || '#f8fafc',
         font_family: brandResponse.font_family || 'system-ui, -apple-system, sans-serif',
         company_name: brandResponse.company_name || new URL(websiteUrl).hostname
       };
