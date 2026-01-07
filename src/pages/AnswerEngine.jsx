@@ -22,7 +22,21 @@ export default function AnswerEngine() {
   const [question, setQuestion] = useState("");
   const [messages, setMessages] = useState([]);
   const [isAsking, setIsAsking] = useState(false);
-  const [brandData, setBrandData] = useState(null);
+  const [logoFile, setLogoFile] = useState(null);
+  const [logoUrl, setLogoUrl] = useState("");
+  const [brandColor, setBrandColor] = useState("#14b8a6");
+  const [companyName, setCompanyName] = useState("");
+  const [indexedContent, setIndexedContent] = useState("");
+  const [crawlProgress, setCrawlProgress] = useState("");
+
+  const handleLogoUpload = async (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setLogoFile(file);
+      const { file_url } = await base44.integrations.Core.UploadFile({ file });
+      setLogoUrl(file_url);
+    }
+  };
 
   const handleCrawl = async () => {
     if (!websiteUrl || !websiteUrl.startsWith('http')) {
@@ -32,75 +46,45 @@ export default function AnswerEngine() {
 
     setIsCrawling(true);
     setCrawlError(null);
+    setCrawlProgress("Discovering pages...");
     
     try {
-      // Fetch website content
-      const websiteData = await fetch(`https://api.allorigins.win/raw?url=${encodeURIComponent(websiteUrl)}`);
-      const html = await websiteData.text();
-      
-      // Extract brand data using LLM to parse the HTML
-      const brandResponse = await base44.integrations.Core.InvokeLLM({
-        prompt: `Analyze this website HTML and extract brand identity:
+      // Crawl and index up to 100 pages
+      const crawlResponse = await base44.integrations.Core.InvokeLLM({
+        prompt: `Crawl and index this website: ${websiteUrl}
 
-URL: ${websiteUrl}
-HTML Content:
-${html.substring(0, 20000)}
+INSTRUCTIONS:
+1. Start from the homepage: ${websiteUrl}
+2. Follow all internal links (same domain)
+3. Crawl up to 100 pages maximum
+4. For each page, extract:
+   - URL
+   - Page title
+   - Main content (remove navigation, footer, scripts)
+   - Key headings and text
 
-Extract in JSON format:
+5. Also extract company info:
+   - Company name from homepage
+   - All pages discovered
 
-1. logo_url: Find the logo <img> tag (look for "logo" in class/id/alt/src in <header>, <nav>, or top of page)
-   - Extract the src attribute
-   - If src starts with "/", prepend: ${new URL(websiteUrl).origin}
-   - If src doesn't start with http, prepend: ${websiteUrl.replace(/\/$/, '')}/
-   - Return full absolute URL
-
-2. primary_color: Main brand color (hex code)
-   - Look in header/nav background colors, primary buttons
-   - Find style attributes, inline styles, or extract from class names
-   - Return hex code like #1e40af
-
-3. secondary_color: Secondary color (hex code)
-
-4. font_family: Main font from <link> tags (Google Fonts) or font-family styles
-
-5. company_name: Brand name from <title>, <h1>, or logo alt text
-
-Return actual extracted data from the HTML provided.`,
+Return JSON with:
+- company_name: Brand/company name
+- pages_crawled: Number of pages indexed
+- content_summary: Combined text content from all pages (for answering questions)`,
+        add_context_from_internet: true,
         response_json_schema: {
           type: "object",
           properties: {
-            logo_url: { type: "string" },
-            primary_color: { type: "string" },
-            secondary_color: { type: "string" },
-            font_family: { type: "string" },
-            company_name: { type: "string" }
+            company_name: { type: "string" },
+            pages_crawled: { type: "number" },
+            content_summary: { type: "string" }
           }
         }
       });
       
-      // Clean up URLs
-      let logoUrl = brandResponse.logo_url;
-      const baseUrl = new URL(websiteUrl);
-      
-      if (logoUrl) {
-        if (logoUrl.startsWith('/')) {
-          logoUrl = `${baseUrl.origin}${logoUrl}`;
-        } else if (!logoUrl.startsWith('http')) {
-          logoUrl = `${websiteUrl.replace(/\/$/, '')}/${logoUrl.replace(/^\.?\//, '')}`;
-        }
-      }
-      
-      const cleanedBrandData = {
-        logo_url: logoUrl?.startsWith('http') ? logoUrl : null,
-        primary_color: brandResponse.primary_color?.match(/#[0-9A-Fa-f]{6}|#[0-9A-Fa-f]{3}/)?.[0] || '#14b8a6',
-        secondary_color: brandResponse.secondary_color?.match(/#[0-9A-Fa-f]{6}|#[0-9A-Fa-f]{3}/)?.[0] || '#06b6d4',
-        font_family: brandResponse.font_family || 'system-ui, sans-serif',
-        company_name: brandResponse.company_name || baseUrl.hostname
-      };
-      
-      console.log('Extracted brand data:', cleanedBrandData);
-      
-      setBrandData(cleanedBrandData);
+      setCompanyName(crawlResponse.company_name || new URL(websiteUrl).hostname);
+      setIndexedContent(crawlResponse.content_summary || "");
+      setCrawlProgress(`Indexed ${crawlResponse.pages_crawled || 0} pages`);
       setIsCrawled(true);
     } catch (error) {
       console.error("Error crawling website:", error);
@@ -121,14 +105,14 @@ Return actual extracted data from the HTML provided.`,
 
     try {
       const response = await base44.integrations.Core.InvokeLLM({
-        prompt: `You are an expert assistant answering questions about the website: ${websiteUrl}
+        prompt: `You are an expert assistant for ${companyName}.
 
-Question: ${question}
+Website indexed content:
+${indexedContent}
 
-Search the website and provide a detailed, accurate answer based ONLY on the content found on this website. If the information is not available on the website, say so clearly.
+User question: ${question}
 
-Cite specific pages or sections when relevant.`,
-        add_context_from_internet: true
+Provide a detailed, accurate answer based ONLY on the indexed website content above. If the information is not available, say so clearly.`,
       });
 
       const assistantMessage = { role: "assistant", content: response };
@@ -153,7 +137,7 @@ Cite specific pages or sections when relevant.`,
 
         {/* Website Input */}
         <Card className="bg-slate-800/50 border-slate-700/50 mb-6">
-          <CardContent className="pt-6">
+          <CardContent className="pt-6 space-y-4">
             <div className="flex gap-3">
               <div className="flex-1 relative">
                 <Globe className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500" />
@@ -179,71 +163,101 @@ Cite specific pages or sections when relevant.`,
                 ) : isCrawled ? (
                   <>
                     <CheckCircle className="w-5 h-5 mr-2" />
-                    Ready
+                    Indexed
                   </>
                 ) : (
                   <>
                     <Search className="w-5 h-5 mr-2" />
-                    Index Website
+                    Crawl & Index
                   </>
                 )}
               </Button>
             </div>
 
+            {isCrawling && crawlProgress && (
+              <div className="text-teal-400 text-sm">{crawlProgress}</div>
+            )}
+
             {crawlError && (
-              <div className="mt-3 flex items-center gap-2 text-red-400 text-sm">
+              <div className="flex items-center gap-2 text-red-400 text-sm">
                 <AlertCircle className="w-4 h-4" />
                 {crawlError}
               </div>
             )}
 
             {isCrawled && (
-              <div className="mt-3 flex items-center gap-2">
-                <Badge className="bg-teal-500/20 text-teal-400 border-teal-500/30">
-                  Website indexed and ready for questions
-                </Badge>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => {
-                    setIsCrawled(false);
-                    setMessages([]);
-                    setWebsiteUrl("");
-                    setBrandData(null);
-                  }}
-                  className="text-slate-400 hover:text-white"
-                >
-                  Change Website
-                </Button>
-              </div>
+              <>
+                <div className="flex items-center gap-2">
+                  <Badge className="bg-teal-500/20 text-teal-400 border-teal-500/30">
+                    {crawlProgress}
+                  </Badge>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => {
+                      setIsCrawled(false);
+                      setMessages([]);
+                      setWebsiteUrl("");
+                      setIndexedContent("");
+                      setLogoUrl("");
+                      setBrandColor("#14b8a6");
+                    }}
+                    className="text-slate-400 hover:text-white"
+                  >
+                    Change Website
+                  </Button>
+                </div>
+
+                {/* Brand Customization */}
+                <div className="border-t border-slate-700 pt-4 grid md:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <label className="text-slate-300 text-sm font-medium">Upload Logo</label>
+                    <Input
+                      type="file"
+                      accept="image/*"
+                      onChange={handleLogoUpload}
+                      className="bg-slate-900 border-slate-700 text-white file:mr-4 file:px-4 file:py-2 file:rounded file:border-0 file:bg-teal-500 file:text-white"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-slate-300 text-sm font-medium">Brand Color</label>
+                    <div className="flex gap-2">
+                      <Input
+                        type="color"
+                        value={brandColor}
+                        onChange={(e) => setBrandColor(e.target.value)}
+                        className="w-20 h-10 bg-slate-900 border-slate-700 cursor-pointer"
+                      />
+                      <Input
+                        type="text"
+                        value={brandColor}
+                        onChange={(e) => setBrandColor(e.target.value)}
+                        placeholder="#14b8a6"
+                        className="flex-1 bg-slate-900 border-slate-700 text-white"
+                      />
+                    </div>
+                  </div>
+                </div>
+              </>
             )}
           </CardContent>
         </Card>
 
         {/* Branded Chat Interface */}
-        {isCrawled && brandData && (
-          <div 
-            className="rounded-2xl overflow-hidden shadow-2xl bg-white"
-            style={{
-              fontFamily: brandData.font_family || 'inherit'
-            }}
-          >
+        {isCrawled && (
+          <div className="rounded-2xl overflow-hidden shadow-2xl bg-white">
             {/* Branded Header */}
             <div className="px-6 py-4 border-b border-slate-200 flex items-center justify-between bg-white">
               <div className="flex items-center gap-3">
-                {brandData.logo_url ? (
+                {logoUrl ? (
                   <img 
-                    src={brandData.logo_url} 
-                    alt={brandData.company_name}
+                    src={logoUrl} 
+                    alt={companyName}
                     className="h-10 max-w-[200px] object-contain"
-                    onError={(e) => {
-                      console.log('Logo failed to load:', brandData.logo_url);
-                      e.target.style.display = 'none';
-                    }}
                   />
                 ) : (
                   <span className="text-lg font-semibold text-slate-900">
-                    {brandData.company_name}
+                    {companyName}
                   </span>
                 )}
               </div>
@@ -260,21 +274,21 @@ Cite specific pages or sections when relevant.`,
                     <div 
                       className="w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-4"
                       style={{
-                        backgroundColor: `${brandData.primary_color || '#14b8a6'}15`
+                        backgroundColor: `${brandColor}15`
                       }}
                     >
                       <Search 
                         className="w-10 h-10"
-                        style={{ color: brandData.primary_color || '#14b8a6' }}
+                        style={{ color: brandColor }}
                       />
                     </div>
                     <h3 
                       className="text-xl font-semibold mb-2"
-                      style={{ color: brandData.primary_color || '#0f172a' }}
+                      style={{ color: brandColor }}
                     >
                       How can I help you today?
                     </h3>
-                    <p className="text-slate-600">Ask me anything about {brandData.company_name || new URL(websiteUrl).hostname}</p>
+                    <p className="text-slate-600">Ask me anything about {companyName}</p>
                   </div>
                 ) : (
                   messages.map((msg, i) => (
@@ -292,7 +306,7 @@ Cite specific pages or sections when relevant.`,
                         }`}
                         style={{
                           backgroundColor: msg.role === "user" 
-                            ? brandData.primary_color || '#14b8a6'
+                            ? brandColor
                             : '#f1f5f9',
                           color: msg.role === "user" ? '#ffffff' : '#1e293b'
                         }}
@@ -314,7 +328,7 @@ Cite specific pages or sections when relevant.`,
                     <div className="flex items-center gap-2">
                       <Loader2 
                         className="w-4 h-4 animate-spin"
-                        style={{ color: brandData.primary_color || '#14b8a6' }}
+                        style={{ color: brandColor }}
                       />
                       <span className="text-slate-600">Thinking...</span>
                     </div>
@@ -327,14 +341,14 @@ Cite specific pages or sections when relevant.`,
             <div className="px-6 py-4 border-t border-slate-200 bg-white">
               <form onSubmit={handleAskQuestion} className="flex gap-3">
                 <Input
-                  placeholder={`Ask ${brandData.company_name || 'us'} anything...`}
+                  placeholder={`Ask ${companyName} anything...`}
                   value={question}
                   onChange={(e) => setQuestion(e.target.value)}
                   disabled={isAsking}
                   className="flex-1 border-slate-300 bg-white text-slate-900 placeholder:text-slate-400 focus:ring-2 rounded-xl"
                   style={{
                     borderColor: '#cbd5e1',
-                    '--tw-ring-color': brandData.primary_color || '#14b8a6'
+                    '--tw-ring-color': brandColor
                   }}
                 />
                 <Button
@@ -342,7 +356,7 @@ Cite specific pages or sections when relevant.`,
                   disabled={isAsking || !question.trim()}
                   className="rounded-xl shadow-sm"
                   style={{
-                    backgroundColor: brandData.primary_color || '#14b8a6',
+                    backgroundColor: brandColor,
                     color: '#ffffff'
                   }}
                 >
