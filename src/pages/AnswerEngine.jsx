@@ -7,7 +7,9 @@ import {
   Send,
   Search,
   CheckCircle,
-  AlertCircle
+  AlertCircle,
+  ChevronUp,
+  ChevronDown
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -28,6 +30,7 @@ export default function AnswerEngine() {
   const [companyName, setCompanyName] = useState("");
   const [indexedContent, setIndexedContent] = useState("");
   const [crawlProgress, setCrawlProgress] = useState("");
+  const [isInputCollapsed, setIsInputCollapsed] = useState(false);
 
   const handleLogoUpload = async (e) => {
     const file = e.target.files[0];
@@ -152,6 +155,35 @@ Answer the question directly and conversationally.`,
 
         {/* Website Input */}
         <Card className="bg-slate-800/50 border-slate-700/50 mb-6">
+          {isCrawled && (
+            <div className="px-6 pt-4 flex justify-end">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setIsInputCollapsed(!isInputCollapsed)}
+                className="text-slate-400 hover:text-white"
+              >
+                {isInputCollapsed ? (
+                  <>
+                    <ChevronDown className="w-4 h-4 mr-1" />
+                    Show Setup
+                  </>
+                ) : (
+                  <>
+                    <ChevronUp className="w-4 h-4 mr-1" />
+                    Hide Setup
+                  </>
+                )}
+              </Button>
+            </div>
+          )}
+          <AnimatePresence>
+            {!isInputCollapsed && (
+              <motion.div
+                initial={{ height: "auto", opacity: 1 }}
+                exit={{ height: 0, opacity: 0, marginTop: 0, paddingTop: 0, paddingBottom: 0 }}
+                transition={{ duration: 0.3 }}
+              >
           <CardContent className="pt-6 space-y-4">
             <div className="flex gap-3">
               <div className="flex-1 relative">
@@ -256,6 +288,9 @@ Answer the question directly and conversationally.`,
               </>
             )}
           </CardContent>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </Card>
 
         {/* Branded Chat Interface */}
