@@ -34,48 +34,30 @@ export default function AnswerEngine() {
     setCrawlError(null);
     
     try {
-      // First, fetch the actual website HTML
-      const websiteContent = await fetch(`https://api.allorigins.win/raw?url=${encodeURIComponent(websiteUrl)}`)
-        .then(res => res.text());
-      
-      // Extract brand data from the actual HTML content
+      // Extract brand data by visiting the website
       const brandResponse = await base44.integrations.Core.InvokeLLM({
-        prompt: `Analyze this website HTML and extract brand identity:
+        prompt: `Visit and analyze this website: ${websiteUrl}
 
-Website URL: ${websiteUrl}
-HTML Content:
-${websiteContent.substring(0, 15000)}
+Extract the following brand identity information in JSON format:
 
-Extract the following in JSON format:
+1. logo_url: Find the main logo image URL from the website header/navigation
+   - Must be a complete, absolute URL (starting with http:// or https://)
+   - If you find a relative URL, convert it to absolute by prepending the domain
 
-1. logo_url: Find the logo image URL from:
-   - <img> tags with "logo" in class/id/alt/src
-   - <svg> in header (if SVG, return null, we'll use company name)
-   - Look in <header>, <nav>, or top of <body>
-   - Convert relative URLs to absolute (prepend ${websiteUrl} if URL starts with /)
-   - Must be complete URL starting with http:// or https://
+2. primary_color: Extract the main brand color (hex code like #1e40af)
+   - Look in navigation bar, primary buttons, brand elements
 
-2. primary_color: Extract main brand color:
-   - Look for style attributes with background-color or color
-   - Common in nav, header, primary buttons
-   - Extract hex code (e.g., #1e40af)
-   - Look for CSS variables like --primary-color
-   
-3. secondary_color: Secondary color:
-   - Accent colors in buttons, links
-   - Extract hex code
-   
-4. font_family: Main font:
-   - Look for <link> tags loading Google Fonts
-   - font-family in style attributes
-   - Common fonts like Inter, Roboto, etc.
-   
-5. company_name: Brand name from:
-   - <title> tag
-   - <h1> or logo alt text
-   - <meta property="og:site_name">
+3. secondary_color: Extract secondary/accent color (hex code)
+   - From secondary buttons, links, accent elements
 
-Return actual extracted data from the HTML provided.`,
+4. font_family: Identify the main font used
+   - Common fonts like Inter, Roboto, Arial, etc.
+
+5. company_name: Extract the company/brand name
+   - From page title, logo alt text, or header
+
+Return actual data extracted from visiting the website.`,
+        add_context_from_internet: true,
         response_json_schema: {
           type: "object",
           properties: {
