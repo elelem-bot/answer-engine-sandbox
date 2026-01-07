@@ -216,19 +216,18 @@ Cite specific pages or sections when relevant.`,
             {/* Branded Header */}
             <div className="px-6 py-4 border-b border-slate-200 flex items-center justify-between bg-white">
               <div className="flex items-center gap-3">
-                {brandData.logo_url && (
-                  <img 
-                    src={brandData.logo_url} 
-                    alt={brandData.company_name}
-                    className="h-10 max-w-[200px] object-contain"
-                    onError={(e) => e.target.style.display = 'none'}
-                  />
-                )}
-                {!brandData.logo_url && (
-                  <span className="text-lg font-semibold text-slate-900">
-                    {brandData.company_name || new URL(websiteUrl).hostname}
-                  </span>
-                )}
+                <img 
+                  src={brandData.logo_url || `https://logo.clearbit.com/${new URL(websiteUrl).hostname}`} 
+                  alt={brandData.company_name}
+                  className="h-10 max-w-[200px] object-contain"
+                  onError={(e) => {
+                    e.target.style.display = 'none';
+                    const fallback = document.createElement('span');
+                    fallback.className = 'text-lg font-semibold text-slate-900';
+                    fallback.textContent = brandData.company_name || new URL(websiteUrl).hostname;
+                    e.target.parentNode.appendChild(fallback);
+                  }}
+                />
               </div>
               <Badge className="text-xs bg-slate-100 text-slate-600 border-slate-200">
                 Powered by AI
