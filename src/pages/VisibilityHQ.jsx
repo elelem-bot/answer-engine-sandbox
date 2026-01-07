@@ -241,35 +241,13 @@ After the response, provide analysis in JSON format:
   return (
     <div className="min-h-screen bg-slate-950 p-6 lg:p-8">
       <div className="max-w-7xl mx-auto">
-        {/* View Type Submenu */}
-        <div className="mb-6 border-b border-slate-800">
-          <div className="flex gap-1">
-            <button
-              onClick={() => navigate(createPageUrl("VisibilityHQ"))}
-              className="px-6 py-3 text-sm font-medium transition-all text-teal-400 border-b-2 border-teal-400"
-            >
-              Prospect
-            </button>
-            <button
-              onClick={() => navigate(createPageUrl("CustomerVisibility"))}
-              className="px-6 py-3 text-sm font-medium transition-all text-slate-400 hover:text-slate-300"
-            >
-              Customer
-            </button>
-            <button
-              onClick={() => navigate(createPageUrl("AgentVisibility"))}
-              className="px-6 py-3 text-sm font-medium transition-all text-slate-400 hover:text-slate-300"
-            >
-              Agent
-            </button>
-          </div>
-        </div>
+
 
         {/* Header */}
         <div className="flex flex-col gap-6 mb-8">
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
             <div>
-              <h1 className="text-2xl font-bold text-white">Prospect Visibility Dashboard</h1>
+              <h1 className="text-2xl font-bold text-white">AI Visibility Dashboard</h1>
               <p className="text-slate-400">Track performance across AI search engines and optimize your content strategy</p>
             </div>
             <div className="flex items-center gap-3">
