@@ -22,6 +22,7 @@ export default function AnswerEngine() {
   const [question, setQuestion] = useState("");
   const [messages, setMessages] = useState([]);
   const [isAsking, setIsAsking] = useState(false);
+  const [brandData, setBrandData] = useState(null);
 
   const handleCrawl = async () => {
     if (!websiteUrl || !websiteUrl.startsWith('http')) {
@@ -33,19 +34,33 @@ export default function AnswerEngine() {
     setCrawlError(null);
     
     try {
-      // Fetch and index the website
-      await base44.integrations.Core.InvokeLLM({
-        prompt: `Crawl and index this website: ${websiteUrl}. Explore all pages and subpages. Confirm when ready.`,
+      // Extract brand data and index the website
+      const brandResponse = await base44.integrations.Core.InvokeLLM({
+        prompt: `Analyze this website: ${websiteUrl}
+        
+Extract the brand identity in JSON format:
+- logo_url: The main logo URL (full URL, not relative path)
+- primary_color: Primary brand color (hex code)
+- secondary_color: Secondary brand color if available (hex code)
+- font_family: Main font family name
+- company_name: Company/brand name
+
+Also confirm the website is crawled and indexed for Q&A.`,
         add_context_from_internet: true,
         response_json_schema: {
           type: "object",
           properties: {
-            status: { type: "string" },
-            pages_found: { type: "number" }
+            logo_url: { type: "string" },
+            primary_color: { type: "string" },
+            secondary_color: { type: "string" },
+            font_family: { type: "string" },
+            company_name: { type: "string" },
+            status: { type: "string" }
           }
         }
       });
       
+      setBrandData(brandResponse);
       setIsCrawled(true);
     } catch (error) {
       console.error("Error crawling website:", error);
@@ -154,6 +169,7 @@ Cite specific pages or sections when relevant.`,
                     setIsCrawled(false);
                     setMessages([]);
                     setWebsiteUrl("");
+                    setBrandData(null);
                   }}
                   className="text-slate-400 hover:text-white"
                 >
@@ -164,78 +180,161 @@ Cite specific pages or sections when relevant.`,
           </CardContent>
         </Card>
 
-        {/* Chat Interface */}
-        {isCrawled && (
-          <Card className="bg-slate-800/50 border-slate-700/50">
-            <CardContent className="pt-6">
-              {/* Messages */}
-              <div className="space-y-4 mb-6 max-h-[500px] overflow-y-auto">
-                <AnimatePresence>
-                  {messages.length === 0 ? (
-                    <div className="text-center py-12">
-                      <div className="w-16 h-16 bg-teal-500/10 rounded-full flex items-center justify-center mx-auto mb-4">
-                        <Search className="w-8 h-8 text-teal-400" />
-                      </div>
-                      <p className="text-slate-400">Ask any question about {new URL(websiteUrl).hostname}</p>
-                      <p className="text-slate-500 text-sm mt-2">I'll search the website and provide accurate answers</p>
-                    </div>
-                  ) : (
-                    messages.map((msg, i) => (
-                      <motion.div
-                        key={i}
-                        initial={{ opacity: 0, y: 10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}
-                      >
-                        <div
-                          className={`max-w-[80%] rounded-lg p-4 ${
-                            msg.role === "user"
-                              ? "bg-gradient-to-r from-teal-500 to-cyan-500 text-white"
-                              : "bg-slate-900/50 text-slate-300 border border-slate-700/50"
-                          }`}
-                        >
-                          <p className="whitespace-pre-wrap leading-relaxed">{msg.content}</p>
-                        </div>
-                      </motion.div>
-                    ))
-                  )}
-                </AnimatePresence>
-
-                {isAsking && (
-                  <motion.div
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    className="flex justify-start"
+        {/* Branded Chat Interface */}
+        {isCrawled && brandData && (
+          <div 
+            className="rounded-2xl overflow-hidden shadow-2xl"
+            style={{
+              backgroundColor: brandData.secondary_color || '#f8fafc',
+              fontFamily: brandData.font_family || 'inherit'
+            }}
+          >
+            {/* Branded Header */}
+            <div 
+              className="px-6 py-4 border-b flex items-center justify-between"
+              style={{
+                backgroundColor: brandData.primary_color || '#0f172a',
+                borderBottomColor: brandData.secondary_color || '#e2e8f0'
+              }}
+            >
+              <div className="flex items-center gap-3">
+                {brandData.logo_url && (
+                  <img 
+                    src={brandData.logo_url} 
+                    alt={brandData.company_name}
+                    className="h-8 max-w-[200px] object-contain"
+                    onError={(e) => e.target.style.display = 'none'}
+                  />
+                )}
+                {!brandData.logo_url && (
+                  <span 
+                    className="text-lg font-semibold"
+                    style={{ color: brandData.secondary_color || '#ffffff' }}
                   >
-                    <div className="bg-slate-900/50 rounded-lg p-4 border border-slate-700/50">
-                      <div className="flex items-center gap-2">
-                        <Loader2 className="w-4 h-4 text-teal-400 animate-spin" />
-                        <span className="text-slate-400">Searching website...</span>
-                      </div>
-                    </div>
-                  </motion.div>
+                    {brandData.company_name || new URL(websiteUrl).hostname}
+                  </span>
                 )}
               </div>
+              <Badge 
+                className="text-xs"
+                style={{
+                  backgroundColor: `${brandData.secondary_color || '#64748b'}20`,
+                  color: brandData.secondary_color || '#64748b',
+                  borderColor: `${brandData.secondary_color || '#64748b'}40`
+                }}
+              >
+                Powered by AI
+              </Badge>
+            </div>
 
-              {/* Question Input */}
+            {/* Messages Container */}
+            <div 
+              className="p-6 space-y-4 max-h-[600px] overflow-y-auto"
+              style={{ backgroundColor: '#ffffff' }}
+            >
+              <AnimatePresence>
+                {messages.length === 0 ? (
+                  <div className="text-center py-16">
+                    <div 
+                      className="w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-4"
+                      style={{
+                        backgroundColor: `${brandData.primary_color || '#14b8a6'}15`
+                      }}
+                    >
+                      <Search 
+                        className="w-10 h-10"
+                        style={{ color: brandData.primary_color || '#14b8a6' }}
+                      />
+                    </div>
+                    <h3 
+                      className="text-xl font-semibold mb-2"
+                      style={{ color: brandData.primary_color || '#0f172a' }}
+                    >
+                      How can I help you today?
+                    </h3>
+                    <p className="text-slate-600">Ask me anything about {brandData.company_name || new URL(websiteUrl).hostname}</p>
+                  </div>
+                ) : (
+                  messages.map((msg, i) => (
+                    <motion.div
+                      key={i}
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}
+                    >
+                      <div
+                        className={`max-w-[75%] rounded-2xl px-5 py-3 ${
+                          msg.role === "user"
+                            ? "shadow-sm"
+                            : "shadow-sm"
+                        }`}
+                        style={{
+                          backgroundColor: msg.role === "user" 
+                            ? brandData.primary_color || '#14b8a6'
+                            : '#f1f5f9',
+                          color: msg.role === "user" ? '#ffffff' : '#1e293b'
+                        }}
+                      >
+                        <p className="whitespace-pre-wrap leading-relaxed">{msg.content}</p>
+                      </div>
+                    </motion.div>
+                  ))
+                )}
+              </AnimatePresence>
+
+              {isAsking && (
+                <motion.div
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="flex justify-start"
+                >
+                  <div className="bg-slate-100 rounded-2xl px-5 py-3 shadow-sm">
+                    <div className="flex items-center gap-2">
+                      <Loader2 
+                        className="w-4 h-4 animate-spin"
+                        style={{ color: brandData.primary_color || '#14b8a6' }}
+                      />
+                      <span className="text-slate-600">Thinking...</span>
+                    </div>
+                  </div>
+                </motion.div>
+              )}
+            </div>
+
+            {/* Input Footer */}
+            <div 
+              className="px-6 py-4 border-t"
+              style={{
+                backgroundColor: '#ffffff',
+                borderTopColor: '#e2e8f0'
+              }}
+            >
               <form onSubmit={handleAskQuestion} className="flex gap-3">
                 <Input
-                  placeholder="Ask a question about this website..."
+                  placeholder={`Ask ${brandData.company_name || 'us'} anything...`}
                   value={question}
                   onChange={(e) => setQuestion(e.target.value)}
                   disabled={isAsking}
-                  className="flex-1 bg-slate-900 border-slate-700 text-white placeholder:text-slate-500"
+                  className="flex-1 border-slate-300 bg-white text-slate-900 placeholder:text-slate-400 focus:ring-2 rounded-xl"
+                  style={{
+                    borderColor: '#cbd5e1',
+                    '--tw-ring-color': brandData.primary_color || '#14b8a6'
+                  }}
                 />
                 <Button
                   type="submit"
                   disabled={isAsking || !question.trim()}
-                  className="bg-gradient-to-r from-teal-500 to-cyan-500 hover:from-teal-600 hover:to-cyan-600"
+                  className="rounded-xl shadow-sm"
+                  style={{
+                    backgroundColor: brandData.primary_color || '#14b8a6',
+                    color: '#ffffff'
+                  }}
                 >
                   <Send className="w-5 h-5" />
                 </Button>
               </form>
-            </CardContent>
-          </Card>
+            </div>
+          </div>
         )}
       </div>
     </div>
