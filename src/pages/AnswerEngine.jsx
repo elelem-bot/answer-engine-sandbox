@@ -36,27 +36,34 @@ export default function AnswerEngine() {
     try {
       // Extract brand data by visiting the website
       const brandResponse = await base44.integrations.Core.InvokeLLM({
-        prompt: `Visit and analyze this website: ${websiteUrl}
+        prompt: `You must visit and crawl this website: ${websiteUrl}
+
+CRITICAL: Actually visit the website and extract real data from it.
 
 Extract the following brand identity information in JSON format:
 
-1. logo_url: Find the main logo image URL from the website header/navigation
-   - Must be a complete, absolute URL (starting with http:// or https://)
-   - If you find a relative URL, convert it to absolute by prepending the domain
+1. logo_url: MOST IMPORTANT - Find the company logo image URL
+   - Look in the website header, navigation bar, or top of the page
+   - Find the <img> tag with the logo (usually has "logo" in class, id, alt, or src)
+   - MUST return the complete, absolute URL (starting with http:// or https://)
+   - If the URL is relative (starts with / or no protocol), convert it to absolute:
+     * For paths starting with /: prepend ${new URL(websiteUrl).origin}
+     * For relative paths: prepend ${websiteUrl}
+   - Examples of what to look for:
+     * <img src="/logo.png"> → ${new URL(websiteUrl).origin}/logo.png
+     * <img src="https://example.com/logo.svg"> → use as-is
+   - Return the actual logo URL you find on the website
 
 2. primary_color: Extract the main brand color (hex code like #1e40af)
-   - Look in navigation bar, primary buttons, brand elements
+   - Look in navigation bar background, primary buttons, header
 
 3. secondary_color: Extract secondary/accent color (hex code)
-   - From secondary buttons, links, accent elements
 
-4. font_family: Identify the main font used
-   - Common fonts like Inter, Roboto, Arial, etc.
+4. font_family: Identify the main font (e.g., Inter, Roboto, Arial)
 
-5. company_name: Extract the company/brand name
-   - From page title, logo alt text, or header
+5. company_name: Extract the company/brand name from the page
 
-Return actual data extracted from visiting the website.`,
+IMPORTANT: Visit the actual website and return real extracted data, not placeholders.`,
         add_context_from_internet: true,
         response_json_schema: {
           type: "object",
@@ -75,6 +82,9 @@ Return actual data extracted from visiting the website.`,
       if (logoUrl && logoUrl.startsWith('/')) {
         const baseUrl = new URL(websiteUrl);
         logoUrl = `${baseUrl.origin}${logoUrl}`;
+      } else if (logoUrl && !logoUrl.startsWith('http')) {
+        // Handle relative URLs without leading slash
+        logoUrl = `${websiteUrl.replace(/\/$/, '')}/${logoUrl}`;
       }
       
       const cleanedBrandData = {
@@ -84,6 +94,8 @@ Return actual data extracted from visiting the website.`,
         font_family: brandResponse.font_family || 'system-ui, -apple-system, sans-serif',
         company_name: brandResponse.company_name || new URL(websiteUrl).hostname
       };
+      
+      console.log('Extracted brand data:', cleanedBrandData);
       
       setBrandData(cleanedBrandData);
       setIsCrawled(true);
@@ -216,18 +228,21 @@ Cite specific pages or sections when relevant.`,
             {/* Branded Header */}
             <div className="px-6 py-4 border-b border-slate-200 flex items-center justify-between bg-white">
               <div className="flex items-center gap-3">
-                <img 
-                  src={brandData.logo_url || `https://logo.clearbit.com/${new URL(websiteUrl).hostname}`} 
-                  alt={brandData.company_name}
-                  className="h-10 max-w-[200px] object-contain"
-                  onError={(e) => {
-                    e.target.style.display = 'none';
-                    const fallback = document.createElement('span');
-                    fallback.className = 'text-lg font-semibold text-slate-900';
-                    fallback.textContent = brandData.company_name || new URL(websiteUrl).hostname;
-                    e.target.parentNode.appendChild(fallback);
-                  }}
-                />
+                {brandData.logo_url ? (
+                  <img 
+                    src={brandData.logo_url} 
+                    alt={brandData.company_name}
+                    className="h-10 max-w-[200px] object-contain"
+                    onError={(e) => {
+                      console.log('Logo failed to load:', brandData.logo_url);
+                      e.target.style.display = 'none';
+                    }}
+                  />
+                ) : (
+                  <span className="text-lg font-semibold text-slate-900">
+                    {brandData.company_name}
+                  </span>
+                )}
               </div>
               <Badge className="text-xs bg-slate-100 text-slate-600 border-slate-200">
                 Powered by AI
