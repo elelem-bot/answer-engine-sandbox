@@ -15,7 +15,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 
-const platformPages = ["VisibilityHQ", "CustomerVisibility", "AgentVisibility", "Prompts", "OptimizeContent", "NewContent", "Tracking", "AnswerEngine", "LandingPage", "LandingPage2"];
+const platformPages = ["VisibilityHQ", "Prompts", "OptimizeContent", "AnswerEngine", "LandingPage", "LandingPage2"];
 
   export default function Layout({ children, currentPageName }) {
     const [mobileOpen, setMobileOpen] = React.useState(false);
@@ -23,14 +23,10 @@ const platformPages = ["VisibilityHQ", "CustomerVisibility", "AgentVisibility", 
     const showPlatformNav = platformPages.includes(currentPageName);
 
     const navItems = [
-      { name: "VisibilityHQ", label: "Visibility HQ", icon: LayoutDashboard },
+      { name: "VisibilityHQ", label: "AI Visibility", icon: LayoutDashboard },
       { name: "Prompts", label: "Prompts", icon: MessageSquare },
-      { name: "OptimizeContent", label: "Optimize Content", icon: FileEdit },
-      { name: "NewContent", label: "New Content", icon: FilePlus },
-      { name: "Tracking", label: "Tracking", icon: LineChart },
+      { name: "OptimizeContent", label: "Answer Engineering", icon: FileEdit },
       { name: "AnswerEngine", label: "Answer Engine", icon: Search },
-      { name: "LandingPage", label: "Landing Page", icon: LayoutDashboard },
-      { name: "LandingPage2", label: "Landing Page 2", icon: LayoutDashboard },
     ];
 
   if (!showPlatformNav) {
