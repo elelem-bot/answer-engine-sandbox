@@ -231,7 +231,7 @@ Answer the question directly and conversationally.`,
                       type="file"
                       accept="image/*"
                       onChange={handleLogoUpload}
-                      className="bg-slate-900 border-slate-700 text-white file:mr-4 file:px-4 file:py-2 file:rounded file:border-0 file:bg-teal-500 file:text-white"
+                      className="bg-slate-900 border-slate-700 text-white h-auto py-2 file:mr-4 file:px-4 file:py-2 file:rounded file:border-0 file:bg-teal-500 file:text-white file:cursor-pointer"
                     />
                   </div>
                   <div className="space-y-2">
@@ -277,7 +277,7 @@ Answer the question directly and conversationally.`,
                 )}
               </div>
               <Badge className="text-xs bg-slate-100 text-slate-600 border-slate-200">
-                Powered by AI
+                {companyName} AI Answer Engine
               </Badge>
             </div>
 
