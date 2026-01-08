@@ -139,40 +139,41 @@ Focus on pages that would be most relevant for answering customer questions and 
           <p className="text-slate-400">Select a prompt and optimize your pages for AI search visibility</p>
         </div>
 
+        {/* Funnel Stage Filter */}
+        <div className="flex items-center gap-3 mb-6">
+          <span className="text-slate-400 text-sm">Funnel Stage:</span>
+          <div className="flex gap-2">
+            {["top", "middle", "bottom"].map((stage) => (
+              <Button
+                key={stage}
+                onClick={() => setFunnelStage(stage)}
+                size="sm"
+                className={`${
+                  funnelStage === stage
+                    ? "bg-teal-500 hover:bg-teal-600 text-white"
+                    : "bg-slate-800 text-slate-300 hover:bg-slate-700"
+                }`}
+              >
+                {stage.charAt(0).toUpperCase() + stage.slice(1)}
+              </Button>
+            ))}
+          </div>
+        </div>
+
+        {/* Search */}
+        <div className="relative mb-6">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500" />
+          <Input
+            placeholder="Search prompts..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="pl-10 bg-slate-800 border-slate-700 text-white"
+          />
+        </div>
+
         <div className="grid lg:grid-cols-3 gap-6">
           {/* Left Column - Prompts */}
-          <div className="lg:col-span-2 space-y-6">
-            {/* Funnel Stage Filter */}
-            <div className="flex items-center gap-3">
-              <span className="text-slate-400 text-sm">Funnel Stage:</span>
-              <div className="flex gap-2">
-                {["top", "middle", "bottom"].map((stage) => (
-                  <Button
-                    key={stage}
-                    onClick={() => setFunnelStage(stage)}
-                    size="sm"
-                    className={`${
-                      funnelStage === stage
-                        ? "bg-teal-500 hover:bg-teal-600 text-white"
-                        : "bg-slate-800 text-slate-300 hover:bg-slate-700"
-                    }`}
-                  >
-                    {stage.charAt(0).toUpperCase() + stage.slice(1)}
-                  </Button>
-                ))}
-              </div>
-            </div>
-
-            {/* Search */}
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500" />
-              <Input
-                placeholder="Search prompts..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-10 bg-slate-800 border-slate-700 text-white"
-              />
-            </div>
+          <div className="lg:col-span-2">
 
             {/* Prompts Table */}
             <Card className="bg-slate-800/50 border-slate-700/50">
@@ -232,7 +233,7 @@ Focus on pages that would be most relevant for answering customer questions and 
 
           {/* Right Column - Best Matching Pages */}
           <div>
-            <Card className="bg-slate-800/50 border-slate-700/50 sticky top-6">
+            <Card className="bg-slate-800/50 border-slate-700/50">
               <CardHeader>
                 <CardTitle className="text-white flex items-center gap-2">
                   <FileText className="w-5 h-5" />
@@ -245,7 +246,11 @@ Focus on pages that would be most relevant for answering customer questions and 
                     <p className="text-slate-400 text-sm mb-4">{selectedPrompt.prompt}</p>
                     <div className="space-y-3">
                       {getMatchingPages(selectedPrompt).map((page, i) => (
-                        <div key={i} className="p-3 bg-slate-900/50 rounded-lg">
+                        <div 
+                          key={i} 
+                          className="p-3 bg-slate-900/50 rounded-lg cursor-pointer hover:bg-slate-900 transition-colors border border-transparent hover:border-teal-500/30"
+                          onClick={() => navigate(createPageUrl("NewContent"))}
+                        >
                           <div className="text-white font-medium text-sm mb-1">{page.title}</div>
                           <div className="text-slate-500 text-xs mb-2 truncate">{page.url}</div>
                           <div className="flex items-center justify-between">
@@ -257,13 +262,6 @@ Focus on pages that would be most relevant for answering customer questions and 
                         </div>
                       ))}
                     </div>
-                    <Button 
-                      className="w-full bg-gradient-to-r from-teal-500 to-cyan-500 hover:from-teal-600 hover:to-cyan-600 mt-4"
-                      onClick={() => navigate(createPageUrl("NewContent"))}
-                    >
-                      <Zap className="w-4 h-4 mr-2" />
-                      Optimize for AI Search
-                    </Button>
                   </>
                 ) : (
                   <div className="text-center py-8">
