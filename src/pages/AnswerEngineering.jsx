@@ -308,7 +308,7 @@ Return as JSON with:
                     onClick={() => handleSelectPrompt(prompt)}
                   >
                     <CardContent className="p-6">
-                      <div className="flex items-start justify-between gap-4">
+                      <div className="flex items-start justify-between gap-6">
                         <div className="flex-1">
                           <h3 className="text-white font-semibold mb-2">{prompt.prompt}</h3>
                           <div className="flex gap-2 flex-wrap mb-3">
@@ -331,7 +331,31 @@ Return as JSON with:
                             </div>
                           </div>
                         </div>
-                        <ChevronRight className="w-5 h-5 text-slate-500" />
+                        
+                        <div className="flex flex-col gap-3 items-end min-w-[200px]">
+                          <div className="text-right">
+                            <div className="text-slate-500 text-xs mb-1">Search Signal</div>
+                            <div className="text-white font-semibold">{prompt.search_signal_score || 0}</div>
+                          </div>
+                          <div className="text-right">
+                            <div className="text-slate-500 text-xs mb-1">elelem Score</div>
+                            <div className="text-teal-400 font-semibold">{prompt.elelem_score || 0}/100</div>
+                          </div>
+                          {prompt.best_pages && prompt.best_pages.length > 0 && (
+                            <div className="text-right">
+                              <div className="text-slate-500 text-xs mb-1">Best Pages</div>
+                              <div className="space-y-1">
+                                {prompt.best_pages.slice(0, 2).map((page, idx) => (
+                                  <div key={idx} className="text-xs text-slate-300 truncate max-w-[180px]">
+                                    {page.title || page.url}
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                        
+                        <ChevronRight className="w-5 h-5 text-slate-500 flex-shrink-0" />
                       </div>
                     </CardContent>
                   </Card>
