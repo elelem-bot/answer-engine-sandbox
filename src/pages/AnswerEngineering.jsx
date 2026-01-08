@@ -32,6 +32,8 @@ export default function AnswerEngineering() {
   const [selectedPrompt, setSelectedPrompt] = useState(null);
   const [pages, setPages] = useState([]);
   const [funnelStage, setFunnelStage] = useState("top");
+  const [selectedPage, setSelectedPage] = useState(null);
+  const [isOptimizing, setIsOptimizing] = useState(false);
 
   useEffect(() => {
     loadData();
@@ -119,6 +121,21 @@ Focus on pages that would be most relevant for answering customer questions and 
     return prompt.best_pages;
   };
 
+  const handleOptimize = async () => {
+    if (!selectedPage || !selectedPrompt) return;
+    setIsOptimizing(true);
+    
+    try {
+      // Optimization logic here
+      await new Promise(resolve => setTimeout(resolve, 2000));
+      // Navigate to results or show success
+    } catch (error) {
+      console.error("Error optimizing:", error);
+    } finally {
+      setIsOptimizing(false);
+    }
+  };
+
   if (isLoading) {
     return (
       <div className="min-h-screen bg-slate-950 flex items-center justify-center">
@@ -171,9 +188,9 @@ Focus on pages that would be most relevant for answering customer questions and 
           />
         </div>
 
-        <div className="grid lg:grid-cols-3 gap-6">
+        <div className="grid lg:grid-cols-2 gap-6">
           {/* Left Column - Prompts */}
-          <div className="lg:col-span-2">
+          <div>
 
             {/* Prompts Table */}
             <Card className="bg-slate-800/50 border-slate-700/50">
@@ -248,8 +265,12 @@ Focus on pages that would be most relevant for answering customer questions and 
                       {getMatchingPages(selectedPrompt).map((page, i) => (
                         <div 
                           key={i} 
-                          className="p-3 bg-slate-900/50 rounded-lg cursor-pointer hover:bg-slate-900 transition-colors border border-transparent hover:border-teal-500/30"
-                          onClick={() => navigate(createPageUrl("NewContent"))}
+                          className={`p-3 bg-slate-900/50 rounded-lg cursor-pointer transition-colors border ${
+                            selectedPage?.url === page.url
+                              ? "bg-slate-900 border-teal-500/50"
+                              : "border-transparent hover:border-teal-500/30 hover:bg-slate-900"
+                          }`}
+                          onClick={() => setSelectedPage(page)}
                         >
                           <div className="text-white font-medium text-sm mb-1">{page.title}</div>
                           <div className="text-slate-500 text-xs mb-2 truncate">{page.url}</div>
@@ -262,6 +283,25 @@ Focus on pages that would be most relevant for answering customer questions and 
                         </div>
                       ))}
                     </div>
+                    {selectedPage && (
+                      <Button 
+                        className="w-full bg-gradient-to-r from-teal-500 to-cyan-500 hover:from-teal-600 hover:to-cyan-600 mt-4"
+                        onClick={handleOptimize}
+                        disabled={isOptimizing}
+                      >
+                        {isOptimizing ? (
+                          <>
+                            <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                            Optimizing...
+                          </>
+                        ) : (
+                          <>
+                            <Zap className="w-4 h-4 mr-2" />
+                            Optimize Page
+                          </>
+                        )}
+                      </Button>
+                    )}
                   </>
                 ) : (
                   <div className="text-center py-8">
