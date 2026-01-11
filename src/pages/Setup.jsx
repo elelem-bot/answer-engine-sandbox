@@ -112,17 +112,35 @@ Be specific and accurate based on actual content found across all crawled pages.
     setIsGenerating(true);
     
     try {
-      // Create company first
-      const company = await base44.entities.Company.create({
-        name: formData.name,
-        website_url: formData.website_url,
-        product_name: formData.product_name,
-        top_competitors: formData.top_competitors.split(',').map(c => c.trim()),
-        primary_market: formData.region,
-        setup_complete: false
+      // Step 1: Crawl website comprehensively
+      const crawlResponse = await base44.integrations.Core.InvokeLLM({
+        prompt: `CRITICAL: Comprehensively crawl and index this entire website: ${formData.website_url}
+
+CRAWLING REQUIREMENTS:
+1. Start from homepage: ${formData.website_url}
+2. Follow internal links and visit UP TO 100 PAGES across the site
+3. Include key pages: /about, /products, /services, /blog, /pricing, /customers, /resources, etc.
+4. Extract ALL relevant content from each page visited
+
+For each page, extract:
+- Page content (text, descriptions, features, benefits)
+- Customer pain points mentioned
+- Use cases and examples
+- Product/service details
+
+Return a comprehensive summary of the website content that will be used to generate highly relevant customer prompts.`,
+        add_context_from_internet: true,
+        response_json_schema: {
+          type: "object",
+          properties: {
+            website_summary: { type: "string" },
+            pages_crawled: { type: "number" },
+            key_topics: { type: "array", items: { type: "string" } }
+          }
+        }
       });
 
-      // Extract keywords from CSV if provided
+      // Step 2: Extract keywords from CSV if provided
       let extractedKeywords = [];
       if (formData.keywords_file) {
         const keywordData = await base44.integrations.Core.ExtractDataFromUploadedFile({
@@ -142,11 +160,12 @@ Be specific and accurate based on actual content found across all crawled pages.
         }
       }
 
-      // Generate prompts using LLM
+      // Step 3: Generate prompts using comprehensive website data
       const promptsResponse = await base44.integrations.Core.InvokeLLM({
         prompt: `You are an expert at understanding customer intent and how they search for solutions using AI Answer Engines.
 
-Given the following information about a company and their product, generate 10 compelling questions that their Ideal Customer Profile (ICP) would likely ask an AI Answer Engine when researching solutions.
+COMPREHENSIVE WEBSITE ANALYSIS:
+${crawlResponse.website_summary}
 
 COMPANY INFORMATION:
 - Company: ${formData.name}
@@ -155,30 +174,33 @@ COMPANY INFORMATION:
 - Main Competitors: ${formData.top_competitors}
 - ICP Description: ${formData.icp_description}
 - Region: ${formData.region}
+- Pages Crawled: ${crawlResponse.pages_crawled}
+- Key Topics: ${crawlResponse.key_topics.join(', ')}
 ${extractedKeywords.length > 0 ? `- SEO Keywords: ${extractedKeywords.join(', ')}` : ''}
 
 INSTRUCTIONS:
-1. Create 10 questions that the ICP would naturally ask an AI Answer Engine (like ChatGPT, Perplexity, Gemini)
-2. Questions should be specific, practical, and reflect real buyer intent
-3. Categorize each question by funnel stage:
-   - "top": Awareness/Problem Recognition (e.g., "What are the best tools for X?")
-   - "middle": Consideration/Evaluation (e.g., "How does Product A compare to Product B?")
-   - "bottom": Decision/Purchase Intent (e.g., "Is Product X right for companies like mine?")
-4. Questions should sound natural and conversational, as someone would ask an AI
-5. Ensure questions align with the ICP's role, industry, and needs
+Generate 10 compelling questions that the ICP would naturally ask an AI Answer Engine when researching solutions.
 
-Return the prompts in JSON format with the following structure:
+1. Use the comprehensive website content to create highly relevant, specific questions
+2. Questions should reflect real buyer intent and align with what the company actually offers
+3. Categorize each question by funnel stage:
+   - "top": Awareness/Problem Recognition (3-4 prompts)
+   - "middle": Consideration/Evaluation (3-4 prompts)
+   - "bottom": Decision/Purchase Intent (2-3 prompts)
+4. Questions should sound natural and conversational
+5. Ensure questions align with the ICP's role, industry, and specific needs
+
+Return JSON format:
 {
   "prompts": [
     {
       "prompt": "The actual question",
       "funnel_stage": "top/middle/bottom",
       "keywords": ["relevant", "keywords"],
-      "reasoning": "Brief explanation of why this question matters to the ICP"
+      "reasoning": "Why this question matters to the ICP"
     }
   ]
 }`,
-        add_context_from_internet: true,
         response_json_schema: {
           type: "object",
           properties: {
@@ -198,15 +220,18 @@ Return the prompts in JSON format with the following structure:
         }
       });
 
-      // Store prompts for approval
-      const generatedPrompts = promptsResponse.prompts || [];
-      
-      // Update company with generated prompts
-      await base44.entities.Company.update(company.id, {
-        buyer_prompts: generatedPrompts
+      // Step 4: Create company record
+      const company = await base44.entities.Company.create({
+        name: formData.name,
+        website_url: formData.website_url,
+        product_name: formData.product_name,
+        top_competitors: formData.top_competitors.split(',').map(c => c.trim()),
+        primary_market: formData.region,
+        setup_complete: false,
+        buyer_prompts: promptsResponse.prompts || []
       });
 
-      // Navigate to approval page
+      // Step 5: Navigate to approval page
       navigate(createPageUrl(`Approvals?companyId=${company.id}`));
     } catch (error) {
       console.error("Error generating prompts:", error);
