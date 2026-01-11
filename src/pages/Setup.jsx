@@ -250,7 +250,7 @@ Return the prompts in JSON format with the following structure:
               <CardContent className="space-y-6">
                 <div className="grid md:grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label className="text-slate-300">Company Name *</Label>
+                    <Label className="text-slate-300">Company/Project Name *</Label>
                     <Input
                       value={formData.name}
                       onChange={(e) => handleChange("name", e.target.value)}
