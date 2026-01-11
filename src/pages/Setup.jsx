@@ -242,8 +242,26 @@ Return JSON format:
 
       console.log("Company created:", company);
       
-      // Step 5: Navigate to prompts page for review
-      console.log("Step 5: Navigating to prompts...");
+      // Step 5: Create PromptAnalysis records for each generated prompt
+      console.log("Step 5: Creating prompt analysis records...");
+      const promptAnalysisRecords = (promptsResponse.prompts || []).map(p => ({
+        company_id: company.id,
+        prompt: p.prompt,
+        view_type: "prospect",
+        funnel_stage: p.funnel_stage,
+        keywords: p.keywords || [],
+        search_signal_score: 0,
+        elelem_score: 0,
+        citations_count: 0,
+        brand_mentions_count: 0,
+        is_optimized: false
+      }));
+      
+      await base44.entities.PromptAnalysis.bulkCreate(promptAnalysisRecords);
+      console.log("Prompt analysis records created");
+      
+      // Step 6: Navigate to prompts page for review
+      console.log("Step 6: Navigating to prompts...");
       navigate(createPageUrl("Prompts"));
     } catch (error) {
       console.error("Error generating prompts:", error);
