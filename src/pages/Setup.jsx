@@ -52,18 +52,25 @@ export default function Setup() {
     
     try {
       const analysis = await base44.integrations.Core.InvokeLLM({
-        prompt: `Analyze this company and website to extract information for AI visibility optimization.
+        prompt: `CRITICAL: Comprehensively crawl and analyze this website to extract detailed information.
 
 Company: ${companyName}
 Website: ${websiteUrl}
 
-Research the company and extract:
-1. product_name: The main product/service name (e.g., "Salesforce CRM", "Gmail", "PlayStation")
-2. top_competitors: List 3-5 main commercial competitors (comma-separated)
-3. icp_description: Describe their ideal customer profile (e.g., "Content Marketers at Enterprise Insurance companies")
-4. region: Primary geographic market (e.g., "United States", "Europe", "Global")
+CRAWLING INSTRUCTIONS:
+1. Start from the homepage: ${websiteUrl}
+2. Follow internal links and crawl UP TO 100 pages across the site
+3. Visit key pages like: /about, /products, /services, /pricing, /blog, /resources, /customers, etc.
+4. Extract comprehensive information from ALL crawled pages
 
-Be specific and accurate based on actual company information.`,
+Based on the content from all crawled pages, extract:
+
+1. product_name: The main product/service name (e.g., "Salesforce CRM", "Gmail", "PlayStation")
+2. top_competitors: List 3-5 main commercial competitors (comma-separated, based on industry context and content)
+3. icp_description: Describe their ideal customer profile based on case studies, testimonials, and content (e.g., "Content Marketers at Enterprise Insurance companies")
+4. region: Primary geographic market(s) mentioned across the site (e.g., "United States", "Europe", "Global")
+
+Be specific and accurate based on actual content found across all crawled pages.`,
         add_context_from_internet: true,
         response_json_schema: {
           type: "object",
