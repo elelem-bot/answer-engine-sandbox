@@ -230,7 +230,7 @@ Return the prompts in JSON format with the following structure:
           transition={{ duration: 0.5 }}
         >
           <div className="text-center mb-10">
-            <h1 className="text-3xl font-bold text-white mb-3">Let's Generate Your Customer Questions</h1>
+            <h1 className="text-3xl font-bold text-white mb-3">Let's Generate Your Prompts & Dashboard</h1>
             <p className="text-slate-400 max-w-2xl mx-auto">
               Tell us about your product and ideal customers. We'll generate the most compelling questions they ask AI Answer Engines.
             </p>
