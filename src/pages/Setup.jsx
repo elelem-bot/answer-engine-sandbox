@@ -18,6 +18,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 export default function Setup() {
   const navigate = useNavigate();
   const [isGenerating, setIsGenerating] = useState(false);
+  const [isAutoFilling, setIsAutoFilling] = useState(false);
   
   const [formData, setFormData] = useState({
     name: "",
@@ -31,8 +32,62 @@ export default function Setup() {
     chatbot_file: null
   });
 
-  const handleChange = (field, value) => {
+  const handleChange = async (field, value) => {
     setFormData(prev => ({ ...prev, [field]: value }));
+    
+    // Auto-fill when both company name and URL are present
+    if ((field === 'name' || field === 'website_url') && formData.name && formData.website_url) {
+      const name = field === 'name' ? value : formData.name;
+      const url = field === 'website_url' ? value : formData.website_url;
+      
+      if (name && url && url.startsWith('http')) {
+        await autoFillForm(name, url);
+      }
+    }
+  };
+
+  const autoFillForm = async (companyName, websiteUrl) => {
+    if (isAutoFilling) return;
+    setIsAutoFilling(true);
+    
+    try {
+      const analysis = await base44.integrations.Core.InvokeLLM({
+        prompt: `Analyze this company and website to extract information for AI visibility optimization.
+
+Company: ${companyName}
+Website: ${websiteUrl}
+
+Research the company and extract:
+1. product_name: The main product/service name (e.g., "Salesforce CRM", "Gmail", "PlayStation")
+2. top_competitors: List 3-5 main commercial competitors (comma-separated)
+3. icp_description: Describe their ideal customer profile (e.g., "Content Marketers at Enterprise Insurance companies")
+4. region: Primary geographic market (e.g., "United States", "Europe", "Global")
+
+Be specific and accurate based on actual company information.`,
+        add_context_from_internet: true,
+        response_json_schema: {
+          type: "object",
+          properties: {
+            product_name: { type: "string" },
+            top_competitors: { type: "string" },
+            icp_description: { type: "string" },
+            region: { type: "string" }
+          }
+        }
+      });
+
+      setFormData(prev => ({
+        ...prev,
+        product_name: analysis.product_name || prev.product_name,
+        top_competitors: analysis.top_competitors || prev.top_competitors,
+        icp_description: analysis.icp_description || prev.icp_description,
+        region: analysis.region || prev.region
+      }));
+    } catch (error) {
+      console.error("Error auto-filling form:", error);
+    } finally {
+      setIsAutoFilling(false);
+    }
   };
 
   const handleFileUpload = async (field, file) => {
@@ -179,6 +234,12 @@ Return the prompts in JSON format with the following structure:
             <p className="text-slate-400 max-w-2xl mx-auto">
               Tell us about your product and ideal customers. We'll generate the most compelling questions they ask AI Answer Engines.
             </p>
+            {isAutoFilling && (
+              <div className="mt-4 flex items-center justify-center gap-2 text-teal-400">
+                <Loader2 className="w-4 h-4 animate-spin" />
+                <span>Analyzing your company and pre-filling the form...</span>
+              </div>
+            )}
           </div>
 
           <form onSubmit={handleSubmit}>
