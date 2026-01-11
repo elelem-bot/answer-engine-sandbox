@@ -109,9 +109,11 @@ Be specific and accurate based on actual content found across all crawled pages.
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    console.log("Form submitted, starting generation...");
     setIsGenerating(true);
     
     try {
+      console.log("Step 1: Crawling website...");
       // Step 1: Crawl website comprehensively
       const crawlResponse = await base44.integrations.Core.InvokeLLM({
         prompt: `CRITICAL: Comprehensively crawl and index this entire website: ${formData.website_url}
@@ -140,7 +142,10 @@ Return a comprehensive summary of the website content that will be used to gener
         }
       });
 
+      console.log("Crawl complete:", crawlResponse);
+      
       // Step 2: Extract keywords from CSV if provided
+      console.log("Step 2: Extracting keywords...");
       let extractedKeywords = [];
       if (formData.keywords_file) {
         const keywordData = await base44.integrations.Core.ExtractDataFromUploadedFile({
@@ -161,6 +166,7 @@ Return a comprehensive summary of the website content that will be used to gener
       }
 
       // Step 3: Generate prompts using comprehensive website data
+      console.log("Step 3: Generating prompts...");
       const promptsResponse = await base44.integrations.Core.InvokeLLM({
         prompt: `You are an expert at understanding customer intent and how they search for solutions using AI Answer Engines.
 
@@ -220,7 +226,10 @@ Return JSON format:
         }
       });
 
+      console.log("Prompts generated:", promptsResponse);
+      
       // Step 4: Create company record
+      console.log("Step 4: Creating company record...");
       const company = await base44.entities.Company.create({
         name: formData.name,
         website_url: formData.website_url,
@@ -231,10 +240,14 @@ Return JSON format:
         buyer_prompts: promptsResponse.prompts || []
       });
 
+      console.log("Company created:", company);
+      
       // Step 5: Navigate to approval page
+      console.log("Step 5: Navigating to approvals...");
       navigate(createPageUrl(`Approvals?companyId=${company.id}`));
     } catch (error) {
       console.error("Error generating prompts:", error);
+      alert(`Error: ${error.message || 'Failed to generate prompts. Please try again.'}`);
       setIsGenerating(false);
     }
   };
