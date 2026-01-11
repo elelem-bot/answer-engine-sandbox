@@ -342,10 +342,10 @@ Return the prompts in JSON format with the following structure:
                       type="file"
                       accept=".csv"
                       onChange={(e) => handleFileUpload("keywords_file", e.target.files[0])}
-                      className="bg-slate-900 border-slate-700 text-white file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:bg-teal-500 file:text-white file:cursor-pointer hover:file:bg-teal-600"
+                      className="bg-slate-900 border-slate-700 text-white h-auto py-2.5 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:bg-teal-500 file:text-white file:font-medium file:cursor-pointer hover:file:bg-teal-600 file:transition-colors"
                     />
                     {formData.keywords_file && (
-                      <FileUp className="w-5 h-5 text-teal-400" />
+                      <FileUp className="w-5 h-5 text-teal-400 flex-shrink-0" />
                     )}
                   </div>
                   <p className="text-slate-500 text-sm">Upload your SEO keywords for better prompt generation</p>
@@ -358,10 +358,10 @@ Return the prompts in JSON format with the following structure:
                       type="file"
                       accept=".pdf,.txt,.csv"
                       onChange={(e) => handleFileUpload("sales_logs_file", e.target.files[0])}
-                      className="bg-slate-900 border-slate-700 text-white file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:bg-teal-500 file:text-white file:cursor-pointer hover:file:bg-teal-600"
+                      className="bg-slate-900 border-slate-700 text-white h-auto py-2.5 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:bg-teal-500 file:text-white file:font-medium file:cursor-pointer hover:file:bg-teal-600 file:transition-colors"
                     />
                     {formData.sales_logs_file && (
-                      <FileUp className="w-5 h-5 text-teal-400" />
+                      <FileUp className="w-5 h-5 text-teal-400 flex-shrink-0" />
                     )}
                   </div>
                   <p className="text-slate-500 text-sm">Help us understand real customer questions</p>
@@ -374,10 +374,10 @@ Return the prompts in JSON format with the following structure:
                       type="file"
                       accept=".pdf,.txt,.csv"
                       onChange={(e) => handleFileUpload("chatbot_file", e.target.files[0])}
-                      className="bg-slate-900 border-slate-700 text-white file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:bg-teal-500 file:text-white file:cursor-pointer hover:file:bg-teal-600"
+                      className="bg-slate-900 border-slate-700 text-white h-auto py-2.5 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:bg-teal-500 file:text-white file:font-medium file:cursor-pointer hover:file:bg-teal-600 file:transition-colors"
                     />
                     {formData.chatbot_file && (
-                      <FileUp className="w-5 h-5 text-teal-400" />
+                      <FileUp className="w-5 h-5 text-teal-400 flex-shrink-0" />
                     )}
                   </div>
                   <p className="text-slate-500 text-sm">Upload chatbot logs to improve question accuracy</p>
