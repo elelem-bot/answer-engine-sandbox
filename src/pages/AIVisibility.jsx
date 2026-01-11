@@ -10,7 +10,8 @@ import {
   TrendingUp,
   Loader2,
   RefreshCw,
-  Filter
+  Filter,
+  Settings
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -270,6 +271,14 @@ After the response, provide analysis in JSON format:
               >
                 <RefreshCw className={`w-4 h-4 mr-2 ${isAnalyzing ? "animate-spin" : ""}`} />
                 Refresh
+              </Button>
+              <Button 
+                variant="outline" 
+                size="icon"
+                className="border-slate-700 text-slate-300"
+                onClick={() => navigate(createPageUrl("Setup"))}
+              >
+                <Settings className="w-4 h-4" />
               </Button>
             </div>
           </div>
