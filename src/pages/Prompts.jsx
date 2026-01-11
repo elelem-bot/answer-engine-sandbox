@@ -26,7 +26,6 @@ export default function Prompts() {
   const [prompts, setPrompts] = useState([]);
   const [filteredPrompts, setFilteredPrompts] = useState([]);
   const [company, setCompany] = useState(null);
-  const [viewType, setViewType] = useState("prospect");
   const [funnelStage, setFunnelStage] = useState("all");
   const [searchTerm, setSearchTerm] = useState("");
 
@@ -38,11 +37,11 @@ export default function Prompts() {
     if (prompts.length > 0) {
       filterPrompts();
     }
-  }, [viewType, funnelStage, searchTerm]);
+  }, [funnelStage, searchTerm]);
 
   const loadData = async () => {
     try {
-      const companies = await base44.entities.Company.filter({ setup_complete: true });
+      const companies = await base44.entities.Company.list();
       if (companies.length > 0) {
         setCompany(companies[0]);
         const promptsData = await base44.entities.PromptAnalysis.filter({ company_id: companies[0].id });
@@ -58,9 +57,6 @@ export default function Prompts() {
 
   const filterPrompts = () => {
     let filtered = [...prompts];
-
-    // Filter by view type
-    filtered = filtered.filter(p => p.view_type === viewType);
 
     // Filter by funnel stage
     if (funnelStage !== "all") {
@@ -91,49 +87,13 @@ export default function Prompts() {
   return (
     <div className="min-h-screen bg-slate-950 p-6 lg:p-8">
       <div className="max-w-7xl mx-auto">
-        {/* View Type Submenu */}
-        <div className="mb-6 border-b border-slate-800">
-          <div className="flex gap-1">
-            <button
-              onClick={() => setViewType("prospect")}
-              className={`px-6 py-3 text-sm font-medium transition-all ${
-                viewType === "prospect"
-                  ? "text-teal-400 border-b-2 border-teal-400"
-                  : "text-slate-400 hover:text-slate-300"
-              }`}
-            >
-              Prospect
-            </button>
-            <button
-              onClick={() => setViewType("customer")}
-              className={`px-6 py-3 text-sm font-medium transition-all ${
-                viewType === "customer"
-                  ? "text-teal-400 border-b-2 border-teal-400"
-                  : "text-slate-400 hover:text-slate-300"
-              }`}
-            >
-              Customer
-            </button>
-            <button
-              onClick={() => setViewType("agent")}
-              className={`px-6 py-3 text-sm font-medium transition-all ${
-                viewType === "agent"
-                  ? "text-teal-400 border-b-2 border-teal-400"
-                  : "text-slate-400 hover:text-slate-300"
-              }`}
-            >
-              Agent
-            </button>
-          </div>
-        </div>
-
         {/* Header */}
         <div className="mb-8">
           <h1 className="text-2xl font-bold text-white mb-2">
-            {viewType.charAt(0).toUpperCase() + viewType.slice(1)} Prompts
+            Generated Prompts
           </h1>
           <p className="text-slate-400">
-            View and manage all prompts for {viewType} visibility tracking
+            Review and manage all generated prompts
           </p>
         </div>
 
