@@ -20,10 +20,8 @@ export default function Setup() {
   const [isGenerating, setIsGenerating] = useState(false);
   
   const [formData, setFormData] = useState({
-    contact_name: "",
     name: "",
     website_url: "",
-    email: "",
     product_name: "",
     top_competitors: "",
     icp_description: "",
@@ -55,8 +53,6 @@ export default function Setup() {
       // Create company first
       const company = await base44.entities.Company.create({
         name: formData.name,
-        contact_name: formData.contact_name,
-        email: formData.email,
         website_url: formData.website_url,
         product_name: formData.product_name,
         top_competitors: formData.top_competitors.split(',').map(c => c.trim()),
@@ -193,17 +189,6 @@ Return the prompts in JSON format with the following structure:
               <CardContent className="space-y-6">
                 <div className="grid md:grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label className="text-slate-300">Name (First and Last) *</Label>
-                    <Input
-                      value={formData.contact_name}
-                      onChange={(e) => handleChange("contact_name", e.target.value)}
-                      className="bg-slate-900 border-slate-700 text-white"
-                      placeholder="John Smith"
-                      required
-                    />
-                  </div>
-                  
-                  <div className="space-y-2">
                     <Label className="text-slate-300">Company Name *</Label>
                     <Input
                       value={formData.name}
@@ -213,9 +198,7 @@ Return the prompts in JSON format with the following structure:
                       required
                     />
                   </div>
-                </div>
-
-                <div className="grid md:grid-cols-2 gap-4">
+                  
                   <div className="space-y-2">
                     <Label className="text-slate-300">Website URL *</Label>
                     <Input
@@ -224,18 +207,6 @@ Return the prompts in JSON format with the following structure:
                       onChange={(e) => handleChange("website_url", e.target.value)}
                       className="bg-slate-900 border-slate-700 text-white"
                       placeholder="https://example.com"
-                      required
-                    />
-                  </div>
-                  
-                  <div className="space-y-2">
-                    <Label className="text-slate-300">Email *</Label>
-                    <Input
-                      type="email"
-                      value={formData.email}
-                      onChange={(e) => handleChange("email", e.target.value)}
-                      className="bg-slate-900 border-slate-700 text-white"
-                      placeholder="john@acme.com"
                       required
                     />
                   </div>
