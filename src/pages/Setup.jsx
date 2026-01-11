@@ -35,14 +35,10 @@ export default function Setup() {
   const handleChange = async (field, value) => {
     setFormData(prev => ({ ...prev, [field]: value }));
     
-    // Auto-fill when both company name and URL are present
-    if ((field === 'name' || field === 'website_url') && formData.name && formData.website_url) {
-      const name = field === 'name' ? value : formData.name;
-      const url = field === 'website_url' ? value : formData.website_url;
-      
-      if (name && url && url.startsWith('http')) {
-        await autoFillForm(name, url);
-      }
+    // Auto-fill when URL is entered
+    if (field === 'website_url' && value && value.startsWith('http')) {
+      const name = formData.name || value.replace(/^https?:\/\/(www\.)?/, '').split('/')[0].split('.')[0];
+      await autoFillForm(name, value);
     }
   };
 
