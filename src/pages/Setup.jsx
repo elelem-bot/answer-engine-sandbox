@@ -242,9 +242,9 @@ Return JSON format:
 
       console.log("Company created:", company);
       
-      // Step 5: Navigate to approval page
-      console.log("Step 5: Navigating to approvals...");
-      navigate(createPageUrl(`Approvals?companyId=${company.id}`));
+      // Step 5: Navigate to prompts page for review
+      console.log("Step 5: Navigating to prompts...");
+      navigate(createPageUrl("Prompts"));
     } catch (error) {
       console.error("Error generating prompts:", error);
       alert(`Error: ${error.message || 'Failed to generate prompts. Please try again.'}`);
