@@ -459,7 +459,7 @@ After the response, provide analysis in JSON format:
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              {prompts.filter(p => p.funnel_stage === funnelStage && p.gemini_response).map((prompt, i) => (
+              {prompts.filter(p => p.gemini_response).map((prompt, i) => (
                 <div key={i} className="border border-slate-700/50 rounded-lg p-4 bg-slate-900/50">
                   <div className="flex items-start justify-between gap-4 mb-3">
                     <div className="flex-1">
@@ -529,7 +529,7 @@ After the response, provide analysis in JSON format:
                 </div>
               ))}
 
-              {prompts.filter(p => p.funnel_stage === funnelStage && p.gemini_response).length === 0 && (
+              {prompts.filter(p => p.gemini_response).length === 0 && (
                 <p className="text-slate-400 text-center py-8">No responses available for this funnel stage yet.</p>
               )}
             </div>
