@@ -7,7 +7,8 @@ import {
   Loader2,
   Search,
   Filter,
-  Settings
+  Settings,
+  Plus
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -20,6 +21,14 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "@/components/ui/dialog";
+import { Textarea } from "@/components/ui/textarea";
 
 export default function Prompts() {
   const navigate = useNavigate();
@@ -29,6 +38,9 @@ export default function Prompts() {
   const [company, setCompany] = useState(null);
   const [funnelStage, setFunnelStage] = useState("all");
   const [searchTerm, setSearchTerm] = useState("");
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [newPromptText, setNewPromptText] = useState("");
+  const [isProcessing, setIsProcessing] = useState(false);
 
   useEffect(() => {
     loadData();
@@ -74,6 +86,63 @@ export default function Prompts() {
     setFilteredPrompts(filtered);
   };
 
+  const handleAddPrompt = async () => {
+    if (!newPromptText.trim() || !company) return;
+    
+    setIsProcessing(true);
+    try {
+      // Use LLM to analyze the prompt
+      const analysis = await base44.integrations.Core.InvokeLLM({
+        prompt: `Analyze this buyer prompt and extract metadata:
+
+Prompt: "${newPromptText}"
+
+Extract:
+1. funnel_stage: Determine if this is "top" (awareness), "middle" (consideration), or "bottom" (decision) of funnel
+2. keywords: Extract 3-5 relevant keywords from the prompt
+3. topics: Identify 2-4 main topics discussed
+
+Consider the buyer journey and intent level when determining funnel stage.`,
+        response_json_schema: {
+          type: "object",
+          properties: {
+            funnel_stage: { type: "string", enum: ["top", "middle", "bottom"] },
+            keywords: { type: "array", items: { type: "string" } },
+            topics: { type: "array", items: { type: "string" } }
+          }
+        }
+      });
+
+      // Create the prompt analysis record
+      const newPrompt = await base44.entities.PromptAnalysis.create({
+        company_id: company.id,
+        prompt: newPromptText.trim(),
+        view_type: "prospect",
+        funnel_stage: analysis.funnel_stage,
+        keywords: analysis.keywords || [],
+        topics: analysis.topics || [],
+        search_signal_score: 0,
+        elelem_score: 0,
+        citations_count: 0,
+        brand_mentions_count: 0,
+        is_optimized: false
+      });
+
+      // Update local state
+      setPrompts([newPrompt, ...prompts]);
+      setFilteredPrompts([newPrompt, ...filteredPrompts]);
+      
+      // Reset form
+      setNewPromptText("");
+      setIsDialogOpen(false);
+    } catch (error) {
+      console.error("Error adding prompt:", error);
+      alert("Failed to add prompt. Please try again.");
+    } finally {
+      setIsProcessing(false);
+    }
+  };
+
   if (isLoading) {
     return (
       <div className="min-h-screen bg-slate-950 flex items-center justify-center">
@@ -98,14 +167,23 @@ export default function Prompts() {
               Review and manage all generated prompts
             </p>
           </div>
-          <Button 
-            variant="outline" 
-            size="icon"
-            className="border-slate-700 text-slate-300 self-start"
-            onClick={() => navigate(createPageUrl("Setup"))}
-          >
-            <Settings className="w-4 h-4" />
-          </Button>
+          <div className="flex gap-2">
+            <Button 
+              className="bg-gradient-to-r from-teal-500 to-cyan-500 hover:from-teal-600 hover:to-cyan-600 text-white"
+              onClick={() => setIsDialogOpen(true)}
+            >
+              <Plus className="w-4 h-4 mr-2" />
+              Add Prompt
+            </Button>
+            <Button 
+              variant="outline" 
+              size="icon"
+              className="border-slate-700 text-slate-300"
+              onClick={() => navigate(createPageUrl("Setup"))}
+            >
+              <Settings className="w-4 h-4" />
+            </Button>
+          </div>
         </div>
 
         {/* Filters */}
@@ -212,6 +290,54 @@ export default function Prompts() {
             </div>
           </CardContent>
         </Card>
+
+        {/* Add Prompt Dialog */}
+        <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+          <DialogContent className="bg-slate-800 border-slate-700 text-white">
+            <DialogHeader>
+              <DialogTitle className="text-white">Add Custom Prompt</DialogTitle>
+            </DialogHeader>
+            <div className="space-y-4">
+              <div>
+                <p className="text-slate-400 text-sm mb-3">
+                  Enter a buyer question or prompt. We'll automatically analyze it to determine the funnel stage, keywords, and topics.
+                </p>
+                <Textarea
+                  placeholder="e.g., What are the best CRM tools for small businesses?"
+                  value={newPromptText}
+                  onChange={(e) => setNewPromptText(e.target.value)}
+                  className="bg-slate-900 border-slate-700 text-white min-h-[120px]"
+                />
+              </div>
+            </div>
+            <DialogFooter>
+              <Button
+                variant="outline"
+                onClick={() => {
+                  setIsDialogOpen(false);
+                  setNewPromptText("");
+                }}
+                className="border-slate-700 text-slate-300"
+              >
+                Cancel
+              </Button>
+              <Button
+                onClick={handleAddPrompt}
+                disabled={!newPromptText.trim() || isProcessing}
+                className="bg-gradient-to-r from-teal-500 to-cyan-500 hover:from-teal-600 hover:to-cyan-600 text-white"
+              >
+                {isProcessing ? (
+                  <>
+                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                    Analyzing...
+                  </>
+                ) : (
+                  "Add Prompt"
+                )}
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
       </div>
     </div>
   );
