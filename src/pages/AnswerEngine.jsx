@@ -32,6 +32,20 @@ export default function AnswerEngine() {
   const [crawlProgress, setCrawlProgress] = useState("");
   const [isInputCollapsed, setIsInputCollapsed] = useState(false);
 
+  React.useEffect(() => {
+    const loadCompanyUrl = async () => {
+      try {
+        const companies = await base44.entities.Company.list();
+        if (companies.length > 0 && companies[0].website_url) {
+          setWebsiteUrl(companies[0].website_url);
+        }
+      } catch (error) {
+        console.error("Error loading company URL:", error);
+      }
+    };
+    loadCompanyUrl();
+  }, []);
+
   const handleLogoUpload = async (e) => {
     const file = e.target.files[0];
     if (file) {
