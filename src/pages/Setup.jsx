@@ -189,8 +189,13 @@ Generate 10 compelling questions that the ICP would naturally ask an AI Answer E
    - "top": Awareness/Problem Recognition (3-4 prompts)
    - "middle": Consideration/Evaluation (3-4 prompts)
    - "bottom": Decision/Purchase Intent (2-3 prompts)
-4. Questions should sound natural and conversational
-5. Ensure questions align with the ICP's role, industry, and specific needs
+4. CRITICAL - Branding Rules:
+   - Generate EXACTLY 3 BRANDED prompts that include the company name "${formData.name}" or product name "${formData.product_name}"
+   - Generate EXACTLY 7 UNBRANDED prompts that DO NOT mention the company or product name at all
+   - Branded prompts should be bottom or middle funnel (decision/comparison stage)
+   - Unbranded prompts should focus on problems, solutions, and general category questions
+5. Questions should sound natural and conversational
+6. Ensure questions align with the ICP's role, industry, and specific needs
 
 Return JSON format:
 {
@@ -198,6 +203,7 @@ Return JSON format:
     {
       "prompt": "The actual question",
       "funnel_stage": "top/middle/bottom",
+      "is_branded": true/false,
       "keywords": ["relevant", "keywords"],
       "reasoning": "Why this question matters to the ICP"
     }
