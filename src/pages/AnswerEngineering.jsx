@@ -34,6 +34,7 @@ export default function AnswerEngineering() {
   const [funnelStage, setFunnelStage] = useState("top");
   const [selectedPage, setSelectedPage] = useState(null);
   const [isOptimizing, setIsOptimizing] = useState(false);
+  const [optimizationResult, setOptimizationResult] = useState(null);
 
   useEffect(() => {
     loadData();
@@ -126,11 +127,79 @@ Focus on pages that would be most relevant for answering customer questions and 
     setIsOptimizing(true);
     
     try {
-      // Optimization logic here
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      // Navigate to results or show success
+      // Step 1: Fetch original page content
+      const originalContent = await base44.integrations.Core.InvokeLLM({
+        prompt: `Extract the main content from this webpage: ${selectedPage.url}
+        
+Return the page content including headings, body text, and key sections.`,
+        add_context_from_internet: true,
+        response_json_schema: {
+          type: "object",
+          properties: {
+            content: { type: "string" }
+          }
+        }
+      });
+
+      // Step 2: Generate optimized content
+      const optimization = await base44.integrations.Core.InvokeLLM({
+        prompt: `You are an expert at optimizing content for AI search engines.
+
+ORIGINAL PAGE CONTENT:
+${originalContent.content}
+
+TARGET PROMPT:
+"${selectedPrompt.prompt}"
+
+COMPANY CONTEXT:
+- Company: ${company.name}
+- Product: ${company.product_name}
+
+TASK:
+Rewrite the content to better answer the target prompt while maintaining the page's structure and purpose.
+
+Return:
+1. optimized_content: The improved version
+2. changes: Array of specific changes made, each with:
+   - section: What part was changed (e.g., "Introduction", "H1 Heading", "Product Description")
+   - before: Original text snippet
+   - after: New text snippet
+   - reason: Why this change improves AI search visibility
+
+Focus on:
+- Directly addressing the prompt's question/intent
+- Using clear, semantic language
+- Adding specific details and examples
+- Improving structure and formatting
+- Natural keyword integration`,
+        response_json_schema: {
+          type: "object",
+          properties: {
+            optimized_content: { type: "string" },
+            changes: {
+              type: "array",
+              items: {
+                type: "object",
+                properties: {
+                  section: { type: "string" },
+                  before: { type: "string" },
+                  after: { type: "string" },
+                  reason: { type: "string" }
+                }
+              }
+            }
+          }
+        }
+      });
+
+      setOptimizationResult({
+        original: originalContent.content,
+        optimized: optimization.optimized_content,
+        changes: optimization.changes
+      });
     } catch (error) {
       console.error("Error optimizing:", error);
+      alert("Failed to optimize page. Please try again.");
     } finally {
       setIsOptimizing(false);
     }
@@ -188,9 +257,9 @@ Focus on pages that would be most relevant for answering customer questions and 
           />
         </div>
 
-        <div className="grid lg:grid-cols-2 gap-6">
+        <div className={`grid gap-6 ${optimizationResult ? 'lg:grid-cols-1' : 'lg:grid-cols-2'}`}>
           {/* Left Column - Prompts */}
-          <div>
+          {!optimizationResult && <div>
 
             {/* Prompts Table */}
             <Card className="bg-slate-800/50 border-slate-700/50">
@@ -246,10 +315,10 @@ Focus on pages that would be most relevant for answering customer questions and 
                 </div>
               </CardContent>
             </Card>
-          </div>
+          </div>}
 
           {/* Right Column - Best Matching Pages */}
-          <div>
+          {!optimizationResult && <div>
             <Card className="bg-slate-800/50 border-slate-700/50">
               <CardHeader>
                 <CardTitle className="text-white flex items-center gap-2">
@@ -311,7 +380,96 @@ Focus on pages that would be most relevant for answering customer questions and 
                 )}
               </CardContent>
             </Card>
-          </div>
+          </div>}
+
+          {/* Optimization Results */}
+          {optimizationResult && (
+            <div className="space-y-6">
+              <div className="flex items-center justify-between">
+                <Button
+                  variant="ghost"
+                  onClick={() => setOptimizationResult(null)}
+                  className="text-slate-400 hover:text-white"
+                >
+                  <ArrowLeft className="w-4 h-4 mr-2" />
+                  Back to Prompts
+                </Button>
+              </div>
+
+              {/* Changes Summary */}
+              <Card className="bg-slate-800/50 border-slate-700/50">
+                <CardHeader>
+                  <CardTitle className="text-white flex items-center gap-2">
+                    <CheckCircle className="w-5 h-5 text-teal-400" />
+                    Optimization Complete
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-slate-400 mb-4">
+                    Optimized <span className="text-white font-medium">{selectedPage?.title}</span> to better answer: 
+                    <span className="text-teal-400 italic"> "{selectedPrompt?.prompt}"</span>
+                  </p>
+                  <div className="space-y-3">
+                    {optimizationResult.changes.map((change, i) => (
+                      <div key={i} className="p-4 bg-slate-900/50 rounded-lg border border-slate-700/50">
+                        <div className="flex items-start gap-3 mb-3">
+                          <Badge className="bg-teal-500/20 text-teal-400 border-teal-500/30">
+                            {change.section}
+                          </Badge>
+                        </div>
+                        <div className="space-y-2 text-sm">
+                          <div className="p-2 bg-red-500/10 border border-red-500/30 rounded">
+                            <div className="text-red-400 text-xs mb-1">Before:</div>
+                            <div className="text-slate-300">{change.before}</div>
+                          </div>
+                          <div className="p-2 bg-green-500/10 border border-green-500/30 rounded">
+                            <div className="text-green-400 text-xs mb-1">After:</div>
+                            <div className="text-slate-300">{change.after}</div>
+                          </div>
+                          <div className="text-slate-400 text-xs mt-2 flex items-start gap-2">
+                            <Target className="w-3 h-3 text-teal-400 mt-0.5 flex-shrink-0" />
+                            <span>{change.reason}</span>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Side by Side Comparison */}
+              <div className="grid lg:grid-cols-2 gap-6">
+                <Card className="bg-slate-800/50 border-slate-700/50">
+                  <CardHeader>
+                    <CardTitle className="text-white text-sm">Original Content</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="prose prose-invert prose-sm max-w-none">
+                      <pre className="text-slate-300 whitespace-pre-wrap text-xs bg-slate-900/50 p-4 rounded-lg max-h-[600px] overflow-y-auto">
+                        {optimizationResult.original}
+                      </pre>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                <Card className="bg-slate-800/50 border-teal-500/30">
+                  <CardHeader>
+                    <CardTitle className="text-white text-sm flex items-center gap-2">
+                      <Zap className="w-4 h-4 text-teal-400" />
+                      Optimized Content
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="prose prose-invert prose-sm max-w-none">
+                      <pre className="text-slate-300 whitespace-pre-wrap text-xs bg-slate-900/50 p-4 rounded-lg max-h-[600px] overflow-y-auto">
+                        {optimizationResult.optimized}
+                      </pre>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </div>
