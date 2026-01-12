@@ -6,7 +6,8 @@ import { motion } from "framer-motion";
 import { 
   Loader2,
   Search,
-  Filter
+  Filter,
+  Settings
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
