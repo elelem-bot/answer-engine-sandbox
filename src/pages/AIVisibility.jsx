@@ -84,7 +84,7 @@ export default function AIVisibility() {
 
   const loadData = async () => {
     try {
-      const companies = await base44.entities.Company.filter({ setup_complete: true });
+      const companies = await base44.entities.Company.list();
       if (companies.length > 0) {
         setCompany(companies[0]);
         const promptsData = await base44.entities.PromptAnalysis.filter({ company_id: companies[0].id });
