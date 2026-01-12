@@ -178,7 +178,7 @@ Consider the buyer journey and intent level when determining funnel stage.`,
             <Button 
               variant="outline" 
               size="icon"
-              className="border-slate-700 text-slate-300"
+              className="border-slate-700 text-white"
               onClick={() => navigate(createPageUrl("Setup"))}
             >
               <Settings className="w-4 h-4" />
