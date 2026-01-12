@@ -111,7 +111,7 @@ export default function AIVisibility() {
     
     const updatedPrompts = [];
     
-    for (const prompt of promptsData.slice(0, 5)) {
+    for (const prompt of promptsData) {
       try {
         const response = await base44.integrations.Core.InvokeLLM({
           prompt: `You are simulating an AI search engine response. Answer this question from a user: "${prompt.prompt}"
@@ -266,7 +266,7 @@ After the response, provide analysis in JSON format:
               <Button 
                 variant="outline" 
                 className="border-slate-700 text-slate-300"
-                onClick={() => company && analyzePrompts(prompts, company)}
+                onClick={() => company && analyzePrompts(allPrompts, company)}
                 disabled={isAnalyzing}
               >
                 <RefreshCw className={`w-4 h-4 mr-2 ${isAnalyzing ? "animate-spin" : ""}`} />
