@@ -218,7 +218,7 @@ export default function Prompts() {
         </div>
 
         {/* Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
           <Card className="bg-slate-800/50 border-slate-700/50">
             <CardContent className="pt-6">
               <div className="text-slate-400 text-sm mb-1">Total Prompts</div>
@@ -230,6 +230,14 @@ export default function Prompts() {
               <div className="text-slate-400 text-sm mb-1">Top of Funnel</div>
               <div className="text-3xl font-bold text-white">
                 {filteredPrompts.filter(p => p.funnel_stage === "top").length}
+              </div>
+            </CardContent>
+          </Card>
+          <Card className="bg-slate-800/50 border-slate-700/50">
+            <CardContent className="pt-6">
+              <div className="text-slate-400 text-sm mb-1">Middle of Funnel</div>
+              <div className="text-3xl font-bold text-white">
+                {filteredPrompts.filter(p => p.funnel_stage === "middle").length}
               </div>
             </CardContent>
           </Card>
