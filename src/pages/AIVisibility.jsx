@@ -42,6 +42,9 @@ export default function AIVisibility() {
   const [funnelStage, setFunnelStage] = useState("top");
   const [promptType, setPromptType] = useState("branded");
   const [selectedPrompt, setSelectedPrompt] = useState(null);
+  const [theme, setTheme] = useState(() => {
+    return localStorage.getItem('elelem-theme') || 'dark';
+  });
   const [visibilityData, setVisibilityData] = useState({
     totalVisibility: 0,
     shareOfCitations: 0,
@@ -53,6 +56,18 @@ export default function AIVisibility() {
     topTopics: [],
     trendData: []
   });
+
+  useEffect(() => {
+    const handleThemeChange = () => {
+      setTheme(localStorage.getItem('elelem-theme') || 'dark');
+    };
+    window.addEventListener('storage', handleThemeChange);
+    const interval = setInterval(handleThemeChange, 100);
+    return () => {
+      window.removeEventListener('storage', handleThemeChange);
+      clearInterval(interval);
+    };
+  }, []);
 
   useEffect(() => {
     loadData();
@@ -219,19 +234,21 @@ export default function AIVisibility() {
     });
   };
 
+  const isDark = theme === 'dark';
+
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-slate-950 flex items-center justify-center">
+      <div className={`min-h-screen flex items-center justify-center ${isDark ? 'bg-slate-950' : 'bg-gray-50'}`}>
         <div className="text-center">
           <Loader2 className="w-12 h-12 text-teal-500 animate-spin mx-auto mb-4" />
-          <p className="text-slate-400">Loading visibility data...</p>
+          <p className={isDark ? 'text-slate-400' : 'text-gray-600'}>Loading visibility data...</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-slate-950 p-6 lg:p-8">
+    <div className={`min-h-screen p-6 lg:p-8 ${isDark ? 'bg-slate-950' : 'bg-gray-50'}`}>
       <div className="max-w-7xl mx-auto">
 
 
@@ -239,12 +256,12 @@ export default function AIVisibility() {
         <div className="flex flex-col gap-6 mb-8">
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
             <div>
-              <h1 className="text-2xl font-bold text-white">AI Visibility Dashboard</h1>
-              <p className="text-slate-400">Track performance across AI search engines and optimize your content strategy</p>
+              <h1 className={`text-2xl font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>AI Visibility Dashboard</h1>
+              <p className={isDark ? 'text-slate-400' : 'text-gray-600'}>Track performance across AI search engines and optimize your content strategy</p>
             </div>
             <div className="flex items-center gap-3">
               <Select defaultValue="7d">
-                <SelectTrigger className="w-40 bg-slate-800 border-slate-700 text-white">
+                <SelectTrigger className={`w-40 ${isDark ? 'bg-slate-800 border-slate-700 text-white' : 'bg-white border-gray-300 text-gray-900'}`}>
                   <SelectValue placeholder="Time period" />
                 </SelectTrigger>
                 <SelectContent>
@@ -256,7 +273,7 @@ export default function AIVisibility() {
               </Select>
               <Button 
                 variant="outline" 
-                className="border-slate-700 text-slate-300"
+                className={isDark ? 'border-slate-700 text-slate-300' : 'border-gray-300 text-gray-700'}
                 onClick={() => company && analyzePrompts(allPrompts, company)}
                 disabled={isAnalyzing}
               >
@@ -266,7 +283,7 @@ export default function AIVisibility() {
               <Button 
                 variant="outline" 
                 size="icon"
-                className="border-slate-700 text-slate-300"
+                className={isDark ? 'border-slate-700 text-slate-300' : 'border-gray-300 text-gray-700'}
                 onClick={() => navigate(createPageUrl("Setup"))}
               >
                 <Settings className="w-4 h-4" />
@@ -277,16 +294,16 @@ export default function AIVisibility() {
           {/* Filters */}
           <div className="flex flex-col gap-4">
             <div className="flex items-center gap-3">
-              <span className="text-slate-400 text-sm">Unbranded</span>
+              <span className={`text-sm ${isDark ? 'text-slate-400' : 'text-gray-600'}`}>Unbranded</span>
               <Switch
                 checked={promptType === "branded"}
                 onCheckedChange={(checked) => setPromptType(checked ? "branded" : "unbranded")}
               />
-              <span className="text-slate-400 text-sm">Branded</span>
+              <span className={`text-sm ${isDark ? 'text-slate-400' : 'text-gray-600'}`}>Branded</span>
             </div>
 
             <div className="flex flex-col sm:flex-row sm:items-center gap-3">
-              <span className="text-slate-400 text-sm">Funnel Stage:</span>
+              <span className={`text-sm ${isDark ? 'text-slate-400' : 'text-gray-600'}`}>Funnel Stage:</span>
               <div className="flex gap-2 flex-wrap">
                 {["top", "middle", "bottom"].map((stage) => (
                   <Button
@@ -296,7 +313,9 @@ export default function AIVisibility() {
                     className={`flex-1 sm:flex-none ${
                       funnelStage === stage
                         ? "bg-gradient-to-r from-teal-500 to-cyan-500 text-white"
-                        : "bg-slate-800 text-slate-300 hover:bg-slate-700"
+                        : isDark
+                          ? "bg-slate-800 text-slate-300 hover:bg-slate-700"
+                          : "bg-white text-gray-700 hover:bg-gray-100 border border-gray-300"
                     }`}
                   >
                     {stage.charAt(0).toUpperCase() + stage.slice(1)}
@@ -344,7 +363,7 @@ export default function AIVisibility() {
 
         {/* Citation Insights */}
         <div className="mb-8">
-          <h2 className="text-lg font-semibold text-white mb-4">Citation Insights</h2>
+          <h2 className={`text-lg font-semibold mb-4 ${isDark ? 'text-white' : 'text-gray-900'}`}>Citation Insights</h2>
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <CitationChart 
               data={visibilityData.citationsBySource} 
@@ -360,7 +379,7 @@ export default function AIVisibility() {
 
         {/* Mention Insights */}
         <div className="mb-8">
-          <h2 className="text-lg font-semibold text-white mb-4">Mention Insights</h2>
+          <h2 className={`text-lg font-semibold mb-4 ${isDark ? 'text-white' : 'text-gray-900'}`}>Mention Insights</h2>
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <CitationChart 
               data={visibilityData.brandMentionsBreakdown} 
@@ -377,9 +396,9 @@ export default function AIVisibility() {
         {/* Trend Charts - Only show when we have trend data */}
         {visibilityData.trendData.length > 0 && (
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-            <Card className="bg-slate-800/50 border-slate-700/50">
+            <Card className={isDark ? 'bg-slate-800/50 border-slate-700/50' : 'bg-white border-gray-200'}>
               <CardHeader>
-                <CardTitle className="text-white text-lg">Citation Trend Over Time</CardTitle>
+                <CardTitle className={`text-lg ${isDark ? 'text-white' : 'text-gray-900'}`}>Citation Trend Over Time</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="h-64">
@@ -409,9 +428,9 @@ export default function AIVisibility() {
               </CardContent>
             </Card>
 
-            <Card className="bg-slate-800/50 border-slate-700/50">
+            <Card className={isDark ? 'bg-slate-800/50 border-slate-700/50' : 'bg-white border-gray-200'}>
               <CardHeader>
-                <CardTitle className="text-white text-lg">Mention Trend Over Time</CardTitle>
+                <CardTitle className={`text-lg ${isDark ? 'text-white' : 'text-gray-900'}`}>Mention Trend Over Time</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="h-64">
@@ -444,17 +463,17 @@ export default function AIVisibility() {
         )}
 
         {/* AI Responses with Citations */}
-        <Card className="bg-slate-800/50 border-slate-700/50 mb-8">
+        <Card className={isDark ? 'bg-slate-800/50 border-slate-700/50' : 'bg-white border-gray-200'} mb-8>
           <CardHeader>
-            <CardTitle className="text-white text-lg">AI Responses for {funnelStage.charAt(0).toUpperCase() + funnelStage.slice(1)} of Funnel Prompts</CardTitle>
+            <CardTitle className={`text-lg ${isDark ? 'text-white' : 'text-gray-900'}`}>AI Responses for {funnelStage.charAt(0).toUpperCase() + funnelStage.slice(1)} of Funnel Prompts</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
               {prompts.filter(p => p.gemini_response).map((prompt, i) => (
-                <div key={i} className="border border-slate-700/50 rounded-lg p-4 bg-slate-900/50">
+                <div key={i} className={`border rounded-lg p-4 ${isDark ? 'border-slate-700/50 bg-slate-900/50' : 'border-gray-200 bg-gray-50'}`}>
                   <div className="flex items-start justify-between gap-4 mb-3">
                     <div className="flex-1">
-                      <p className="text-white font-semibold mb-1">{prompt.prompt}</p>
+                      <p className={`font-semibold mb-1 ${isDark ? 'text-white' : 'text-gray-900'}`}>{prompt.prompt}</p>
                       <div className="flex gap-2 flex-wrap">
                         {prompt.cited_brands?.slice(0, 3).map((cb, j) => (
                           <Badge 
@@ -474,7 +493,7 @@ export default function AIVisibility() {
                       variant="outline"
                       size="sm"
                       onClick={() => setSelectedPrompt(selectedPrompt?.id === prompt.id ? null : prompt)}
-                      className="border-slate-700 text-slate-300"
+                      className={isDark ? 'border-slate-700 text-slate-300' : 'border-gray-300 text-gray-700'}
                     >
                       {selectedPrompt?.id === prompt.id ? "Hide" : "View"} Response
                     </Button>
@@ -521,16 +540,16 @@ export default function AIVisibility() {
               ))}
 
               {prompts.filter(p => p.gemini_response).length === 0 && (
-                <p className="text-slate-400 text-center py-8">No responses available for this funnel stage yet.</p>
+                <p className={`text-center py-8 ${isDark ? 'text-slate-400' : 'text-gray-600'}`}>No responses available for this funnel stage yet.</p>
               )}
             </div>
           </CardContent>
         </Card>
 
         {/* Top Topics */}
-        <Card className="bg-slate-800/50 border-slate-700/50">
+        <Card className={isDark ? 'bg-slate-800/50 border-slate-700/50' : 'bg-white border-gray-200'}>
           <CardHeader>
-            <CardTitle className="text-white text-lg">Top Topics in Responses</CardTitle>
+            <CardTitle className={`text-lg ${isDark ? 'text-white' : 'text-gray-900'}`}>Top Topics in Responses</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="flex flex-wrap gap-2">

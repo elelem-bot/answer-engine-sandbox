@@ -35,6 +35,21 @@ export default function AnswerEngineering() {
   const [selectedPage, setSelectedPage] = useState(null);
   const [isOptimizing, setIsOptimizing] = useState(false);
   const [optimizationResult, setOptimizationResult] = useState(null);
+  const [theme, setTheme] = useState(() => {
+    return localStorage.getItem('elelem-theme') || 'dark';
+  });
+
+  useEffect(() => {
+    const handleThemeChange = () => {
+      setTheme(localStorage.getItem('elelem-theme') || 'dark');
+    };
+    window.addEventListener('storage', handleThemeChange);
+    const interval = setInterval(handleThemeChange, 100);
+    return () => {
+      window.removeEventListener('storage', handleThemeChange);
+      clearInterval(interval);
+    };
+  }, []);
 
   useEffect(() => {
     loadData();
@@ -205,29 +220,31 @@ Focus on:
     }
   };
 
+  const isDark = theme === 'dark';
+
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-slate-950 flex items-center justify-center">
+      <div className={`min-h-screen flex items-center justify-center ${isDark ? 'bg-slate-950' : 'bg-gray-50'}`}>
         <div className="text-center">
           <Loader2 className="w-12 h-12 text-teal-500 animate-spin mx-auto mb-4" />
-          <p className="text-slate-400">Loading optimization data...</p>
+          <p className={isDark ? 'text-slate-400' : 'text-gray-600'}>Loading optimization data...</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-slate-950 p-6 lg:p-8">
+    <div className={`min-h-screen p-6 lg:p-8 ${isDark ? 'bg-slate-950' : 'bg-gray-50'}`}>
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-2xl font-bold text-white mb-2">Optimize Content</h1>
-          <p className="text-slate-400">Select a prompt and optimize your pages for AI search visibility</p>
+          <h1 className={`text-2xl font-bold mb-2 ${isDark ? 'text-white' : 'text-gray-900'}`}>Optimize Content</h1>
+          <p className={isDark ? 'text-slate-400' : 'text-gray-600'}>Select a prompt and optimize your pages for AI search visibility</p>
         </div>
 
         {/* Funnel Stage Filter */}
         <div className="flex items-center gap-3 mb-6">
-          <span className="text-slate-400 text-sm">Funnel Stage:</span>
+          <span className={`text-sm ${isDark ? 'text-slate-400' : 'text-gray-600'}`}>Funnel Stage:</span>
           <div className="flex gap-2">
             {["top", "middle", "bottom"].map((stage) => (
               <Button
@@ -237,7 +254,9 @@ Focus on:
                 className={`${
                   funnelStage === stage
                     ? "bg-teal-500 hover:bg-teal-600 text-white"
-                    : "bg-slate-800 text-slate-300 hover:bg-slate-700"
+                    : isDark
+                      ? "bg-slate-800 text-slate-300 hover:bg-slate-700"
+                      : "bg-white text-gray-700 hover:bg-gray-100 border border-gray-300"
                 }`}
               >
                 {stage.charAt(0).toUpperCase() + stage.slice(1)}
@@ -248,12 +267,12 @@ Focus on:
 
         {/* Search */}
         <div className="relative mb-6">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500" />
+          <Search className={`absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 ${isDark ? 'text-slate-500' : 'text-gray-400'}`} />
           <Input
             placeholder="Search prompts..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="pl-10 bg-slate-800 border-slate-700 text-white"
+            className={`pl-10 ${isDark ? 'bg-slate-800 border-slate-700 text-white' : 'bg-white border-gray-300 text-gray-900'}`}
           />
         </div>
 
@@ -262,15 +281,15 @@ Focus on:
           {!optimizationResult && <div>
 
             {/* Prompts Table */}
-            <Card className="bg-slate-800/50 border-slate-700/50">
+            <Card className={isDark ? 'bg-slate-800/50 border-slate-700/50' : 'bg-white border-gray-200'}>
               <CardContent className="p-0">
                 <div className="overflow-x-auto">
                   <table className="w-full">
                     <thead>
-                      <tr className="border-b border-slate-700">
-                        <th className="text-left text-slate-400 text-sm font-medium p-4">Prompt</th>
-                        <th className="text-center text-slate-400 text-sm font-medium p-4">Search Signal</th>
-                        <th className="text-center text-slate-400 text-sm font-medium p-4">elelem Score</th>
+                      <tr className={`border-b ${isDark ? 'border-slate-700' : 'border-gray-200'}`}>
+                        <th className={`text-left text-sm font-medium p-4 ${isDark ? 'text-slate-400' : 'text-gray-600'}`}>Prompt</th>
+                        <th className={`text-center text-sm font-medium p-4 ${isDark ? 'text-slate-400' : 'text-gray-600'}`}>Search Signal</th>
+                        <th className={`text-center text-sm font-medium p-4 ${isDark ? 'text-slate-400' : 'text-gray-600'}`}>elelem Score</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -278,15 +297,17 @@ Focus on:
                         <tr
                           key={i}
                           onClick={() => handleSelectPrompt(prompt)}
-                          className={`border-b border-slate-700/50 last:border-0 cursor-pointer transition-colors ${
+                          className={`border-b last:border-0 cursor-pointer transition-colors ${
+                            isDark ? 'border-slate-700/50' : 'border-gray-200'
+                          } ${
                             selectedPrompt?.id === prompt.id
                               ? "bg-teal-500/10"
-                              : "hover:bg-slate-800/50"
+                              : isDark ? "hover:bg-slate-800/50" : "hover:bg-gray-50"
                           }`}
                         >
                           <td className="p-4">
                             <div className="space-y-2">
-                              <div className="text-white font-medium">{prompt.prompt}</div>
+                              <div className={`font-medium ${isDark ? 'text-white' : 'text-gray-900'}`}>{prompt.prompt}</div>
                               <div className="flex gap-2 flex-wrap">
                                 {(prompt.keywords || []).slice(0, 3).map((keyword, j) => (
                                   <Badge
@@ -301,12 +322,12 @@ Focus on:
                           </td>
                           <td className="p-4 text-center">
                             <div className="flex items-center justify-center gap-1">
-                              <TrendingUp className="w-4 h-4 text-teal-400" />
-                              <span className="text-white font-medium">{prompt.search_signal_score || Math.floor(Math.random() * 50) + 50}</span>
+                              <TrendingUp className="w-4 h-4 text-teal-500" />
+                              <span className={`font-medium ${isDark ? 'text-white' : 'text-gray-900'}`}>{prompt.search_signal_score || Math.floor(Math.random() * 50) + 50}</span>
                             </div>
                           </td>
                           <td className="p-4 text-center">
-                            <span className="text-teal-400 font-semibold">{prompt.elelem_score || Math.floor(Math.random() * 30) + 60}/100</span>
+                            <span className="text-teal-600 font-semibold">{prompt.elelem_score || Math.floor(Math.random() * 30) + 60}/100</span>
                           </td>
                         </tr>
                       ))}
@@ -319,9 +340,9 @@ Focus on:
 
           {/* Right Column - Best Matching Pages */}
           {!optimizationResult && <div>
-            <Card className="bg-slate-800/50 border-slate-700/50">
+            <Card className={isDark ? 'bg-slate-800/50 border-slate-700/50' : 'bg-white border-gray-200'}>
               <CardHeader>
-                <CardTitle className="text-white flex items-center gap-2">
+                <CardTitle className={`flex items-center gap-2 ${isDark ? 'text-white' : 'text-gray-900'}`}>
                   <FileText className="w-5 h-5" />
                   Best Matching Pages
                 </CardTitle>
@@ -329,22 +350,26 @@ Focus on:
               <CardContent className="space-y-4">
                 {selectedPrompt ? (
                   <>
-                    <p className="text-slate-400 text-sm mb-4">{selectedPrompt.prompt}</p>
+                    <p className={`text-sm mb-4 ${isDark ? 'text-slate-400' : 'text-gray-600'}`}>{selectedPrompt.prompt}</p>
                     <div className="space-y-3">
                       {getMatchingPages(selectedPrompt).map((page, i) => (
                         <div 
                           key={i} 
-                          className={`p-3 bg-slate-900/50 rounded-lg cursor-pointer transition-colors border ${
-                            selectedPage?.url === page.url
-                              ? "bg-slate-900 border-teal-500/50"
-                              : "border-transparent hover:border-teal-500/30 hover:bg-slate-900"
+                          className={`p-3 rounded-lg cursor-pointer transition-colors border ${
+                            isDark 
+                              ? selectedPage?.url === page.url
+                                ? "bg-slate-900 border-teal-500/50"
+                                : "bg-slate-900/50 border-transparent hover:border-teal-500/30 hover:bg-slate-900"
+                              : selectedPage?.url === page.url
+                                ? "bg-gray-100 border-teal-500/50"
+                                : "bg-gray-50 border-transparent hover:border-teal-500/30 hover:bg-gray-100"
                           }`}
                           onClick={() => setSelectedPage(page)}
                         >
-                          <div className="text-white font-medium text-sm mb-1">{page.title}</div>
-                          <div className="text-slate-500 text-xs mb-2 truncate">{page.url}</div>
+                          <div className={`font-medium text-sm mb-1 ${isDark ? 'text-white' : 'text-gray-900'}`}>{page.title}</div>
+                          <div className={`text-xs mb-2 truncate ${isDark ? 'text-slate-500' : 'text-gray-500'}`}>{page.url}</div>
                           <div className="flex items-center justify-between">
-                            <span className="text-slate-400 text-xs">Match</span>
+                            <span className={`text-xs ${isDark ? 'text-slate-400' : 'text-gray-600'}`}>Match</span>
                             <Badge className="bg-teal-500/20 text-teal-400 border-teal-500/30">
                               {page.relevance_score}%
                             </Badge>
@@ -374,8 +399,8 @@ Focus on:
                   </>
                 ) : (
                   <div className="text-center py-8">
-                    <FileText className="w-12 h-12 text-slate-600 mx-auto mb-3" />
-                    <p className="text-slate-500 text-sm">Select a prompt to see best matching pages</p>
+                    <FileText className={`w-12 h-12 mx-auto mb-3 ${isDark ? 'text-slate-600' : 'text-gray-400'}`} />
+                    <p className={`text-sm ${isDark ? 'text-slate-500' : 'text-gray-500'}`}>Select a prompt to see best matching pages</p>
                   </div>
                 )}
               </CardContent>
@@ -389,7 +414,7 @@ Focus on:
                 <Button
                   variant="ghost"
                   onClick={() => setOptimizationResult(null)}
-                  className="text-slate-400 hover:text-white"
+                  className={isDark ? 'text-slate-400 hover:text-white' : 'text-gray-600 hover:text-gray-900'}
                 >
                   <ArrowLeft className="w-4 h-4 mr-2" />
                   Back to Prompts
@@ -397,21 +422,21 @@ Focus on:
               </div>
 
               {/* Changes Summary */}
-              <Card className="bg-slate-800/50 border-slate-700/50">
+              <Card className={isDark ? 'bg-slate-800/50 border-slate-700/50' : 'bg-white border-gray-200'}>
                 <CardHeader>
-                  <CardTitle className="text-white flex items-center gap-2">
-                    <CheckCircle className="w-5 h-5 text-teal-400" />
+                  <CardTitle className={`flex items-center gap-2 ${isDark ? 'text-white' : 'text-gray-900'}`}>
+                    <CheckCircle className="w-5 h-5 text-teal-500" />
                     Optimization Complete
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-slate-400 mb-4">
-                    Optimized <span className="text-white font-medium">{selectedPage?.title}</span> to better answer: 
-                    <span className="text-teal-400 italic"> "{selectedPrompt?.prompt}"</span>
+                  <p className={isDark ? 'text-slate-400 mb-4' : 'text-gray-600 mb-4'}>
+                    Optimized <span className={`font-medium ${isDark ? 'text-white' : 'text-gray-900'}`}>{selectedPage?.title}</span> to better answer: 
+                    <span className="text-teal-600 italic"> "{selectedPrompt?.prompt}"</span>
                   </p>
                   <div className="space-y-3">
                     {optimizationResult.changes.map((change, i) => (
-                      <div key={i} className="p-4 bg-slate-900/50 rounded-lg border border-slate-700/50">
+                      <div key={i} className={`p-4 rounded-lg border ${isDark ? 'bg-slate-900/50 border-slate-700/50' : 'bg-gray-50 border-gray-200'}`}>
                         <div className="flex items-start gap-3 mb-3">
                           <Badge className="bg-teal-500/20 text-teal-400 border-teal-500/30">
                             {change.section}
@@ -439,29 +464,29 @@ Focus on:
 
               {/* Side by Side Comparison */}
               <div className="grid lg:grid-cols-2 gap-6">
-                <Card className="bg-slate-800/50 border-slate-700/50">
+                <Card className={isDark ? 'bg-slate-800/50 border-slate-700/50' : 'bg-white border-gray-200'}>
                   <CardHeader>
-                    <CardTitle className="text-white text-sm">Original Content</CardTitle>
+                    <CardTitle className={`text-sm ${isDark ? 'text-white' : 'text-gray-900'}`}>Original Content</CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <div className="prose prose-invert prose-sm max-w-none">
-                      <pre className="text-slate-300 whitespace-pre-wrap text-xs bg-slate-900/50 p-4 rounded-lg max-h-[600px] overflow-y-auto">
+                    <div className="prose prose-sm max-w-none">
+                      <pre className={`whitespace-pre-wrap text-xs p-4 rounded-lg max-h-[600px] overflow-y-auto ${isDark ? 'text-slate-300 bg-slate-900/50' : 'text-gray-700 bg-gray-50'}`}>
                         {optimizationResult.original}
                       </pre>
                     </div>
                   </CardContent>
                 </Card>
 
-                <Card className="bg-slate-800/50 border-teal-500/30">
+                <Card className={isDark ? 'bg-slate-800/50 border-teal-500/30' : 'bg-white border-teal-500/30'}>
                   <CardHeader>
-                    <CardTitle className="text-white text-sm flex items-center gap-2">
-                      <Zap className="w-4 h-4 text-teal-400" />
+                    <CardTitle className={`text-sm flex items-center gap-2 ${isDark ? 'text-white' : 'text-gray-900'}`}>
+                      <Zap className="w-4 h-4 text-teal-500" />
                       Optimized Content
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <div className="prose prose-invert prose-sm max-w-none">
-                      <pre className="text-slate-300 whitespace-pre-wrap text-xs bg-slate-900/50 p-4 rounded-lg max-h-[600px] overflow-y-auto">
+                    <div className="prose prose-sm max-w-none">
+                      <pre className={`whitespace-pre-wrap text-xs p-4 rounded-lg max-h-[600px] overflow-y-auto ${isDark ? 'text-slate-300 bg-slate-900/50' : 'text-gray-700 bg-gray-50'}`}>
                         {optimizationResult.optimized}
                       </pre>
                     </div>
