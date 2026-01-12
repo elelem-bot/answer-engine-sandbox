@@ -310,22 +310,11 @@ Return JSON format:
                   <div className="w-8 h-8 rounded-full bg-teal-500 text-white flex items-center justify-center font-bold">
                     1
                   </div>
-                  <CardTitle className="text-white">Enter Your Website URL</CardTitle>
+                  <CardTitle className="text-white">Enter Your Company URL & Name</CardTitle>
                 </div>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="grid md:grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label className="text-slate-300">Company/Project Name *</Label>
-                    <Input
-                      value={formData.name}
-                      onChange={(e) => handleChange("name", e.target.value)}
-                      className="bg-slate-900 border-slate-700 text-white"
-                      placeholder="Acme Corp"
-                      required
-                    />
-                  </div>
-
                   <div className="space-y-2">
                     <Label className="text-slate-300">Website URL *</Label>
                     <Input
@@ -334,6 +323,17 @@ Return JSON format:
                       onChange={(e) => handleChange("website_url", e.target.value)}
                       className="bg-slate-900 border-slate-700 text-white"
                       placeholder="https://example.com"
+                      required
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label className="text-slate-300">Company/Project Name *</Label>
+                    <Input
+                      value={formData.name}
+                      onChange={(e) => handleChange("name", e.target.value)}
+                      className="bg-slate-900 border-slate-700 text-white"
+                      placeholder="Acme Corp"
                       required
                     />
                   </div>
