@@ -91,18 +91,25 @@ export default function Prompts() {
     
     setIsProcessing(true);
     try {
+      // Check if prompt is branded (contains company name or product name)
+      const promptLower = newPromptText.toLowerCase();
+      const companyNameLower = company.name.toLowerCase();
+      const productNameLower = (company.product_name || "").toLowerCase();
+      const isBranded = promptLower.includes(companyNameLower) || 
+                       (productNameLower && promptLower.includes(productNameLower));
+
       // Use LLM to analyze the prompt
       const analysis = await base44.integrations.Core.InvokeLLM({
         prompt: `Analyze this buyer prompt and extract metadata:
 
-Prompt: "${newPromptText}"
+      Prompt: "${newPromptText}"
 
-Extract:
-1. funnel_stage: Determine if this is "top" (awareness), "middle" (consideration), or "bottom" (decision) of funnel
-2. keywords: Extract 3-5 relevant keywords from the prompt
-3. topics: Identify 2-4 main topics discussed
+      Extract:
+      1. funnel_stage: Determine if this is "top" (awareness), "middle" (consideration), or "bottom" (decision) of funnel
+      2. keywords: Extract 3-5 relevant keywords from the prompt
+      3. topics: Identify 2-4 main topics discussed
 
-Consider the buyer journey and intent level when determining funnel stage.`,
+      Consider the buyer journey and intent level when determining funnel stage.`,
         response_json_schema: {
           type: "object",
           properties: {
@@ -117,7 +124,7 @@ Consider the buyer journey and intent level when determining funnel stage.`,
       const newPrompt = await base44.entities.PromptAnalysis.create({
         company_id: company.id,
         prompt: newPromptText.trim(),
-        view_type: "prospect",
+        view_type: isBranded ? "customer" : "prospect",
         funnel_stage: analysis.funnel_stage,
         keywords: analysis.keywords || [],
         topics: analysis.topics || [],
