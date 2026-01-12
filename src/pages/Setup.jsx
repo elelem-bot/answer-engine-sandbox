@@ -213,6 +213,7 @@ Return JSON format:
                 properties: {
                   prompt: { type: "string" },
                   funnel_stage: { type: "string" },
+                  is_branded: { type: "boolean" },
                   keywords: { type: "array", items: { type: "string" } },
                   reasoning: { type: "string" }
                 }
@@ -243,7 +244,7 @@ Return JSON format:
       const promptAnalysisRecords = (promptsResponse.prompts || []).map(p => ({
         company_id: company.id,
         prompt: p.prompt,
-        view_type: "prospect",
+        view_type: p.is_branded ? "customer" : "prospect",
         funnel_stage: p.funnel_stage,
         keywords: p.keywords || [],
         search_signal_score: 0,
