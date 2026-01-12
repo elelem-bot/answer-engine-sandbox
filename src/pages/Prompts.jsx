@@ -89,13 +89,23 @@ export default function Prompts() {
     <div className="min-h-screen bg-slate-950 p-6 lg:p-8">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-2xl font-bold text-white mb-2">
-            Generated Prompts
-          </h1>
-          <p className="text-slate-400">
-            Review and manage all generated prompts
-          </p>
+        <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4 mb-8">
+          <div>
+            <h1 className="text-2xl font-bold text-white mb-2">
+              Generated Prompts
+            </h1>
+            <p className="text-slate-400">
+              Review and manage all generated prompts
+            </p>
+          </div>
+          <Button 
+            variant="outline" 
+            size="icon"
+            className="border-slate-700 text-slate-300 self-start"
+            onClick={() => navigate(createPageUrl("Setup"))}
+          >
+            <Settings className="w-4 h-4" />
+          </Button>
         </div>
 
         {/* Filters */}
