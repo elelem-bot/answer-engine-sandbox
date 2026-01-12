@@ -298,22 +298,22 @@ Return JSON format:
           <div className="text-center mb-10">
             <h1 className="text-3xl font-bold text-white mb-3">Let's Generate Your Prompts & Dashboard</h1>
             <p className="text-slate-400 max-w-2xl mx-auto">
-              Tell us about your product and ideal customers. We'll generate the most compelling questions they ask AI Answer Engines.
+              Start by entering your website URL - we'll analyze it and help fill in the rest.
             </p>
-            {isAutoFilling && (
-              <div className="mt-4 flex items-center justify-center gap-2 text-teal-400">
-                <Loader2 className="w-4 h-4 animate-spin" />
-                <span>Analyzing your company and pre-filling the form...</span>
-              </div>
-            )}
           </div>
 
           <form onSubmit={handleSubmit}>
-            <Card className="bg-slate-800/50 border-slate-700/50 mb-6">
+            {/* Step 1: Website URL */}
+            <Card className="bg-gradient-to-br from-teal-500/10 to-cyan-500/10 border-teal-500/30 mb-8">
               <CardHeader>
-                <CardTitle className="text-white">Company & Product Information</CardTitle>
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 rounded-full bg-teal-500 text-white flex items-center justify-center font-bold">
+                    1
+                  </div>
+                  <CardTitle className="text-white">Enter Your Website URL</CardTitle>
+                </div>
               </CardHeader>
-              <CardContent className="space-y-6">
+              <CardContent className="space-y-4">
                 <div className="grid md:grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label className="text-slate-300">Company/Project Name *</Label>
@@ -325,7 +325,7 @@ Return JSON format:
                       required
                     />
                   </div>
-                  
+
                   <div className="space-y-2">
                     <Label className="text-slate-300">Website URL *</Label>
                     <Input
@@ -338,6 +338,26 @@ Return JSON format:
                     />
                   </div>
                 </div>
+                {isAutoFilling && (
+                  <div className="flex items-center gap-2 text-teal-400 bg-teal-500/10 rounded-lg p-3 border border-teal-500/30">
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                    <span>Analyzing your website and pre-filling the form...</span>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+
+            {/* Step 2: Company Details */}
+            <Card className="bg-slate-800/50 border-slate-700/50 mb-6">
+              <CardHeader>
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 rounded-full bg-slate-700 text-white flex items-center justify-center font-bold">
+                    2
+                  </div>
+                  <CardTitle className="text-white">Company & Product Information</CardTitle>
+                </div>
+              </CardHeader>
+              <CardContent className="space-y-6">
 
                 <div className="space-y-2">
                   <Label className="text-slate-300">Key Product Name *</Label>
