@@ -39,6 +39,21 @@ export default function AnswerEngine() {
   const [askedQuestions, setAskedQuestions] = useState([]);
   const [company, setCompany] = useState(null);
   const [isLoadingQuestions, setIsLoadingQuestions] = useState(false);
+  const [theme, setTheme] = useState(() => {
+    return localStorage.getItem('elelem-theme') || 'dark';
+  });
+
+  React.useEffect(() => {
+    const handleThemeChange = () => {
+      setTheme(localStorage.getItem('elelem-theme') || 'dark');
+    };
+    window.addEventListener('storage', handleThemeChange);
+    const interval = setInterval(handleThemeChange, 100);
+    return () => {
+      window.removeEventListener('storage', handleThemeChange);
+      clearInterval(interval);
+    };
+  }, []);
 
   React.useEffect(() => {
     const loadCompanyUrl = async () => {
@@ -218,24 +233,26 @@ Consider buyer intent when determining funnel stage.`,
     }
   };
 
+  const isDark = theme === 'dark';
+
   return (
-    <div className="min-h-screen bg-slate-950 p-6 lg:p-8">
+    <div className={`min-h-screen p-6 lg:p-8 ${isDark ? 'bg-slate-950' : 'bg-gray-50'}`}>
       <div className="max-w-5xl mx-auto">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-2xl font-bold text-white mb-2">Answer Engine</h1>
-          <p className="text-slate-400">Turn any website into an intelligent Q&A system</p>
+          <h1 className={`text-2xl font-bold mb-2 ${isDark ? 'text-white' : 'text-gray-900'}`}>Answer Engine</h1>
+          <p className={isDark ? 'text-slate-400' : 'text-gray-600'}>Turn any website into an intelligent Q&A system</p>
         </div>
 
         {/* Website Input */}
-        <Card className="bg-slate-800/50 border-slate-700/50 mb-6">
+        <Card className={isDark ? 'bg-slate-800/50 border-slate-700/50' : 'bg-white border-gray-200'} mb-6>
           {isCrawled && (
             <div className="px-6 pt-4 flex justify-end">
               <Button
                 variant="ghost"
                 size="sm"
                 onClick={() => setIsInputCollapsed(!isInputCollapsed)}
-                className="text-slate-400 hover:text-white"
+                className={isDark ? 'text-slate-400 hover:text-white' : 'text-gray-600 hover:text-gray-900'}
               >
                 {isInputCollapsed ? (
                   <>
@@ -268,7 +285,7 @@ Consider buyer intent when determining funnel stage.`,
                   value={websiteUrl}
                   onChange={(e) => setWebsiteUrl(e.target.value)}
                   disabled={isCrawling || isCrawled}
-                  className="pl-10 bg-slate-900 border-slate-700 text-white placeholder:text-slate-500"
+                  className={`pl-10 ${isDark ? 'bg-slate-900 border-slate-700 text-white placeholder:text-slate-500' : 'bg-white border-gray-300 text-gray-900 placeholder:text-gray-400'}`}
                 />
               </div>
               <Button
@@ -323,7 +340,7 @@ Consider buyer intent when determining funnel stage.`,
                       setLogoUrl("");
                       setBrandColor("#14b8a6");
                     }}
-                    className="text-slate-400 hover:text-white"
+                    className={isDark ? 'text-slate-400 hover:text-white' : 'text-gray-600 hover:text-gray-900'}
                   >
                     Change Website
                   </Button>
@@ -332,29 +349,29 @@ Consider buyer intent when determining funnel stage.`,
                 {/* Brand Customization */}
                 <div className="border-t border-slate-700 pt-4 grid md:grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <label className="text-slate-300 text-sm font-medium">Upload Logo</label>
+                    <label className={`text-sm font-medium ${isDark ? 'text-slate-300' : 'text-gray-700'}`}>Upload Logo</label>
                     <Input
                       type="file"
                       accept="image/*"
                       onChange={handleLogoUpload}
-                      className="bg-slate-900 border-slate-700 text-white h-auto py-2 file:mr-4 file:px-4 file:py-2 file:rounded file:border-0 file:bg-teal-500 file:text-white file:cursor-pointer"
+                      className={`h-auto py-2 file:mr-4 file:px-4 file:py-2 file:rounded file:border-0 file:bg-teal-500 file:text-white file:cursor-pointer ${isDark ? 'bg-slate-900 border-slate-700 text-white' : 'bg-white border-gray-300 text-gray-900'}`}
                     />
                   </div>
                   <div className="space-y-2">
-                    <label className="text-slate-300 text-sm font-medium">Brand Color</label>
+                    <label className={`text-sm font-medium ${isDark ? 'text-slate-300' : 'text-gray-700'}`}>Brand Color</label>
                     <div className="flex gap-2">
                       <Input
                         type="color"
                         value={brandColor}
                         onChange={(e) => setBrandColor(e.target.value)}
-                        className="w-20 h-10 bg-slate-900 border-slate-700 cursor-pointer"
+                        className={`w-20 h-10 cursor-pointer ${isDark ? 'bg-slate-900 border-slate-700' : 'bg-white border-gray-300'}`}
                       />
                       <Input
                         type="text"
                         value={brandColor}
                         onChange={(e) => setBrandColor(e.target.value)}
                         placeholder="#14b8a6"
-                        className="flex-1 bg-slate-900 border-slate-700 text-white"
+                        className={`flex-1 ${isDark ? 'bg-slate-900 border-slate-700 text-white' : 'bg-white border-gray-300 text-gray-900'}`}
                       />
                     </div>
                   </div>
@@ -370,12 +387,12 @@ Consider buyer intent when determining funnel stage.`,
         {/* Tabs for Chat and Questions */}
         {isCrawled && (
           <Tabs value={activeTab} onValueChange={setActiveTab} className="mb-6">
-            <TabsList className="bg-slate-800/50 border border-slate-700/50">
-              <TabsTrigger value="chat" className="data-[state=active]:bg-slate-700">
+            <TabsList className={isDark ? 'bg-slate-800/50 border border-slate-700/50' : 'bg-white border border-gray-200'}>
+              <TabsTrigger value="chat" className={isDark ? 'data-[state=active]:bg-slate-700' : 'data-[state=active]:bg-gray-100'}>
                 <MessageSquare className="w-4 h-4 mr-2" />
                 Chat
               </TabsTrigger>
-              <TabsTrigger value="questions" className="data-[state=active]:bg-slate-700">
+              <TabsTrigger value="questions" className={isDark ? 'data-[state=active]:bg-slate-700' : 'data-[state=active]:bg-gray-100'}>
                 <List className="w-4 h-4 mr-2" />
                 Questions ({askedQuestions.length})
               </TabsTrigger>
@@ -509,18 +526,18 @@ Consider buyer intent when determining funnel stage.`,
 
         {/* Questions List */}
         {isCrawled && activeTab === "questions" && (
-          <Card className="bg-slate-800/50 border-slate-700/50">
+          <Card className={isDark ? 'bg-slate-800/50 border-slate-700/50' : 'bg-white border-gray-200'}>
             <CardHeader>
-              <CardTitle className="text-white">Asked Questions</CardTitle>
+              <CardTitle className={isDark ? 'text-white' : 'text-gray-900'}>Asked Questions</CardTitle>
             </CardHeader>
             <CardContent>
               {isLoadingQuestions ? (
                 <div className="text-center py-8">
                   <Loader2 className="w-8 h-8 text-teal-500 animate-spin mx-auto mb-2" />
-                  <p className="text-slate-400">Loading questions...</p>
+                  <p className={isDark ? 'text-slate-400' : 'text-gray-600'}>Loading questions...</p>
                 </div>
               ) : askedQuestions.length === 0 ? (
-                <p className="text-slate-400 text-center py-8">No questions asked yet</p>
+                <p className={`text-center py-8 ${isDark ? 'text-slate-400' : 'text-gray-600'}`}>No questions asked yet</p>
               ) : (
                 <div className="space-y-3">
                   {askedQuestions.map((q, i) => (
@@ -529,11 +546,11 @@ Consider buyer intent when determining funnel stage.`,
                       initial={{ opacity: 0, y: 10 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ delay: i * 0.05 }}
-                      className="border border-slate-700/50 rounded-lg p-4 bg-slate-900/50"
+                      className={`border rounded-lg p-4 ${isDark ? 'border-slate-700/50 bg-slate-900/50' : 'border-gray-200 bg-gray-50'}`}
                     >
                       <div className="flex items-start justify-between gap-4 mb-3">
                         <div className="flex-1">
-                          <p className="text-white font-medium mb-2">{q.question}</p>
+                          <p className={`font-medium mb-2 ${isDark ? 'text-white' : 'text-gray-900'}`}>{q.question}</p>
                           <div className="flex gap-2 flex-wrap">
                             <Badge 
                               variant="outline"
@@ -603,7 +620,7 @@ Consider buyer intent when determining funnel stage.`,
                           </Button>
                         )}
                       </div>
-                      <div className="text-slate-400 text-sm pl-4 border-l-2 border-slate-700">
+                      <div className={`text-sm pl-4 border-l-2 ${isDark ? 'text-slate-400 border-slate-700' : 'text-gray-600 border-gray-300'}`}>
                         {q.answer}
                       </div>
                     </motion.div>
