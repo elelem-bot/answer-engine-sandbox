@@ -176,12 +176,12 @@ Consider the buyer journey and intent level when determining funnel stage.`,
               Add Prompt
             </Button>
             <Button 
-              variant="outline" 
+              variant="ghost" 
               size="icon"
-              className="border-slate-700 text-white"
+              className="text-white hover:bg-slate-800"
               onClick={() => navigate(createPageUrl("Setup"))}
             >
-              <Settings className="w-4 h-4" />
+              <Settings className="w-5 h-5" />
             </Button>
           </div>
         </div>
