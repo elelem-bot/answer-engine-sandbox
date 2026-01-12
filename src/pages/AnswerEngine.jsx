@@ -203,7 +203,8 @@ Consider buyer intent when determining funnel stage.`,
           answer: cleanedResponse,
           funnel_stage: analysis.funnel_stage,
           keywords: analysis.keywords || [],
-          moved_to_prompts: false
+          moved_to_prompts: false,
+          source_tag: "REAL"
         });
 
         setAskedQuestions(prev => [savedQuestion, ...prev]);
@@ -551,6 +552,9 @@ Consider buyer intent when determining funnel stage.`,
                                 {keyword}
                               </Badge>
                             ))}
+                            <Badge className="bg-green-500/20 text-green-400 border-green-500/30">
+                              REAL
+                            </Badge>
                             {q.moved_to_prompts && (
                               <Badge className="bg-teal-500/20 text-teal-400 border-teal-500/30">
                                 Added to Prompts
@@ -573,7 +577,8 @@ Consider buyer intent when determining funnel stage.`,
                                   elelem_score: 0,
                                   citations_count: 0,
                                   brand_mentions_count: 0,
-                                  is_optimized: false
+                                  is_optimized: false,
+                                  source_tag: "REAL"
                                 });
                                 
                                 await base44.entities.AnswerEngineQuestion.update(q.id, {
