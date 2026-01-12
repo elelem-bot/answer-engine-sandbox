@@ -9,12 +9,16 @@ import {
   CheckCircle,
   AlertCircle,
   ChevronUp,
-  ChevronDown
+  ChevronDown,
+  MessageSquare,
+  List,
+  ArrowRight
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 export default function AnswerEngine() {
   const [websiteUrl, setWebsiteUrl] = useState("");
@@ -31,13 +35,21 @@ export default function AnswerEngine() {
   const [indexedContent, setIndexedContent] = useState("");
   const [crawlProgress, setCrawlProgress] = useState("");
   const [isInputCollapsed, setIsInputCollapsed] = useState(false);
+  const [activeTab, setActiveTab] = useState("chat");
+  const [askedQuestions, setAskedQuestions] = useState([]);
+  const [company, setCompany] = useState(null);
+  const [isLoadingQuestions, setIsLoadingQuestions] = useState(false);
 
   React.useEffect(() => {
     const loadCompanyUrl = async () => {
       try {
         const companies = await base44.entities.Company.list();
-        if (companies.length > 0 && companies[0].website_url) {
-          setWebsiteUrl(companies[0].website_url);
+        if (companies.length > 0) {
+          setCompany(companies[0]);
+          if (companies[0].website_url) {
+            setWebsiteUrl(companies[0].website_url);
+          }
+          loadQuestions(companies[0].id);
         }
       } catch (error) {
         console.error("Error loading company URL:", error);
@@ -45,6 +57,20 @@ export default function AnswerEngine() {
     };
     loadCompanyUrl();
   }, []);
+
+  const loadQuestions = async (companyId) => {
+    setIsLoadingQuestions(true);
+    try {
+      const questions = await base44.entities.AnswerEngineQuestion.filter({ 
+        company_id: companyId 
+      });
+      setAskedQuestions(questions);
+    } catch (error) {
+      console.error("Error loading questions:", error);
+    } finally {
+      setIsLoadingQuestions(false);
+    }
+  };
 
   const handleLogoUpload = async (e) => {
     const file = e.target.files[0];
@@ -149,6 +175,39 @@ Answer the question directly and conversationally.`,
 
       const assistantMessage = { role: "assistant", content: cleanedResponse };
       setMessages(prev => [...prev, assistantMessage]);
+
+      // Analyze and store the question
+      if (company) {
+        const analysis = await base44.integrations.Core.InvokeLLM({
+          prompt: `Analyze this customer question and extract metadata:
+
+Question: "${userMessage.content}"
+
+Extract:
+1. funnel_stage: "top" (awareness), "middle" (consideration), or "bottom" (decision)
+2. keywords: 3-5 relevant keywords
+
+Consider buyer intent when determining funnel stage.`,
+          response_json_schema: {
+            type: "object",
+            properties: {
+              funnel_stage: { type: "string", enum: ["top", "middle", "bottom"] },
+              keywords: { type: "array", items: { type: "string" } }
+            }
+          }
+        });
+
+        const savedQuestion = await base44.entities.AnswerEngineQuestion.create({
+          company_id: company.id,
+          question: userMessage.content,
+          answer: cleanedResponse,
+          funnel_stage: analysis.funnel_stage,
+          keywords: analysis.keywords || [],
+          moved_to_prompts: false
+        });
+
+        setAskedQuestions(prev => [savedQuestion, ...prev]);
+      }
     } catch (error) {
       console.error("Error asking question:", error);
       const errorMessage = { role: "assistant", content: "Sorry, I encountered an error processing your question. Please try again." };
@@ -307,8 +366,24 @@ Answer the question directly and conversationally.`,
           </AnimatePresence>
         </Card>
 
-        {/* Branded Chat Interface */}
+        {/* Tabs for Chat and Questions */}
         {isCrawled && (
+          <Tabs value={activeTab} onValueChange={setActiveTab} className="mb-6">
+            <TabsList className="bg-slate-800/50 border border-slate-700/50">
+              <TabsTrigger value="chat" className="data-[state=active]:bg-slate-700">
+                <MessageSquare className="w-4 h-4 mr-2" />
+                Chat
+              </TabsTrigger>
+              <TabsTrigger value="questions" className="data-[state=active]:bg-slate-700">
+                <List className="w-4 h-4 mr-2" />
+                Questions ({askedQuestions.length})
+              </TabsTrigger>
+            </TabsList>
+          </Tabs>
+        )}
+
+        {/* Branded Chat Interface */}
+        {isCrawled && activeTab === "chat" && (
           <div className="rounded-2xl overflow-hidden shadow-2xl bg-white">
             {/* Branded Header */}
             <div className="px-6 py-4 border-b border-slate-200 flex items-center justify-between bg-white">
@@ -429,6 +504,109 @@ Answer the question directly and conversationally.`,
               </form>
             </div>
           </div>
+        )}
+
+        {/* Questions List */}
+        {isCrawled && activeTab === "questions" && (
+          <Card className="bg-slate-800/50 border-slate-700/50">
+            <CardHeader>
+              <CardTitle className="text-white">Asked Questions</CardTitle>
+            </CardHeader>
+            <CardContent>
+              {isLoadingQuestions ? (
+                <div className="text-center py-8">
+                  <Loader2 className="w-8 h-8 text-teal-500 animate-spin mx-auto mb-2" />
+                  <p className="text-slate-400">Loading questions...</p>
+                </div>
+              ) : askedQuestions.length === 0 ? (
+                <p className="text-slate-400 text-center py-8">No questions asked yet</p>
+              ) : (
+                <div className="space-y-3">
+                  {askedQuestions.map((q, i) => (
+                    <motion.div
+                      key={q.id}
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: i * 0.05 }}
+                      className="border border-slate-700/50 rounded-lg p-4 bg-slate-900/50"
+                    >
+                      <div className="flex items-start justify-between gap-4 mb-3">
+                        <div className="flex-1">
+                          <p className="text-white font-medium mb-2">{q.question}</p>
+                          <div className="flex gap-2 flex-wrap">
+                            <Badge 
+                              variant="outline"
+                              className={`${
+                                q.funnel_stage === "top"
+                                  ? "bg-blue-500/20 text-blue-400 border-blue-500/30"
+                                  : q.funnel_stage === "middle"
+                                  ? "bg-purple-500/20 text-purple-400 border-purple-500/30"
+                                  : "bg-pink-500/20 text-pink-400 border-pink-500/30"
+                              }`}
+                            >
+                              {q.funnel_stage.charAt(0).toUpperCase() + q.funnel_stage.slice(1)} Funnel
+                            </Badge>
+                            {q.keywords && q.keywords.slice(0, 3).map((keyword, j) => (
+                              <Badge key={j} variant="outline" className="bg-slate-700/50 text-slate-300 border-slate-600/30">
+                                {keyword}
+                              </Badge>
+                            ))}
+                            {q.moved_to_prompts && (
+                              <Badge className="bg-teal-500/20 text-teal-400 border-teal-500/30">
+                                Added to Prompts
+                              </Badge>
+                            )}
+                          </div>
+                        </div>
+                        {!q.moved_to_prompts && (
+                          <Button
+                            size="sm"
+                            onClick={async () => {
+                              try {
+                                await base44.entities.PromptAnalysis.create({
+                                  company_id: q.company_id,
+                                  prompt: q.question,
+                                  view_type: "prospect",
+                                  funnel_stage: q.funnel_stage,
+                                  keywords: q.keywords || [],
+                                  search_signal_score: 0,
+                                  elelem_score: 0,
+                                  citations_count: 0,
+                                  brand_mentions_count: 0,
+                                  is_optimized: false
+                                });
+                                
+                                await base44.entities.AnswerEngineQuestion.update(q.id, {
+                                  moved_to_prompts: true
+                                });
+                                
+                                setAskedQuestions(prev => 
+                                  prev.map(question => 
+                                    question.id === q.id 
+                                      ? { ...question, moved_to_prompts: true }
+                                      : question
+                                  )
+                                );
+                              } catch (error) {
+                                console.error("Error moving to prompts:", error);
+                              }
+                            }}
+                            className="bg-gradient-to-r from-teal-500 to-cyan-500 hover:from-teal-600 hover:to-cyan-600"
+                          >
+                            <ArrowRight className="w-4 h-4 mr-1" />
+                            Move to Prompts
+                          </Button>
+                        )}
+                      </div>
+                      <div className="text-slate-400 text-sm pl-4 border-l-2 border-slate-700">
+                        {q.answer}
+                      </div>
+                    </motion.div>
+                  ))}
+                </div>
+              )}
+            </CardContent>
+          </Card>
         )}
       </div>
     </div>
