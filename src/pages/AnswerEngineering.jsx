@@ -58,7 +58,7 @@ export default function AnswerEngineering() {
 
   const loadData = async () => {
     try {
-      const companies = await base44.entities.Company.filter({ setup_complete: true });
+      const companies = await base44.entities.Company.list();
       if (companies.length > 0) {
         setCompany(companies[0]);
         
