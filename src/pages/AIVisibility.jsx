@@ -114,17 +114,8 @@ export default function AIVisibility() {
     for (const prompt of promptsData) {
       try {
         const response = await base44.integrations.Core.InvokeLLM({
-          prompt: `You are simulating an AI search engine response. Answer this question from a user: "${prompt.prompt}"
-
-Provide a helpful, detailed answer that would cite relevant sources and mention brands where appropriate. 
-Include specific brand names, websites, and sources in your response.
-The company "${companyData.name}" (${companyData.website_url}) is relevant to this query if it fits the context.
-
-After the response, provide analysis in JSON format:
-- cited_brands: Array of {brand: string, mentions: number} for brands mentioned
-- topics: Array of top 5 topics discussed
-- citations_count: Number of sources/citations in the response
-- brand_mentions_count: Total brand mentions`,
+          prompt: prompt.prompt,
+          add_context_from_internet: true,
           response_json_schema: {
             type: "object",
             properties: {
