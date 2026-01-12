@@ -285,6 +285,11 @@ export default function Prompts() {
                           >
                             {prompt.funnel_stage.charAt(0).toUpperCase() + prompt.funnel_stage.slice(1)} Funnel
                           </Badge>
+                          {prompt.source_tag && (
+                            <Badge className="bg-green-500/20 text-green-400 border-green-500/30">
+                              {prompt.source_tag}
+                            </Badge>
+                          )}
                           {prompt.keywords && prompt.keywords.slice(0, 3).map((keyword, j) => (
                             <Badge key={j} variant="outline" className="bg-slate-700/50 text-slate-300 border-slate-600/30">
                               {keyword}
