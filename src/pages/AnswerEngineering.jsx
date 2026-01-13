@@ -189,32 +189,19 @@ Focus on pages that would be most relevant for answering customer questions and 
     
     try {
       const newContent = await base44.integrations.Core.InvokeLLM({
-        prompt: `You are an expert content creator specializing in AI-optimized content.
+        prompt: `Create a blog article that answers this question: "${selectedPrompt.prompt}"
 
-COMPANY CONTEXT:
-- Company: ${company.name}
-- Product: ${company.product_name}
-- Website: ${company.website_url}
+Company: ${company.name}
+Product: ${company.product_name}
 
-TARGET PROMPT TO ANSWER:
-"${selectedPrompt.prompt}"
+Write a complete, ready-to-publish blog article (800-1200 words) that:
+- Directly answers the question
+- Uses natural, conversational language
+- Includes specific examples and details
+- Is well-structured with clear sections
+- Optimized for AI search engines
 
-TASK:
-Create a completely new webpage that directly answers this prompt. Use the company's tone and language style based on their website.
-
-Return:
-1. content: The complete new page content (formatted in markdown)
-2. structure: Array of sections created, each with:
-   - section_name: What this section is (e.g., "Hero Section", "Key Features", "How It Works", "FAQ")
-   - content_preview: First 100 characters of this section
-   - reasoning: Why this section helps answer the prompt
-
-Focus on:
-- Directly answering the prompt's question/intent
-- Using the company's authentic voice and style
-- Providing specific details and examples
-- Creating well-structured, scannable content
-- Optimizing for AI search visibility`,
+Also return a structure array listing the main sections you created.`,
         add_context_from_internet: true,
         response_json_schema: {
           type: "object",
@@ -237,11 +224,11 @@ Focus on:
 
       setNewPageResult({
         content: newContent.content,
-        structure: newContent.structure
+        structure: newContent.structure || []
       });
     } catch (error) {
       console.error("Error creating new page:", error);
-      alert("Failed to create new page. Please try again.");
+      alert(`Failed to create new page: ${error.message}`);
     } finally {
       setIsCreatingNew(false);
     }
