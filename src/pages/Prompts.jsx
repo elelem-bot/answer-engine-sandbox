@@ -314,12 +314,6 @@ export default function Prompts() {
                           ))}
                         </div>
                       </div>
-                      {prompt.citations_count !== undefined && (
-                        <div className="text-right">
-                          <div className={`text-xs mb-1 ${isDark ? 'text-slate-400' : 'text-gray-600'}`}>Citations</div>
-                          <div className="text-teal-600 font-semibold">{prompt.citations_count}</div>
-                        </div>
-                      )}
                     </div>
                   </motion.div>
                 ))
