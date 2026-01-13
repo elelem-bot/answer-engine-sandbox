@@ -83,13 +83,13 @@ export default function AIVisibility() {
 
   const filterPrompts = (promptsData, stage, type, companyData) => {
     return promptsData.filter(p => {
-      // Only show prospect view type prompts
-      if (p.view_type !== 'prospect') return false;
-      
       const matchesStage = p.funnel_stage === stage;
       const companyName = companyData.name.toLowerCase();
+      const productName = companyData.product_name?.toLowerCase() || '';
       const promptText = p.prompt.toLowerCase();
-      const isBranded = promptText.includes(companyName);
+      
+      // Check if prompt mentions company name or product name
+      const isBranded = promptText.includes(companyName) || (productName && promptText.includes(productName));
       
       const matchesType = type === "branded" ? isBranded : !isBranded;
       
