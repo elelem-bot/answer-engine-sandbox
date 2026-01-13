@@ -25,7 +25,7 @@ export default function Setup() {
   const [formData, setFormData] = useState({
     name: "",
     website_url: "",
-    product_name: "",
+    product_names: [],
     top_competitors: "",
     icp_description: "",
     region: "",
@@ -85,7 +85,7 @@ Be specific and accurate based on actual content found across all crawled pages.
       setFormData(prev => ({
         ...prev,
         name: analysis.company_name || companyName || prev.name,
-        product_name: analysis.product_name || prev.product_name,
+        product_names: analysis.product_name ? [analysis.product_name] : prev.product_names,
         top_competitors: analysis.top_competitors || prev.top_competitors,
         icp_description: analysis.icp_description || prev.icp_description,
         region: analysis.region || prev.region
@@ -240,7 +240,7 @@ Return JSON format:
       const company = await base44.entities.Company.create({
         name: formData.name,
         website_url: formData.website_url,
-        product_name: formData.product_name,
+        product_name: formData.product_names[0] || "",
         top_competitors: formData.top_competitors.split(',').map(c => c.trim()),
         primary_market: formData.region,
         setup_complete: false,
@@ -362,15 +362,63 @@ Return JSON format:
                 </div>
 
                 <div className="space-y-2">
-                  <Label className="text-slate-300">Key Product Name *</Label>
-                  <Input
-                    value={formData.product_name}
-                    onChange={(e) => handleChange("product_name", e.target.value)}
-                    className="bg-slate-900 border-slate-700 text-white"
-                    placeholder="e.g., PlayStation, Gmail, Salesforce CRM"
-                    required
-                  />
-                  <p className="text-slate-500 text-sm">Your main product or service name</p>
+                  <Label className="text-slate-300">Key Product Names *</Label>
+                  {formData.product_names.length > 0 ? (
+                    <div className="space-y-2">
+                      <div className="flex flex-wrap gap-2">
+                        {formData.product_names.map((prod, i) => (
+                          <Badge 
+                            key={i}
+                            className="bg-teal-500/20 text-teal-400 border-teal-500/30 text-sm px-3 py-1.5 flex items-center gap-2"
+                          >
+                            {prod}
+                            <X 
+                              className="w-3.5 h-3.5 cursor-pointer hover:text-teal-300" 
+                              onClick={() => {
+                                setFormData(prev => ({ 
+                                  ...prev, 
+                                  product_names: prev.product_names.filter((_, idx) => idx !== i) 
+                                }));
+                              }}
+                            />
+                          </Badge>
+                        ))}
+                      </div>
+                      <Input
+                        value=""
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter' && e.target.value.trim()) {
+                            e.preventDefault();
+                            setFormData(prev => ({ 
+                              ...prev, 
+                              product_names: [...prev.product_names, e.target.value.trim()]
+                            }));
+                            e.target.value = '';
+                          }
+                        }}
+                        className="bg-slate-900 border-slate-700 text-white"
+                        placeholder="Add product name and press Enter"
+                      />
+                    </div>
+                  ) : (
+                    <Input
+                      value=""
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter' && e.target.value.trim()) {
+                          e.preventDefault();
+                          setFormData(prev => ({ 
+                            ...prev, 
+                            product_names: [e.target.value.trim()]
+                          }));
+                          e.target.value = '';
+                        }
+                      }}
+                      className="bg-slate-900 border-slate-700 text-white"
+                      placeholder="e.g., PlayStation, Gmail, Salesforce CRM - press Enter"
+                      required
+                    />
+                  )}
+                  <p className="text-slate-500 text-sm">Add your product or service names and press Enter</p>
                 </div>
 
                 <div className="space-y-2">
