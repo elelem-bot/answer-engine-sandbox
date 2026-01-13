@@ -157,6 +157,7 @@ Focus on pages that would be most relevant for answering customer questions and 
       .replace(/Source:.*?(?=\n|$)/gim, '')
       .replace(/\(Source:.*?\)/gi, '')
       .replace(/\[([^\]]+)\]\([^\)]+\)/g, '$1') // Convert markdown links to plain text
+      .replace(/\(\[[\w\.\-]+\]\(\)\)/g, '') // Remove ([domain.com]()) patterns
       // Remove "Next steps", "Related articles", etc. sections
       .replace(/(?:Next Steps?|Related Articles?|Further Reading|Learn More|Additional Resources|See Also|Recommended Reading|More Information):?[\s\S]*?(?=\n\n|$)/gi, '')
       // Remove citation brackets like [1], [2], [1,2,3]
