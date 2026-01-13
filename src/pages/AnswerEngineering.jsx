@@ -474,8 +474,8 @@ Focus on:
                         </div>
                       ))}
                     </div>
-                    {selectedPage && (
-                      <>
+                    <>
+                      {selectedPage && (
                         <Button 
                           className="w-full bg-gradient-to-r from-teal-500 to-cyan-500 hover:from-teal-600 hover:to-cyan-600 mt-4"
                           onClick={handleOptimize}
@@ -493,29 +493,29 @@ Focus on:
                             </>
                           )}
                         </Button>
-                        <Button 
-                          className="w-full mt-2"
-                          style={{
-                            background: 'linear-gradient(to right, #bbeb02, #a0d000)',
-                            color: '#000'
-                          }}
-                          onClick={handleCreateNew}
-                          disabled={isCreatingNew}
-                        >
-                          {isCreatingNew ? (
-                            <>
-                              <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                              Creating...
-                            </>
-                          ) : (
-                            <>
-                              <FileText className="w-4 h-4 mr-2" />
-                              Create New Page
-                            </>
-                          )}
-                        </Button>
-                      </>
-                    )}
+                      )}
+                      <Button 
+                        className="w-full mt-2"
+                        style={{
+                          background: 'linear-gradient(to right, #bbeb02, #a0d000)',
+                          color: '#000'
+                        }}
+                        onClick={handleCreateNew}
+                        disabled={isCreatingNew}
+                      >
+                        {isCreatingNew ? (
+                          <>
+                            <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                            Creating...
+                          </>
+                        ) : (
+                          <>
+                            <FileText className="w-4 h-4 mr-2" />
+                            Create New Page
+                          </>
+                        )}
+                      </Button>
+                    </>
                   </>
                 ) : (
                   <div className="text-center py-8">
