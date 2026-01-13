@@ -12,7 +12,9 @@ import {
   TrendingUp,
   CheckCircle,
   Target,
-  Zap
+  Zap,
+  Copy,
+  Check
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -37,6 +39,7 @@ export default function AnswerEngineering() {
   const [optimizationResult, setOptimizationResult] = useState(null);
   const [isCreatingNew, setIsCreatingNew] = useState(false);
   const [newPageResult, setNewPageResult] = useState(null);
+  const [copied, setCopied] = useState(false);
   const [theme, setTheme] = useState(() => {
     return localStorage.getItem('elelem-theme') || 'dark';
   });
@@ -137,6 +140,29 @@ Focus on pages that would be most relevant for answering customer questions and 
       }));
     }
     return prompt.best_pages;
+  };
+
+  const cleanContentForDisplay = (content) => {
+    return content
+      .replace(/^##\s+/gm, '') // Remove ## headers
+      .replace(/^###\s+/gm, '') // Remove ### headers
+      .replace(/^####\s+/gm, '') // Remove #### headers
+      .replace(/Source:.*$/gm, '') // Remove source URLs
+      .replace(/\[Source:.*?\]/g, '') // Remove [Source: ...] patterns
+      .trim();
+  };
+
+  const handleCopyContent = async () => {
+    if (!newPageResult) return;
+    
+    try {
+      const cleanedContent = cleanContentForDisplay(newPageResult.content);
+      await navigator.clipboard.writeText(cleanedContent);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch (error) {
+      console.error("Failed to copy:", error);
+    }
   };
 
   const handleCreateNew = async () => {
@@ -635,15 +661,34 @@ Focus on:
               {/* Full Content Display */}
               <Card className={isDark ? 'bg-slate-800/50 border-purple-500/30' : 'bg-white border-purple-500/30'}>
                 <CardHeader>
-                  <CardTitle className={`text-sm flex items-center gap-2 ${isDark ? 'text-white' : 'text-gray-900'}`}>
-                    <FileText className="w-4 h-4 text-purple-500" />
-                    Complete Page Content
-                  </CardTitle>
+                  <div className="flex items-center justify-between">
+                    <CardTitle className={`text-sm flex items-center gap-2 ${isDark ? 'text-white' : 'text-gray-900'}`}>
+                      <FileText className="w-4 h-4 text-purple-500" />
+                      Complete Page Content
+                    </CardTitle>
+                    <Button
+                      size="sm"
+                      onClick={handleCopyContent}
+                      className="bg-purple-500 hover:bg-purple-600 text-white"
+                    >
+                      {copied ? (
+                        <>
+                          <Check className="w-4 h-4 mr-2" />
+                          Copied!
+                        </>
+                      ) : (
+                        <>
+                          <Copy className="w-4 h-4 mr-2" />
+                          Copy Text
+                        </>
+                      )}
+                    </Button>
+                  </div>
                 </CardHeader>
                 <CardContent>
                   <div className="prose prose-sm max-w-none">
                     <pre className={`whitespace-pre-wrap text-xs p-4 rounded-lg max-h-[600px] overflow-y-auto ${isDark ? 'text-slate-300 bg-slate-900/50' : 'text-gray-700 bg-gray-50'}`}>
-                      {newPageResult.content}
+                      {cleanContentForDisplay(newPageResult.content)}
                     </pre>
                   </div>
                 </CardContent>
