@@ -144,16 +144,28 @@ Focus on pages that would be most relevant for answering customer questions and 
 
   const cleanContentForDisplay = (content) => {
     return content
-      .replace(/^##\s+/gm, '') // Remove ## headers
-      .replace(/^###\s+/gm, '') // Remove ### headers
-      .replace(/^####\s+/gm, '') // Remove #### headers
-      .replace(/^#\s+/gm, '') // Remove # headers
-      .replace(/Source:.*$/gm, '') // Remove "Source: ..." lines
-      .replace(/\[Source:.*?\]/g, '') // Remove [Source: ...] patterns
-      .replace(/\(https?:\/\/[^\)]+\)/g, '') // Remove URLs in parentheses
-      .replace(/https?:\/\/[^\s]+/g, '') // Remove all URLs
+      // Remove all markdown headers
+      .replace(/^#{1,6}\s+/gm, '')
+      // Remove markdown bold/italic
+      .replace(/\*\*/g, '')
+      .replace(/\*/g, '')
+      .replace(/__/g, '')
+      .replace(/_/g, '')
+      // Remove all URLs and source citations
+      .replace(/https?:\/\/[^\s\)]+/gi, '')
+      .replace(/\[Source:.*?\]/gi, '')
+      .replace(/Source:.*?(?=\n|$)/gim, '')
+      .replace(/\(Source:.*?\)/gi, '')
       .replace(/\[([^\]]+)\]\([^\)]+\)/g, '$1') // Convert markdown links to plain text
-      .replace(/\n{3,}/g, '\n\n') // Remove excessive line breaks
+      // Remove "Next steps", "Related articles", etc. sections
+      .replace(/(?:Next Steps?|Related Articles?|Further Reading|Learn More|Additional Resources|See Also|Recommended Reading|More Information):?[\s\S]*?(?=\n\n|$)/gi, '')
+      // Remove citation brackets like [1], [2], [1,2,3]
+      .replace(/\[[\d\s,]+\]/g, '')
+      // Remove any remaining source/citation markers
+      .replace(/\(?\d+\)?/g, '') // Remove citation numbers like (1) or 1
+      // Clean up extra whitespace
+      .replace(/\n{3,}/g, '\n\n')
+      .replace(/[ \t]+/g, ' ')
       .trim();
   };
 
