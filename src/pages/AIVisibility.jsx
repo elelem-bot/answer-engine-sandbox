@@ -129,7 +129,15 @@ export default function AIVisibility() {
     for (const prompt of promptsData) {
       try {
         const response = await base44.integrations.Core.InvokeLLM({
-          prompt: prompt.prompt,
+          prompt: `Answer this question: "${prompt.prompt}"
+
+After answering, analyze your response and extract:
+1. Which actual company/product brands you mentioned or recommended in your answer (only real companies, not made-up names)
+2. How many times you mentioned each brand
+3. Key topics covered
+4. Total number of citations/sources used
+
+Be accurate - only list brands you actually mentioned in your response.`,
           add_context_from_internet: true,
           response_json_schema: {
             type: "object",
