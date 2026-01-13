@@ -147,8 +147,13 @@ Focus on pages that would be most relevant for answering customer questions and 
       .replace(/^##\s+/gm, '') // Remove ## headers
       .replace(/^###\s+/gm, '') // Remove ### headers
       .replace(/^####\s+/gm, '') // Remove #### headers
-      .replace(/Source:.*$/gm, '') // Remove source URLs
+      .replace(/^#\s+/gm, '') // Remove # headers
+      .replace(/Source:.*$/gm, '') // Remove "Source: ..." lines
       .replace(/\[Source:.*?\]/g, '') // Remove [Source: ...] patterns
+      .replace(/\(https?:\/\/[^\)]+\)/g, '') // Remove URLs in parentheses
+      .replace(/https?:\/\/[^\s]+/g, '') // Remove all URLs
+      .replace(/\[([^\]]+)\]\([^\)]+\)/g, '$1') // Convert markdown links to plain text
+      .replace(/\n{3,}/g, '\n\n') // Remove excessive line breaks
       .trim();
   };
 
