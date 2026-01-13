@@ -35,6 +35,8 @@ export default function AnswerEngineering() {
   const [selectedPage, setSelectedPage] = useState(null);
   const [isOptimizing, setIsOptimizing] = useState(false);
   const [optimizationResult, setOptimizationResult] = useState(null);
+  const [isCreatingNew, setIsCreatingNew] = useState(false);
+  const [newPageResult, setNewPageResult] = useState(null);
   const [theme, setTheme] = useState(() => {
     return localStorage.getItem('elelem-theme') || 'dark';
   });
@@ -135,6 +137,70 @@ Focus on pages that would be most relevant for answering customer questions and 
       }));
     }
     return prompt.best_pages;
+  };
+
+  const handleCreateNew = async () => {
+    if (!selectedPrompt) return;
+    setIsCreatingNew(true);
+    
+    try {
+      const newContent = await base44.integrations.Core.InvokeLLM({
+        prompt: `You are an expert content creator specializing in AI-optimized content.
+
+COMPANY CONTEXT:
+- Company: ${company.name}
+- Product: ${company.product_name}
+- Website: ${company.website_url}
+
+TARGET PROMPT TO ANSWER:
+"${selectedPrompt.prompt}"
+
+TASK:
+Create a completely new webpage that directly answers this prompt. Use the company's tone and language style based on their website.
+
+Return:
+1. content: The complete new page content (formatted in markdown)
+2. structure: Array of sections created, each with:
+   - section_name: What this section is (e.g., "Hero Section", "Key Features", "How It Works", "FAQ")
+   - content_preview: First 100 characters of this section
+   - reasoning: Why this section helps answer the prompt
+
+Focus on:
+- Directly answering the prompt's question/intent
+- Using the company's authentic voice and style
+- Providing specific details and examples
+- Creating well-structured, scannable content
+- Optimizing for AI search visibility`,
+        add_context_from_internet: true,
+        response_json_schema: {
+          type: "object",
+          properties: {
+            content: { type: "string" },
+            structure: {
+              type: "array",
+              items: {
+                type: "object",
+                properties: {
+                  section_name: { type: "string" },
+                  content_preview: { type: "string" },
+                  reasoning: { type: "string" }
+                }
+              }
+            }
+          }
+        }
+      });
+
+      setNewPageResult({
+        content: newContent.content,
+        structure: newContent.structure
+      });
+    } catch (error) {
+      console.error("Error creating new page:", error);
+      alert("Failed to create new page. Please try again.");
+    } finally {
+      setIsCreatingNew(false);
+    }
   };
 
   const handleOptimize = async () => {
@@ -276,9 +342,9 @@ Focus on:
           />
         </div>
 
-        <div className={`grid gap-6 ${optimizationResult ? 'lg:grid-cols-1' : 'lg:grid-cols-2'}`}>
+        <div className={`grid gap-6 ${optimizationResult || newPageResult ? 'lg:grid-cols-1' : 'lg:grid-cols-2'}`}>
           {/* Left Column - Prompts */}
-          {!optimizationResult && <div>
+          {!optimizationResult && !newPageResult && <div>
 
             {/* Prompts Table */}
             <Card className={isDark ? 'bg-slate-800/50 border-slate-700/50' : 'bg-white border-gray-200'}>
@@ -339,7 +405,7 @@ Focus on:
           </div>}
 
           {/* Right Column - Best Matching Pages */}
-          {!optimizationResult && <div>
+          {!optimizationResult && !newPageResult && <div>
             <Card className={isDark ? 'bg-slate-800/50 border-slate-700/50' : 'bg-white border-gray-200'}>
               <CardHeader>
                 <CardTitle className={`flex items-center gap-2 ${isDark ? 'text-white' : 'text-gray-900'}`}>
@@ -378,23 +444,42 @@ Focus on:
                       ))}
                     </div>
                     {selectedPage && (
-                      <Button 
-                        className="w-full bg-gradient-to-r from-teal-500 to-cyan-500 hover:from-teal-600 hover:to-cyan-600 mt-4"
-                        onClick={handleOptimize}
-                        disabled={isOptimizing}
-                      >
-                        {isOptimizing ? (
-                          <>
-                            <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                            Optimizing...
-                          </>
-                        ) : (
-                          <>
-                            <Zap className="w-4 h-4 mr-2" />
-                            Optimize Page
-                          </>
-                        )}
-                      </Button>
+                      <>
+                        <Button 
+                          className="w-full bg-gradient-to-r from-teal-500 to-cyan-500 hover:from-teal-600 hover:to-cyan-600 mt-4"
+                          onClick={handleOptimize}
+                          disabled={isOptimizing}
+                        >
+                          {isOptimizing ? (
+                            <>
+                              <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                              Optimizing...
+                            </>
+                          ) : (
+                            <>
+                              <Zap className="w-4 h-4 mr-2" />
+                              Optimize Page
+                            </>
+                          )}
+                        </Button>
+                        <Button 
+                          className="w-full bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 mt-2"
+                          onClick={handleCreateNew}
+                          disabled={isCreatingNew}
+                        >
+                          {isCreatingNew ? (
+                            <>
+                              <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                              Creating...
+                            </>
+                          ) : (
+                            <>
+                              <FileText className="w-4 h-4 mr-2" />
+                              Create New Page
+                            </>
+                          )}
+                        </Button>
+                      </>
                     )}
                   </>
                 ) : (
@@ -493,6 +578,76 @@ Focus on:
                   </CardContent>
                 </Card>
               </div>
+            </div>
+          )}
+
+          {/* New Page Results */}
+          {newPageResult && (
+            <div className="space-y-6">
+              <div className="flex items-center justify-between">
+                <Button
+                  variant="ghost"
+                  onClick={() => setNewPageResult(null)}
+                  className={isDark ? 'text-slate-400 hover:text-white' : 'text-gray-600 hover:text-gray-900'}
+                >
+                  <ArrowLeft className="w-4 h-4 mr-2" />
+                  Back to Prompts
+                </Button>
+              </div>
+
+              {/* Content Structure Summary */}
+              <Card className={isDark ? 'bg-slate-800/50 border-slate-700/50' : 'bg-white border-gray-200'}>
+                <CardHeader>
+                  <CardTitle className={`flex items-center gap-2 ${isDark ? 'text-white' : 'text-gray-900'}`}>
+                    <CheckCircle className="w-5 h-5 text-purple-500" />
+                    New Page Created
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className={isDark ? 'text-slate-400 mb-4' : 'text-gray-600 mb-4'}>
+                    Created new content to answer: 
+                    <span className="text-purple-600 italic"> "{selectedPrompt?.prompt}"</span>
+                  </p>
+                  <div className="space-y-3">
+                    {newPageResult.structure.map((section, i) => (
+                      <div key={i} className={`p-4 rounded-lg border ${isDark ? 'bg-slate-900/50 border-slate-700/50' : 'bg-gray-50 border-gray-200'}`}>
+                        <div className="flex items-start gap-3 mb-3">
+                          <Badge className="bg-purple-500/20 text-purple-400 border-purple-500/30">
+                            {section.section_name}
+                          </Badge>
+                        </div>
+                        <div className="space-y-2 text-sm">
+                          <div className={`p-2 rounded ${isDark ? 'bg-slate-800' : 'bg-white'}`}>
+                            <div className={`text-xs mb-1 ${isDark ? 'text-slate-500' : 'text-gray-500'}`}>Preview:</div>
+                            <div className={isDark ? 'text-slate-300' : 'text-gray-700'}>{section.content_preview}...</div>
+                          </div>
+                          <div className="text-slate-400 text-xs mt-2 flex items-start gap-2">
+                            <Target className="w-3 h-3 text-purple-400 mt-0.5 flex-shrink-0" />
+                            <span>{section.reasoning}</span>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Full Content Display */}
+              <Card className={isDark ? 'bg-slate-800/50 border-purple-500/30' : 'bg-white border-purple-500/30'}>
+                <CardHeader>
+                  <CardTitle className={`text-sm flex items-center gap-2 ${isDark ? 'text-white' : 'text-gray-900'}`}>
+                    <FileText className="w-4 h-4 text-purple-500" />
+                    Complete Page Content
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="prose prose-sm max-w-none">
+                    <pre className={`whitespace-pre-wrap text-xs p-4 rounded-lg max-h-[600px] overflow-y-auto ${isDark ? 'text-slate-300 bg-slate-900/50' : 'text-gray-700 bg-gray-50'}`}>
+                      {newPageResult.content}
+                    </pre>
+                  </div>
+                </CardContent>
+              </Card>
             </div>
           )}
         </div>
