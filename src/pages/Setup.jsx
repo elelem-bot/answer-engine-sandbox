@@ -351,146 +351,61 @@ Return JSON format:
               <CardContent className="space-y-6">
                 <div className="space-y-2">
                   <Label className="text-slate-300">Company/Project Name *</Label>
-                  {formData.name && !isAutoFilling ? (
-                    <Badge 
-                      className="bg-teal-500/20 text-teal-400 border-teal-500/30 text-base px-4 py-2 flex items-center gap-2 w-fit"
-                    >
-                      {formData.name}
-                      <X 
-                        className="w-4 h-4 cursor-pointer hover:text-teal-300" 
-                        onClick={() => setFormData(prev => ({ ...prev, name: '' }))}
-                      />
-                    </Badge>
-                  ) : (
-                    <Input
-                      value={formData.name}
-                      onChange={(e) => handleChange("name", e.target.value)}
-                      className="bg-slate-900 border-slate-700 text-white"
-                      placeholder="Acme Corp"
-                      required
-                    />
-                  )}
+                  <Input
+                    value={formData.name}
+                    onChange={(e) => handleChange("name", e.target.value)}
+                    className="bg-slate-900 border-slate-700 text-white"
+                    placeholder="Acme Corp"
+                    required
+                  />
                   <p className="text-slate-500 text-sm">Your company or project name</p>
                 </div>
 
                 <div className="space-y-2">
                   <Label className="text-slate-300">Key Product Name *</Label>
-                  {formData.product_name && !isAutoFilling ? (
-                    <Badge 
-                      className="bg-teal-500/20 text-teal-400 border-teal-500/30 text-base px-4 py-2 flex items-center gap-2 w-fit"
-                    >
-                      {formData.product_name}
-                      <X 
-                        className="w-4 h-4 cursor-pointer hover:text-teal-300" 
-                        onClick={() => setFormData(prev => ({ ...prev, product_name: '' }))}
-                      />
-                    </Badge>
-                  ) : (
-                    <Input
-                      value={formData.product_name}
-                      onChange={(e) => handleChange("product_name", e.target.value)}
-                      className="bg-slate-900 border-slate-700 text-white"
-                      placeholder="e.g., PlayStation, Gmail, Salesforce CRM"
-                      required
-                    />
-                  )}
+                  <Input
+                    value={formData.product_name}
+                    onChange={(e) => handleChange("product_name", e.target.value)}
+                    className="bg-slate-900 border-slate-700 text-white"
+                    placeholder="e.g., PlayStation, Gmail, Salesforce CRM"
+                    required
+                  />
                   <p className="text-slate-500 text-sm">Your main product or service name</p>
                 </div>
 
                 <div className="space-y-2">
                   <Label className="text-slate-300">Main Commercial Competitors *</Label>
-                  {formData.top_competitors && !isAutoFilling ? (
-                    <div className="flex flex-wrap gap-2">
-                      {formData.top_competitors.split(',').map((comp, i) => (
-                        <Badge 
-                          key={i}
-                          className="bg-teal-500/20 text-teal-400 border-teal-500/30 text-sm px-3 py-1.5 flex items-center gap-2"
-                        >
-                          {comp.trim()}
-                          <X 
-                            className="w-3.5 h-3.5 cursor-pointer hover:text-teal-300" 
-                            onClick={() => {
-                              const competitors = formData.top_competitors.split(',').filter((_, idx) => idx !== i);
-                              setFormData(prev => ({ ...prev, top_competitors: competitors.join(', ') }));
-                            }}
-                          />
-                        </Badge>
-                      ))}
-                      <Button
-                        type="button"
-                        variant="outline"
-                        size="sm"
-                        onClick={() => {
-                          const newComp = prompt('Add competitor:');
-                          if (newComp) {
-                            setFormData(prev => ({ 
-                              ...prev, 
-                              top_competitors: prev.top_competitors ? `${prev.top_competitors}, ${newComp}` : newComp 
-                            }));
-                          }
-                        }}
-                        className="border-slate-700 text-slate-300 h-7"
-                      >
-                        + Add
-                      </Button>
-                    </div>
-                  ) : (
-                    <Input
-                      value={formData.top_competitors}
-                      onChange={(e) => handleChange("top_competitors", e.target.value)}
-                      className="bg-slate-900 border-slate-700 text-white"
-                      placeholder="Competitor A, Competitor B, Competitor C"
-                      required
-                    />
-                  )}
+                  <Input
+                    value={formData.top_competitors}
+                    onChange={(e) => handleChange("top_competitors", e.target.value)}
+                    className="bg-slate-900 border-slate-700 text-white"
+                    placeholder="Competitor A, Competitor B, Competitor C"
+                    required
+                  />
                   <p className="text-slate-500 text-sm">Separate with commas</p>
                 </div>
 
                 <div className="space-y-2">
                   <Label className="text-slate-300">ICP Description *</Label>
-                  {formData.icp_description && !isAutoFilling ? (
-                    <Badge 
-                      className="bg-teal-500/20 text-teal-400 border-teal-500/30 text-sm px-4 py-2 flex items-center gap-2 w-fit max-w-full whitespace-normal h-auto"
-                    >
-                      <span className="flex-1">{formData.icp_description}</span>
-                      <X 
-                        className="w-4 h-4 cursor-pointer hover:text-teal-300 flex-shrink-0" 
-                        onClick={() => setFormData(prev => ({ ...prev, icp_description: '' }))}
-                      />
-                    </Badge>
-                  ) : (
-                    <Textarea
-                      value={formData.icp_description}
-                      onChange={(e) => handleChange("icp_description", e.target.value)}
-                      className="bg-slate-900 border-slate-700 text-white min-h-[100px]"
-                      placeholder="e.g., Content Marketers at Enterprise Insurance companies, or Tech-savvy millennials interested in gaming"
-                      required
-                    />
-                  )}
+                  <Textarea
+                    value={formData.icp_description}
+                    onChange={(e) => handleChange("icp_description", e.target.value)}
+                    className="bg-slate-900 border-slate-700 text-white min-h-[100px]"
+                    placeholder="e.g., Content Marketers at Enterprise Insurance companies, or Tech-savvy millennials interested in gaming"
+                    required
+                  />
                   <p className="text-slate-500 text-sm">Describe your ideal customer profile</p>
                 </div>
 
                 <div className="space-y-2">
                   <Label className="text-slate-300">Region *</Label>
-                  {formData.region && !isAutoFilling ? (
-                    <Badge 
-                      className="bg-teal-500/20 text-teal-400 border-teal-500/30 text-base px-4 py-2 flex items-center gap-2 w-fit"
-                    >
-                      {formData.region}
-                      <X 
-                        className="w-4 h-4 cursor-pointer hover:text-teal-300" 
-                        onClick={() => setFormData(prev => ({ ...prev, region: '' }))}
-                      />
-                    </Badge>
-                  ) : (
-                    <Input
-                      value={formData.region}
-                      onChange={(e) => handleChange("region", e.target.value)}
-                      className="bg-slate-900 border-slate-700 text-white"
-                      placeholder="e.g., Ireland, UK, EU, Germany, US, California, Japan"
-                      required
-                    />
-                  )}
+                  <Input
+                    value={formData.region}
+                    onChange={(e) => handleChange("region", e.target.value)}
+                    className="bg-slate-900 border-slate-700 text-white"
+                    placeholder="e.g., Ireland, UK, EU, Germany, US, California, Japan"
+                    required
+                  />
                   <p className="text-slate-500 text-sm">Primary market or region</p>
                 </div>
               </CardContent>
