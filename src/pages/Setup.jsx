@@ -52,7 +52,6 @@ export default function Setup() {
       const analysis = await base44.integrations.Core.InvokeLLM({
         prompt: `CRITICAL: Comprehensively crawl and analyze this website to extract detailed information.
 
-Company: ${companyName}
 Website: ${websiteUrl}
 
 CRAWLING INSTRUCTIONS:
@@ -63,16 +62,18 @@ CRAWLING INSTRUCTIONS:
 
 Based on the content from all crawled pages, extract:
 
-1. product_name: The main product/service name (e.g., "Salesforce CRM", "Gmail", "PlayStation")
-2. top_competitors: List 3-5 main commercial competitors (comma-separated, based on industry context and content)
-3. icp_description: Describe their ideal customer profile based on case studies, testimonials, and content (e.g., "Content Marketers at Enterprise Insurance companies")
-4. region: Primary geographic market(s) mentioned across the site (e.g., "United States", "Europe", "Global")
+1. company_name: The company/brand name (e.g., "Salesforce", "Google", "Sony")
+2. product_name: The main product/service name (e.g., "Salesforce CRM", "Gmail", "PlayStation")
+3. top_competitors: List 3-5 main commercial competitors (comma-separated, based on industry context and content)
+4. icp_description: Describe their ideal customer profile based on case studies, testimonials, and content (e.g., "Content Marketers at Enterprise Insurance companies")
+5. region: Primary geographic market(s) mentioned across the site (e.g., "United States", "Europe", "Global")
 
 Be specific and accurate based on actual content found across all crawled pages.`,
         add_context_from_internet: true,
         response_json_schema: {
           type: "object",
           properties: {
+            company_name: { type: "string" },
             product_name: { type: "string" },
             top_competitors: { type: "string" },
             icp_description: { type: "string" },
@@ -83,6 +84,7 @@ Be specific and accurate based on actual content found across all crawled pages.
 
       setFormData(prev => ({
         ...prev,
+        name: analysis.company_name || companyName || prev.name,
         product_name: analysis.product_name || prev.product_name,
         top_competitors: analysis.top_competitors || prev.top_competitors,
         icp_description: analysis.icp_description || prev.icp_description,
@@ -312,33 +314,20 @@ Return JSON format:
                   <div className="w-8 h-8 rounded-full bg-teal-500 text-white flex items-center justify-center font-bold">
                     1
                   </div>
-                  <CardTitle className="text-white">Enter Your Company URL & Name</CardTitle>
+                  <CardTitle className="text-white">Enter Your Company URL</CardTitle>
                 </div>
               </CardHeader>
               <CardContent className="space-y-4">
-                <div className="grid md:grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label className="text-slate-300">Website URL *</Label>
-                    <Input
-                      type="url"
-                      value={formData.website_url}
-                      onChange={(e) => handleChange("website_url", e.target.value)}
-                      className="bg-slate-900 border-slate-700 text-white"
-                      placeholder="https://example.com"
-                      required
-                    />
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label className="text-slate-300">Company/Project Name *</Label>
-                    <Input
-                      value={formData.name}
-                      onChange={(e) => handleChange("name", e.target.value)}
-                      className="bg-slate-900 border-slate-700 text-white"
-                      placeholder="Acme Corp"
-                      required
-                    />
-                  </div>
+                <div className="space-y-2">
+                  <Label className="text-slate-300">Website URL *</Label>
+                  <Input
+                    type="url"
+                    value={formData.website_url}
+                    onChange={(e) => handleChange("website_url", e.target.value)}
+                    className="bg-slate-900 border-slate-700 text-white"
+                    placeholder="https://example.com"
+                    required
+                  />
                 </div>
                 {isAutoFilling && (
                   <div className="flex items-center gap-2 text-teal-400 bg-teal-500/10 rounded-lg p-3 border border-teal-500/30">
@@ -360,6 +349,29 @@ Return JSON format:
                 </div>
               </CardHeader>
               <CardContent className="space-y-6">
+                <div className="space-y-2">
+                  <Label className="text-slate-300">Company/Project Name *</Label>
+                  {formData.name && !isAutoFilling ? (
+                    <Badge 
+                      className="bg-teal-500/20 text-teal-400 border-teal-500/30 text-base px-4 py-2 flex items-center gap-2 w-fit"
+                    >
+                      {formData.name}
+                      <X 
+                        className="w-4 h-4 cursor-pointer hover:text-teal-300" 
+                        onClick={() => setFormData(prev => ({ ...prev, name: '' }))}
+                      />
+                    </Badge>
+                  ) : (
+                    <Input
+                      value={formData.name}
+                      onChange={(e) => handleChange("name", e.target.value)}
+                      className="bg-slate-900 border-slate-700 text-white"
+                      placeholder="Acme Corp"
+                      required
+                    />
+                  )}
+                  <p className="text-slate-500 text-sm">Your company or project name</p>
+                </div>
 
                 <div className="space-y-2">
                   <Label className="text-slate-300">Key Product Name *</Label>
