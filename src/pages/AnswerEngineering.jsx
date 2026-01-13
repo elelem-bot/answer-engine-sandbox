@@ -404,7 +404,14 @@ Focus on:
                         >
                           <td className="p-4">
                             <div className="space-y-2">
-                              <div className={`font-medium ${isDark ? 'text-white' : 'text-gray-900'}`}>{prompt.prompt}</div>
+                              <div className="flex items-start gap-2">
+                                <div className={`font-medium flex-1 ${isDark ? 'text-white' : 'text-gray-900'}`}>{prompt.prompt}</div>
+                                {prompt.source_tag === 'REAL' && (
+                                  <Badge className="bg-blue-500/20 text-blue-400 border-blue-500/30 text-xs">
+                                    REAL
+                                  </Badge>
+                                )}
+                              </div>
                               <div className="flex gap-2 flex-wrap">
                                 {(prompt.keywords || []).slice(0, 3).map((keyword, j) => (
                                   <Badge
@@ -529,17 +536,30 @@ Focus on:
 
           {/* Optimization Results */}
           {optimizationResult && (
-            <div className="space-y-6">
-              <div className="flex items-center justify-between">
-                <Button
-                  variant="ghost"
-                  onClick={() => setOptimizationResult(null)}
-                  className={isDark ? 'text-slate-400 hover:text-white' : 'text-gray-600 hover:text-gray-900'}
-                >
-                  <ArrowLeft className="w-4 h-4 mr-2" />
-                  Back to Prompts
-                </Button>
-              </div>
+          <div className="space-y-6">
+          <div className="flex items-center justify-between">
+            <Button
+              variant="ghost"
+              onClick={() => setOptimizationResult(null)}
+              className={isDark ? 'text-slate-400 hover:text-white' : 'text-gray-600 hover:text-gray-900'}
+            >
+              <ArrowLeft className="w-4 h-4 mr-2" />
+              Back to Prompts
+            </Button>
+            <Button
+              className="bg-gradient-to-r from-teal-500 to-cyan-500 hover:from-teal-600 hover:to-cyan-600"
+              onClick={async () => {
+                await base44.entities.PromptAnalysis.update(selectedPrompt.id, {
+                  is_tracked: true,
+                  tracked_date: new Date().toISOString().split('T')[0]
+                });
+                alert('Prompt tracking started! View in Tracking page.');
+              }}
+            >
+              <Target className="w-4 h-4 mr-2" />
+              Track This Prompt
+            </Button>
+          </div>
 
               {/* Changes Summary */}
               <Card className={isDark ? 'bg-slate-800/50 border-slate-700/50' : 'bg-white border-gray-200'}>
@@ -618,17 +638,30 @@ Focus on:
 
           {/* New Page Results */}
           {newPageResult && (
-            <div className="space-y-6">
-              <div className="flex items-center justify-between">
-                <Button
-                  variant="ghost"
-                  onClick={() => setNewPageResult(null)}
-                  className={isDark ? 'text-slate-400 hover:text-white' : 'text-gray-600 hover:text-gray-900'}
-                >
-                  <ArrowLeft className="w-4 h-4 mr-2" />
-                  Back to Prompts
-                </Button>
-              </div>
+          <div className="space-y-6">
+          <div className="flex items-center justify-between">
+            <Button
+              variant="ghost"
+              onClick={() => setNewPageResult(null)}
+              className={isDark ? 'text-slate-400 hover:text-white' : 'text-gray-600 hover:text-gray-900'}
+            >
+              <ArrowLeft className="w-4 h-4 mr-2" />
+              Back to Prompts
+            </Button>
+            <Button
+              className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600"
+              onClick={async () => {
+                await base44.entities.PromptAnalysis.update(selectedPrompt.id, {
+                  is_tracked: true,
+                  tracked_date: new Date().toISOString().split('T')[0]
+                });
+                alert('Prompt tracking started! View in Tracking page.');
+              }}
+            >
+              <Target className="w-4 h-4 mr-2" />
+              Track This Prompt
+            </Button>
+          </div>
 
               {/* Content Structure Summary */}
               <Card className={isDark ? 'bg-slate-800/50 border-slate-700/50' : 'bg-white border-gray-200'}>
