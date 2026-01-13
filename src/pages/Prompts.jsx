@@ -290,6 +290,11 @@ export default function Prompts() {
                       <div className="flex-1">
                         <p className={`font-medium mb-2 ${isDark ? 'text-white' : 'text-gray-900'}`}>{prompt.prompt}</p>
                         <div className="flex gap-2 flex-wrap">
+                          {prompt.is_tracked && (
+                            <Badge className="bg-gradient-to-r from-teal-500/20 to-cyan-500/20 text-teal-400 border-teal-500/30">
+                              Engineered
+                            </Badge>
+                          )}
                           <Badge 
                             variant="outline"
                             className={`${
@@ -314,6 +319,13 @@ export default function Prompts() {
                           ))}
                         </div>
                       </div>
+                      {prompt.is_tracked && prompt.visibility_trend && prompt.visibility_trend.length > 0 && (
+                        <div className="text-right">
+                          <Badge className="bg-green-500/20 text-green-400 border-green-500/30 mb-1">
+                            +{prompt.visibility_trend[prompt.visibility_trend.length - 1]?.share_percentage || 0}% Share
+                          </Badge>
+                        </div>
+                      )}
                     </div>
                   </motion.div>
                 ))
