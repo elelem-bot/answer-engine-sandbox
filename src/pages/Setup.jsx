@@ -351,65 +351,25 @@ Return JSON format:
               <CardContent className="space-y-6">
                 <div className="space-y-2">
                   <Label className="text-slate-300">Company/Project Name *</Label>
-                  {formData.name && !isAutoFilling ? (
-                    <div className="space-y-2">
-                      <Badge 
-                        className="bg-teal-500/20 text-teal-400 border-teal-500/30 text-base px-4 py-2 flex items-center gap-2 w-fit"
-                      >
-                        {formData.name}
-                        <X 
-                          className="w-4 h-4 cursor-pointer hover:text-teal-300" 
-                          onClick={() => setFormData(prev => ({ ...prev, name: '' }))}
-                        />
-                      </Badge>
-                      <Input
-                        value=""
-                        onChange={(e) => e.target.value && setFormData(prev => ({ ...prev, name: e.target.value }))}
-                        className="bg-slate-900 border-slate-700 text-white"
-                        placeholder="Edit company name"
-                      />
-                    </div>
-                  ) : (
-                    <Input
-                      value={formData.name}
-                      onChange={(e) => handleChange("name", e.target.value)}
-                      className="bg-slate-900 border-slate-700 text-white"
-                      placeholder="Acme Corp"
-                      required
-                    />
-                  )}
+                  <Input
+                    value={formData.name}
+                    onChange={(e) => handleChange("name", e.target.value)}
+                    className="bg-slate-900 border-slate-700 text-white"
+                    placeholder="Acme Corp"
+                    required
+                  />
                   <p className="text-slate-500 text-sm">Your company or project name</p>
                 </div>
 
                 <div className="space-y-2">
                   <Label className="text-slate-300">Key Product Name *</Label>
-                  {formData.product_name && !isAutoFilling ? (
-                    <div className="space-y-2">
-                      <Badge 
-                        className="bg-teal-500/20 text-teal-400 border-teal-500/30 text-base px-4 py-2 flex items-center gap-2 w-fit"
-                      >
-                        {formData.product_name}
-                        <X 
-                          className="w-4 h-4 cursor-pointer hover:text-teal-300" 
-                          onClick={() => setFormData(prev => ({ ...prev, product_name: '' }))}
-                        />
-                      </Badge>
-                      <Input
-                        value=""
-                        onChange={(e) => e.target.value && setFormData(prev => ({ ...prev, product_name: e.target.value }))}
-                        className="bg-slate-900 border-slate-700 text-white"
-                        placeholder="Edit product name"
-                      />
-                    </div>
-                  ) : (
-                    <Input
-                      value={formData.product_name}
-                      onChange={(e) => handleChange("product_name", e.target.value)}
-                      className="bg-slate-900 border-slate-700 text-white"
-                      placeholder="e.g., PlayStation, Gmail, Salesforce CRM"
-                      required
-                    />
-                  )}
+                  <Input
+                    value={formData.product_name}
+                    onChange={(e) => handleChange("product_name", e.target.value)}
+                    className="bg-slate-900 border-slate-700 text-white"
+                    placeholder="e.g., PlayStation, Gmail, Salesforce CRM"
+                    required
+                  />
                   <p className="text-slate-500 text-sm">Your main product or service name</p>
                 </div>
 
@@ -464,65 +424,25 @@ Return JSON format:
 
                 <div className="space-y-2">
                   <Label className="text-slate-300">ICP Description *</Label>
-                  {formData.icp_description && !isAutoFilling ? (
-                    <div className="space-y-2">
-                      <Badge 
-                        className="bg-teal-500/20 text-teal-400 border-teal-500/30 text-sm px-4 py-2 flex items-center gap-2 w-fit max-w-full whitespace-normal h-auto"
-                      >
-                        <span className="flex-1">{formData.icp_description}</span>
-                        <X 
-                          className="w-4 h-4 cursor-pointer hover:text-teal-300 flex-shrink-0" 
-                          onClick={() => setFormData(prev => ({ ...prev, icp_description: '' }))}
-                        />
-                      </Badge>
-                      <Textarea
-                        value=""
-                        onChange={(e) => e.target.value && setFormData(prev => ({ ...prev, icp_description: e.target.value }))}
-                        className="bg-slate-900 border-slate-700 text-white min-h-[100px]"
-                        placeholder="Edit ICP description"
-                      />
-                    </div>
-                  ) : (
-                    <Textarea
-                      value={formData.icp_description}
-                      onChange={(e) => handleChange("icp_description", e.target.value)}
-                      className="bg-slate-900 border-slate-700 text-white min-h-[100px]"
-                      placeholder="e.g., Content Marketers at Enterprise Insurance companies, or Tech-savvy millennials interested in gaming"
-                      required
-                    />
-                  )}
+                  <Textarea
+                    value={formData.icp_description}
+                    onChange={(e) => handleChange("icp_description", e.target.value)}
+                    className="bg-slate-900 border-slate-700 text-white min-h-[100px]"
+                    placeholder="e.g., Content Marketers at Enterprise Insurance companies, or Tech-savvy millennials interested in gaming"
+                    required
+                  />
                   <p className="text-slate-500 text-sm">Describe your ideal customer profile</p>
                 </div>
 
                 <div className="space-y-2">
                   <Label className="text-slate-300">Region *</Label>
-                  {formData.region && !isAutoFilling ? (
-                    <div className="space-y-2">
-                      <Badge 
-                        className="bg-teal-500/20 text-teal-400 border-teal-500/30 text-base px-4 py-2 flex items-center gap-2 w-fit"
-                      >
-                        {formData.region}
-                        <X 
-                          className="w-4 h-4 cursor-pointer hover:text-teal-300" 
-                          onClick={() => setFormData(prev => ({ ...prev, region: '' }))}
-                        />
-                      </Badge>
-                      <Input
-                        value=""
-                        onChange={(e) => e.target.value && setFormData(prev => ({ ...prev, region: e.target.value }))}
-                        className="bg-slate-900 border-slate-700 text-white"
-                        placeholder="Edit region"
-                      />
-                    </div>
-                  ) : (
-                    <Input
-                      value={formData.region}
-                      onChange={(e) => handleChange("region", e.target.value)}
-                      className="bg-slate-900 border-slate-700 text-white"
-                      placeholder="e.g., Ireland, UK, EU, Germany, US, California, Japan"
-                      required
-                    />
-                  )}
+                  <Input
+                    value={formData.region}
+                    onChange={(e) => handleChange("region", e.target.value)}
+                    className="bg-slate-900 border-slate-700 text-white"
+                    placeholder="e.g., Ireland, UK, EU, Germany, US, California, Japan"
+                    required
+                  />
                   <p className="text-slate-500 text-sm">Primary market or region</p>
                 </div>
               </CardContent>
