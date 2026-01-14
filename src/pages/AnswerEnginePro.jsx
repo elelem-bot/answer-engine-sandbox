@@ -121,40 +121,44 @@ export default function AnswerEnginePro() {
     try {
       // Crawl and index up to 100 pages
       const crawlResponse = await base44.integrations.Core.InvokeLLM({
-        prompt: `You have internet access. Fetch and crawl this website: ${websiteUrl}
+        prompt: `You have internet access and Google search. Your goal: Index UP TO 100 REAL PAGES from ${websiteUrl}
 
-      INSTRUCTIONS:
-      1. Use your internet access to ACTUALLY visit ${websiteUrl} and fetch its HTML
-      2. Extract all internal links from the homepage
-      3. Visit up to 100 pages from this website by following the links
-      4. For EACH page you visit, you MUST extract:
-      - The EXACT URL you visited (must be a real working link)
-      - The page title from the <title> tag or first <h1>
-      - A 2-sentence description of the page content
-      - An image URL from one of these (in order):
-      a) <meta property="og:image" content="URL_HERE">
-      b) <meta name="twitter:image" content="URL_HERE">  
-      c) First <img src="URL_HERE"> tag in the content
-      d) Company logo
-      - ALL text content from the page body
+      STEP 1 - DISCOVER PAGES:
+      - Use Google search: "site:${websiteUrl}" to find all indexed pages
+      - Visit ${websiteUrl} homepage and extract ALL internal links
+      - Look for sitemaps: ${websiteUrl}/sitemap.xml, ${websiteUrl}/sitemap_index.xml
+      - Search specifically for: "site:${websiteUrl}/blog", "site:${websiteUrl}/product"
 
-      PRIORITY PAGES TO FIND:
-      - Homepage (${websiteUrl})
-      - Product pages (look for /products, /product, /solutions in links)
-      - Blog posts (look for /blog, /articles, /news in links)
-      - About, Contact, Pricing pages
+      STEP 2 - CRAWL UP TO 100 PAGES:
+      Visit and fetch content from AS MANY pages as possible (target: 100 pages). Include:
+      - Homepage
+      - ALL blog posts you can find
+      - ALL product/solution pages
+      - About, Services, Resources, Pricing, Contact, Features, Case Studies
+      - Category pages, landing pages, documentation
 
-      CRITICAL: 
-      - Only return pages you ACTUALLY FETCHED from the internet
-      - All URLs must be real, working links from this website
-      - All image_url values must be complete URLs starting with http:// or https://
-      - DO NOT make up or invent any pages or URLs
-
-      Return JSON:
+      STEP 3 - EXTRACT FROM EACH PAGE:
       {
-      "company_name": "extracted from website",
-      "pages": [{"title": "...", "url": "...", "description": "...", "image_url": "..."}],
-      "content_summary": "combined text from all pages"
+      "title": "exact page title from <title> or <h1>",
+      "url": "complete URL (http://... or https://...)",
+      "description": "2-sentence summary of THIS specific page",
+      "image_url": "REAL image URL - check: og:image meta tag, twitter:image meta tag, first hero/featured image, or logo",
+      "content": "full text content from the page"
+      }
+
+      CRITICAL RULES:
+      ✓ MUST crawl 50-100 pages minimum (not just 1-5 pages!)
+      ✓ Every URL must be REAL and from ${websiteUrl}
+      ✓ Every image_url must be a COMPLETE URL starting with http:// or https://
+      ✓ Use Google search to discover pages if needed
+      ✓ Prioritize blog posts and product pages
+      ✗ DO NOT invent or fabricate any URLs or content
+
+      Return:
+      {
+      "company_name": "from website",
+      "pages": [array of 50-100 page objects],
+      "content_summary": "combined text from ALL pages crawled"
       }`,
         add_context_from_internet: true,
         response_json_schema: {
