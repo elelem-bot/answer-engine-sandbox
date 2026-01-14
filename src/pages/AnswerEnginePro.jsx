@@ -126,9 +126,14 @@ export default function AnswerEnginePro() {
 CRAWLING REQUIREMENTS:
 1. Start from homepage: ${websiteUrl}
 2. Systematically discover and visit ALL internal pages by following links
-3. Visit UP TO 100 PAGES including: homepage, all product pages, all blog posts, about, services, resources, pricing, contact, etc.
-4. PRIORITY: Ensure you get homepage, all /products or /product pages, and all /blog pages
-5. Extract ALL text content from every page visited
+3. Visit UP TO 100 PAGES
+4. MUST INCLUDE: 
+   - Homepage (/)
+   - All product pages (/products, /product, /solutions, etc.)
+   - All blog pages (/blog, /blog/*, /articles, /news, etc.)
+   - About, services, resources, pricing, contact pages
+5. Look for common blog patterns: /blog, /blog/post-name, /articles, /news, /resources/blog
+6. Extract ALL text content from every page visited
 
 For each page you visit:
 - Extract the full page content (paragraphs, headings, lists)
