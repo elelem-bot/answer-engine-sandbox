@@ -12,7 +12,8 @@ import {
   ChevronDown,
   MessageSquare,
   List,
-  ArrowRight
+  ArrowRight,
+  X
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -440,21 +441,24 @@ Consider buyer intent when determining funnel stage.`,
               {/* Branded Header */}
               <div className="px-6 py-4 border-b border-slate-200 flex items-center justify-between bg-white">
                 <div className="flex items-center gap-3">
-                  {logoUrl ? (
+                  {logoUrl && (
                     <img 
                       src={logoUrl} 
                       alt={companyName}
-                      className="h-10 max-w-[200px] object-contain"
+                      className="h-8 max-w-[40px] object-contain"
                     />
-                  ) : (
-                    <span className="text-lg font-semibold text-slate-900">
-                      {companyName}
-                    </span>
                   )}
+                  <span className="text-lg font-semibold text-slate-900">
+                    {companyName} Answer Engine
+                  </span>
                 </div>
-                <Badge className="text-xs bg-slate-100 text-slate-600 border-slate-200">
-                  AI Assistant
-                </Badge>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="text-slate-400 hover:text-slate-900"
+                >
+                  <X className="w-5 h-5" />
+                </Button>
               </div>
 
               {/* Split View: Chat + Booking */}
