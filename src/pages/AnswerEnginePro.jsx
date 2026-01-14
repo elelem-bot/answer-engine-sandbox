@@ -50,6 +50,8 @@ export default function AnswerEnginePro() {
   const [bookingEmail, setBookingEmail] = useState("");
   const [bookingName, setBookingName] = useState("");
   const [isBooking, setIsBooking] = useState(false);
+  const [showRecommendations, setShowRecommendations] = useState(false);
+  const [recommendedPages, setRecommendedPages] = useState([]);
 
   React.useEffect(() => {
     const handleThemeChange = () => {
@@ -198,6 +200,40 @@ Answer the question directly and conversationally.`,
 
       const assistantMessage = { role: "assistant", content: cleanedResponse };
       setMessages(prev => [...prev, assistantMessage]);
+
+      // Extract recommended pages based on conversation
+      if (messages.length >= 1) {
+        try {
+          const pageRecs = await base44.integrations.Core.InvokeLLM({
+            prompt: `Based on this conversation, suggest 2 most relevant pages from ${websiteUrl} that the user might want to visit.
+            
+Recent conversation:
+${messages.slice(-3).map(m => `${m.role}: ${m.content}`).join('\n')}
+User: ${question}
+Assistant: ${cleanedResponse}
+
+Return 2 page suggestions with titles and URLs.`,
+            response_json_schema: {
+              type: "object",
+              properties: {
+                pages: {
+                  type: "array",
+                  items: {
+                    type: "object",
+                    properties: {
+                      title: { type: "string" },
+                      url: { type: "string" }
+                    }
+                  }
+                }
+              }
+            }
+          });
+          setRecommendedPages(pageRecs.pages || []);
+        } catch (err) {
+          console.error("Failed to get recommendations:", err);
+        }
+      }
 
       // Analyze and store the question
       if (company) {
@@ -537,31 +573,92 @@ Consider buyer intent when determining funnel stage.`,
                   </div>
 
                   {/* Input Footer */}
-                  <div className="px-6 py-4 border-t border-slate-200 bg-white">
-                    <form onSubmit={handleAskQuestion} className="flex gap-3">
-                      <Input
-                        placeholder={`Ask ${companyName} anything...`}
-                        value={question}
-                        onChange={(e) => setQuestion(e.target.value)}
-                        disabled={isAsking}
-                        className="flex-1 border-slate-300 bg-white text-slate-900 placeholder:text-slate-400 focus:ring-2 rounded-xl"
-                        style={{
-                          borderColor: '#cbd5e1',
-                          '--tw-ring-color': brandColor
-                        }}
-                      />
-                      <Button
-                        type="submit"
-                        disabled={isAsking || !question.trim()}
-                        className="rounded-xl shadow-sm"
-                        style={{
-                          backgroundColor: brandColor,
-                          color: '#ffffff'
-                        }}
-                      >
-                        <Send className="w-5 h-5" />
-                      </Button>
-                    </form>
+                  <div className="border-t border-slate-200 bg-white">
+                    <div className="px-6 py-4">
+                      <form onSubmit={handleAskQuestion} className="flex gap-3">
+                        <Input
+                          placeholder={`Ask ${companyName} anything...`}
+                          value={question}
+                          onChange={(e) => setQuestion(e.target.value)}
+                          disabled={isAsking}
+                          className="flex-1 border-slate-300 bg-white text-slate-900 placeholder:text-slate-400 focus:ring-2 rounded-xl"
+                          style={{
+                            borderColor: '#cbd5e1',
+                            '--tw-ring-color': brandColor
+                          }}
+                        />
+                        <Button
+                          type="submit"
+                          disabled={isAsking || !question.trim()}
+                          className="rounded-xl shadow-sm"
+                          style={{
+                            backgroundColor: brandColor,
+                            color: '#ffffff'
+                          }}
+                        >
+                          <Send className="w-5 h-5" />
+                        </Button>
+                      </form>
+                    </div>
+
+                    {/* Recommendations Bar */}
+                    <AnimatePresence>
+                      {showRecommendations && recommendedPages.length > 0 && (
+                        <motion.div
+                          initial={{ height: 0, opacity: 0 }}
+                          animate={{ height: "auto", opacity: 1 }}
+                          exit={{ height: 0, opacity: 0 }}
+                          className="border-t border-slate-200 bg-slate-50 overflow-hidden"
+                        >
+                          <div className="px-6 py-3 flex items-center gap-3">
+                            <span className="text-xs text-slate-600 font-medium">Recommended:</span>
+                            {recommendedPages.slice(0, 2).map((page, i) => (
+                              <a
+                                key={i}
+                                href={page.url}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-xs px-3 py-1.5 rounded-lg bg-white border border-slate-200 text-slate-700 hover:border-slate-300 transition-colors"
+                              >
+                                {page.title}
+                              </a>
+                            ))}
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={() => setShowRecommendations(false)}
+                              className="ml-auto text-xs h-7"
+                              style={{ borderColor: brandColor, color: brandColor }}
+                            >
+                              Book Demo
+                            </Button>
+                            <Button
+                              size="icon"
+                              variant="ghost"
+                              onClick={() => setShowRecommendations(false)}
+                              className="h-7 w-7"
+                            >
+                              <ChevronDown className="w-4 h-4" />
+                            </Button>
+                          </div>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+
+                    {/* Toggle Button */}
+                    {!showRecommendations && recommendedPages.length > 0 && (
+                      <div className="px-6 py-2 border-t border-slate-200 bg-slate-50">
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          onClick={() => setShowRecommendations(true)}
+                          className="w-full text-xs text-slate-600 hover:text-slate-900"
+                        >
+                          <ChevronUp className="w-4 h-4 mr-1" />
+                          Show Recommendations
+                        </Button>
+                      </div>
+                    )}
                   </div>
                 </div>
 
