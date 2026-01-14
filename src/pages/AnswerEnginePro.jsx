@@ -52,6 +52,7 @@ export default function AnswerEnginePro() {
   const [isBooking, setIsBooking] = useState(false);
   const [showRecommendations, setShowRecommendations] = useState(false);
   const [recommendedPages, setRecommendedPages] = useState([]);
+  const [showBookingPanel, setShowBookingPanel] = useState(false);
 
   React.useEffect(() => {
     const handleThemeChange = () => {
@@ -498,9 +499,9 @@ Consider buyer intent when determining funnel stage.`,
                 </Button>
               </div>
 
-              {/* Chat Section - Full Width */}
-              <div className="flex flex-1 overflow-hidden">
-                <div className="flex-1 flex flex-col">
+              {/* Chat Section with Booking Panel */}
+              <div className="flex flex-1 overflow-hidden relative">
+                <div className={`flex flex-col transition-all ${showBookingPanel ? 'w-[70%]' : 'w-full'}`}>
                   {/* Messages Container */}
                   <div className="p-6 space-y-4 flex-1 overflow-y-auto bg-white">
               <AnimatePresence>
@@ -603,64 +604,173 @@ Consider buyer intent when determining funnel stage.`,
 
                     {/* Recommendations Bar */}
                     <AnimatePresence>
-                      {showRecommendations && recommendedPages.length > 0 && (
-                        <motion.div
-                          initial={{ height: 0, opacity: 0 }}
-                          animate={{ height: "auto", opacity: 1 }}
-                          exit={{ height: 0, opacity: 0 }}
-                          className="border-t border-slate-200 bg-slate-50 overflow-hidden"
-                        >
-                          <div className="px-6 py-3 flex items-center gap-3">
-                            <span className="text-xs text-slate-600 font-medium">Recommended:</span>
-                            {recommendedPages.slice(0, 2).map((page, i) => (
-                              <a
-                                key={i}
-                                href={page.url}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="text-xs px-3 py-1.5 rounded-lg bg-white border border-slate-200 text-slate-700 hover:border-slate-300 transition-colors"
-                              >
-                                {page.title}
-                              </a>
-                            ))}
-                            <Button
-                              size="sm"
-                              variant="outline"
-                              onClick={() => setShowRecommendations(false)}
-                              className="ml-auto text-xs h-7"
-                              style={{ borderColor: brandColor, color: brandColor }}
-                            >
-                              Book Demo
-                            </Button>
-                            <Button
-                              size="icon"
-                              variant="ghost"
-                              onClick={() => setShowRecommendations(false)}
-                              className="h-7 w-7"
-                            >
-                              <ChevronDown className="w-4 h-4" />
-                            </Button>
-                          </div>
-                        </motion.div>
-                      )}
+                     {showRecommendations && recommendedPages.length > 0 && (
+                       <motion.div
+                         initial={{ height: 0, opacity: 0 }}
+                         animate={{ height: "auto", opacity: 1 }}
+                         exit={{ height: 0, opacity: 0 }}
+                         className="border-t border-slate-200 bg-slate-50 overflow-hidden"
+                       >
+                         <div className="px-6 py-4 flex items-center gap-4">
+                           <span className="text-sm text-slate-700 font-medium whitespace-nowrap">Recommended for you:</span>
+                           <div className="flex gap-3 flex-1 overflow-x-auto">
+                             {recommendedPages.slice(0, 2).map((page, i) => (
+                               <a
+                                 key={i}
+                                 href={page.url}
+                                 target="_blank"
+                                 rel="noopener noreferrer"
+                                 className="flex items-center gap-3 px-4 py-3 rounded-lg bg-white border border-slate-200 hover:border-slate-300 hover:shadow-sm transition-all min-w-[200px] group"
+                               >
+                                 <div className="w-12 h-12 rounded bg-gradient-to-br from-slate-100 to-slate-200 flex items-center justify-center flex-shrink-0">
+                                   <Globe className="w-6 h-6 text-slate-400" />
+                                 </div>
+                                 <div className="flex-1 min-w-0">
+                                   <p className="text-sm font-medium text-slate-900 truncate group-hover:text-teal-600 transition-colors">
+                                     {page.title}
+                                   </p>
+                                   <p className="text-xs text-slate-500 truncate">{page.url.replace(/^https?:\/\//,'').substring(0, 30)}...</p>
+                                 </div>
+                               </a>
+                             ))}
+                           </div>
+                           <Button
+                             size="sm"
+                             onClick={() => setShowBookingPanel(true)}
+                             className="ml-auto whitespace-nowrap"
+                             style={{ backgroundColor: brandColor, color: '#ffffff' }}
+                           >
+                             Book Demo
+                           </Button>
+                           <Button
+                             size="icon"
+                             variant="ghost"
+                             onClick={() => setShowRecommendations(false)}
+                             className="h-8 w-8 flex-shrink-0"
+                           >
+                             <ChevronDown className="w-4 h-4" />
+                           </Button>
+                         </div>
+                       </motion.div>
+                     )}
                     </AnimatePresence>
 
                     {/* Toggle Button */}
                     {!showRecommendations && recommendedPages.length > 0 && (
-                      <div className="px-6 py-2 border-t border-slate-200 bg-slate-50">
-                        <Button
-                          size="sm"
-                          variant="ghost"
-                          onClick={() => setShowRecommendations(true)}
-                          className="w-full text-xs text-slate-600 hover:text-slate-900"
-                        >
-                          <ChevronUp className="w-4 h-4 mr-1" />
-                          Show Recommendations
-                        </Button>
-                      </div>
+                     <div className="px-6 py-2 border-t border-slate-200 bg-slate-50">
+                       <Button
+                         size="sm"
+                         variant="ghost"
+                         onClick={() => setShowRecommendations(true)}
+                         className="w-full text-xs text-slate-600 hover:text-slate-900"
+                       >
+                         <ChevronUp className="w-4 h-4 mr-1" />
+                         Show Recommendations
+                       </Button>
+                     </div>
                     )}
                   </div>
                 </div>
+
+                {/* Booking Side Panel */}
+                <AnimatePresence>
+                  {showBookingPanel && (
+                    <motion.div
+                      initial={{ width: 0, opacity: 0 }}
+                      animate={{ width: "30%", opacity: 1 }}
+                      exit={{ width: 0, opacity: 0 }}
+                      className="border-l border-slate-200 bg-slate-50 flex flex-col overflow-hidden"
+                    >
+                      <div className="px-6 py-4 border-b border-slate-200 bg-white flex items-center justify-between">
+                        <h3 className="text-lg font-semibold text-slate-900">Book a Demo with {companyName}</h3>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => setShowBookingPanel(false)}
+                          className="text-slate-400 hover:text-slate-900"
+                        >
+                          <X className="w-5 h-5" />
+                        </Button>
+                      </div>
+
+                      <div className="flex-1 overflow-y-auto p-6 space-y-4">
+                        {/* Calendar */}
+                        <div className="flex justify-center">
+                          <Calendar
+                            mode="single"
+                            selected={selectedDate}
+                            onSelect={setSelectedDate}
+                            disabled={(date) => date < new Date()}
+                            className="rounded-md border border-slate-200 bg-white"
+                          />
+                        </div>
+
+                        {/* Time Slots */}
+                        <div>
+                          <Label className="text-sm font-medium text-slate-700 mb-2 block">Select Time</Label>
+                          <div className="grid grid-cols-2 gap-2">
+                            {timeSlots.map((time) => (
+                              <Button
+                                key={time}
+                                variant={selectedTime === time ? "default" : "outline"}
+                                size="sm"
+                                onClick={() => setSelectedTime(time)}
+                                className={selectedTime === time ? "" : "bg-white border-slate-300 text-slate-700 hover:bg-slate-100"}
+                                style={selectedTime === time ? {
+                                  backgroundColor: brandColor,
+                                  borderColor: brandColor
+                                } : {}}
+                              >
+                                {time}
+                              </Button>
+                            ))}
+                          </div>
+                        </div>
+
+                        {/* Booking Form */}
+                        <div className="space-y-3">
+                          <div>
+                            <Label className="text-sm font-medium text-slate-700 mb-1 block">Name</Label>
+                            <Input
+                              placeholder="Your name"
+                              value={bookingName}
+                              onChange={(e) => setBookingName(e.target.value)}
+                              className="bg-white border-slate-300"
+                            />
+                          </div>
+                          <div>
+                            <Label className="text-sm font-medium text-slate-700 mb-1 block">Email</Label>
+                            <Input
+                              type="email"
+                              placeholder="your@email.com"
+                              value={bookingEmail}
+                              onChange={(e) => setBookingEmail(e.target.value)}
+                              className="bg-white border-slate-300"
+                            />
+                          </div>
+                          <Button
+                            onClick={handleBookDemo}
+                            disabled={!bookingName || !bookingEmail || !selectedTime || isBooking}
+                            className="w-full"
+                            style={{
+                              backgroundColor: brandColor,
+                              color: '#ffffff'
+                            }}
+                          >
+                            {isBooking ? (
+                              <>
+                                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                                Booking...
+                              </>
+                            ) : (
+                              "Book Demo"
+                            )}
+                          </Button>
+                        </div>
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
               </div>
             </div>
           </div>
