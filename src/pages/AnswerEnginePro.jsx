@@ -202,7 +202,7 @@ Answer the question directly and conversationally.`,
       setMessages(prev => [...prev, assistantMessage]);
 
       // Extract recommended pages based on conversation
-      if (messages.length >= 1) {
+      if (messages.length >= 0) {
         try {
           const pageRecs = await base44.integrations.Core.InvokeLLM({
             prompt: `Based on this conversation, suggest 2 most relevant pages from ${websiteUrl} that the user might want to visit.
@@ -230,6 +230,7 @@ Return 2 page suggestions with titles and URLs.`,
             }
           });
           setRecommendedPages(pageRecs.pages || []);
+          setShowRecommendations(true);
         } catch (err) {
           console.error("Failed to get recommendations:", err);
         }
@@ -497,10 +498,9 @@ Consider buyer intent when determining funnel stage.`,
                 </Button>
               </div>
 
-              {/* Split View: Chat + Booking */}
+              {/* Chat Section - Full Width */}
               <div className="flex flex-1 overflow-hidden">
-                {/* Chat Section - Left */}
-                <div className="w-[70%] flex flex-col border-r border-slate-200">
+                <div className="flex-1 flex flex-col">
                   {/* Messages Container */}
                   <div className="p-6 space-y-4 flex-1 overflow-y-auto bg-white">
               <AnimatePresence>
@@ -659,85 +659,6 @@ Consider buyer intent when determining funnel stage.`,
                         </Button>
                       </div>
                     )}
-                  </div>
-                </div>
-
-                {/* Booking Section - Right */}
-                <div className="w-[30%] flex flex-col bg-slate-50 p-6 overflow-y-auto">
-                  <h3 className="text-lg font-semibold text-slate-900 mb-4">Book a Demo with {companyName}</h3>
-                  
-                  {/* Calendar */}
-                  <div className="mb-4 flex justify-center">
-                    <Calendar
-                      mode="single"
-                      selected={selectedDate}
-                      onSelect={setSelectedDate}
-                      disabled={(date) => date < new Date()}
-                      className="rounded-md border border-slate-200 bg-white"
-                    />
-                  </div>
-
-                  {/* Time Slots */}
-                  <div className="mb-4">
-                    <Label className="text-sm font-medium text-slate-700 mb-2 block">Select Time</Label>
-                    <div className="grid grid-cols-2 gap-2">
-                      {timeSlots.map((time) => (
-                        <Button
-                          key={time}
-                          variant={selectedTime === time ? "default" : "outline"}
-                          size="sm"
-                          onClick={() => setSelectedTime(time)}
-                          className={selectedTime === time ? "" : "bg-white border-slate-300 text-slate-700 hover:bg-slate-100"}
-                          style={selectedTime === time ? {
-                            backgroundColor: brandColor,
-                            borderColor: brandColor
-                          } : {}}
-                        >
-                          {time}
-                        </Button>
-                      ))}
-                    </div>
-                  </div>
-
-                  {/* Booking Form */}
-                  <div className="space-y-3">
-                    <div>
-                      <Label className="text-sm font-medium text-slate-700 mb-1 block">Name</Label>
-                      <Input
-                        placeholder="Your name"
-                        value={bookingName}
-                        onChange={(e) => setBookingName(e.target.value)}
-                        className="bg-white border-slate-300"
-                      />
-                    </div>
-                    <div>
-                      <Label className="text-sm font-medium text-slate-700 mb-1 block">Email</Label>
-                      <Input
-                        type="email"
-                        placeholder="your@email.com"
-                        value={bookingEmail}
-                        onChange={(e) => setBookingEmail(e.target.value)}
-                        className="bg-white border-slate-300"
-                      />
-                    </div>
-                    <Button
-                      onClick={handleBookDemo}
-                      disabled={!bookingName || !bookingEmail || !selectedTime || isBooking}
-                      className="w-full"
-                      style={{
-                        backgroundColor: brandColor,
-                        color: '#ffffff'
-                      }}
-                    >
-                      {isBooking ? (
-                        <>
-                          <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                          Booking...
-                        </>
-                      ) : (
-                        "Book Demo"
-                      )}
-                    </Button>
                   </div>
                 </div>
               </div>
