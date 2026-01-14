@@ -121,40 +121,41 @@ export default function AnswerEnginePro() {
     try {
       // Crawl and index up to 100 pages
       const crawlResponse = await base44.integrations.Core.InvokeLLM({
-        prompt: `CRITICAL: You must comprehensively crawl and index this REAL website by actually visiting it: ${websiteUrl}
+        prompt: `You have internet access. Fetch and crawl this website: ${websiteUrl}
 
-CRAWLING REQUIREMENTS:
-1. Start from homepage: ${websiteUrl}
-2. Actually VISIT and FETCH the real web pages by following links on the website
-3. Crawl UP TO 100 REAL PAGES that actually exist
-4. MUST INCLUDE: 
-   - Homepage (/)
-   - All product pages (/products, /product, /solutions, etc.)
-   - All blog pages (/blog, /blog/*, /articles, /news, etc.)
-   - About, services, resources, pricing, contact pages
-5. Look for common blog patterns: /blog, /blog/post-name, /articles, /news, /resources/blog
-6. Extract ALL text content from every page visited
+      INSTRUCTIONS:
+      1. Use your internet access to ACTUALLY visit ${websiteUrl} and fetch its HTML
+      2. Extract all internal links from the homepage
+      3. Visit up to 100 pages from this website by following the links
+      4. For EACH page you visit, you MUST extract:
+      - The EXACT URL you visited (must be a real working link)
+      - The page title from the <title> tag or first <h1>
+      - A 2-sentence description of the page content
+      - An image URL from one of these (in order):
+      a) <meta property="og:image" content="URL_HERE">
+      b) <meta name="twitter:image" content="URL_HERE">  
+      c) First <img src="URL_HERE"> tag in the content
+      d) Company logo
+      - ALL text content from the page body
 
-For each REAL page you visit:
-- title: Extract the actual page title from <title> or h1
-- url: The actual, complete, working URL of the page
-- description: Create a 2-sentence summary of what this specific page is about
-- image_url: Extract a REAL, WORKING image URL from the page. Priority order:
-  1. <meta property="og:image" content="...">
-  2. <meta name="twitter:image" content="...">
-  3. First <img> tag with class containing "hero", "banner", "featured", or "thumbnail"
-  4. Any large image on the page (width > 400px)
-  5. Site logo as fallback
-  CRITICAL: Ensure ALL image URLs are complete (start with http:// or https://) and actually exist on the page
-- Extract the full page content (paragraphs, headings, lists)
-- Remove only navigation menus, footers, and scripts
+      PRIORITY PAGES TO FIND:
+      - Homepage (${websiteUrl})
+      - Product pages (look for /products, /product, /solutions in links)
+      - Blog posts (look for /blog, /articles, /news in links)
+      - About, Contact, Pricing pages
 
-IMPORTANT: The content_summary must be COMPREHENSIVE and include content from ALL pages you crawled. This will be used to answer user questions, so more content = better answers.
+      CRITICAL: 
+      - Only return pages you ACTUALLY FETCHED from the internet
+      - All URLs must be real, working links from this website
+      - All image_url values must be complete URLs starting with http:// or https://
+      - DO NOT make up or invent any pages or URLs
 
-Return JSON with:
-- company_name: Brand/company name from website
-- pages: Array of up to 100 REAL page objects with {title, url, description, image_url}
-- content_summary: EXTENSIVE combined text from ALL crawled pages (should be very long with lots of details)`,
+      Return JSON:
+      {
+      "company_name": "extracted from website",
+      "pages": [{"title": "...", "url": "...", "description": "...", "image_url": "..."}],
+      "content_summary": "combined text from all pages"
+      }`,
         add_context_from_internet: true,
         response_json_schema: {
           type: "object",
