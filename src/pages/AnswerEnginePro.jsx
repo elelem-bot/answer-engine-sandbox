@@ -13,7 +13,10 @@ import {
   MessageSquare,
   List,
   ArrowRight,
-  X
+  X,
+  Plus,
+  Mic,
+  Paperclip
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -54,6 +57,9 @@ export default function AnswerEnginePro() {
   const [recommendedPages, setRecommendedPages] = useState([]);
   const [showBookingPanel, setShowBookingPanel] = useState(false);
   const [crawledPages, setCrawledPages] = useState([]);
+  const [uploadedFiles, setUploadedFiles] = useState([]);
+  const [isRecording, setIsRecording] = useState(false);
+  const [mediaRecorder, setMediaRecorder] = useState(null);
 
   React.useEffect(() => {
     const handleThemeChange = () => {
@@ -96,6 +102,66 @@ export default function AnswerEnginePro() {
       console.error("Error loading questions:", error);
     } finally {
       setIsLoadingQuestions(false);
+    }
+  };
+
+  const handleFileUpload = async (e) => {
+    const files = Array.from(e.target.files);
+    const uploadedUrls = [];
+
+    for (const file of files) {
+      try {
+        const { file_url } = await base44.integrations.Core.UploadFile({ file });
+        uploadedUrls.push({ name: file.name, url: file_url, type: file.type });
+      } catch (error) {
+        console.error("Error uploading file:", error);
+      }
+    }
+
+    setUploadedFiles(prev => [...prev, ...uploadedUrls]);
+  };
+
+  const handleVoiceInput = async () => {
+    if (!isRecording) {
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        const recorder = new MediaRecorder(stream);
+        const audioChunks = [];
+
+        recorder.ondataavailable = (e) => {
+          audioChunks.push(e.data);
+        };
+
+        recorder.onstop = async () => {
+          const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
+          const audioFile = new File([audioBlob], 'voice.webm', { type: 'audio/webm' });
+
+          try {
+            const { file_url } = await base44.integrations.Core.UploadFile({ file: audioFile });
+            const transcription = await base44.integrations.Core.InvokeLLM({
+              prompt: "Transcribe this audio to text. Return only the transcription, no other text.",
+              file_urls: [file_url]
+            });
+            setQuestion(prev => prev + (prev ? ' ' : '') + transcription);
+          } catch (error) {
+            console.error("Error transcribing audio:", error);
+          }
+
+          stream.getTracks().forEach(track => track.stop());
+        };
+
+        recorder.start();
+        setMediaRecorder(recorder);
+        setIsRecording(true);
+      } catch (error) {
+        console.error("Error accessing microphone:", error);
+      }
+    } else {
+      if (mediaRecorder) {
+        mediaRecorder.stop();
+        setIsRecording(false);
+        setMediaRecorder(null);
+      }
     }
   };
 
@@ -248,9 +314,11 @@ export default function AnswerEnginePro() {
     e.preventDefault();
     if (!question.trim() || !isCrawled) return;
 
-    const userMessage = { role: "user", content: question };
+    const userMessage = { role: "user", content: question, files: uploadedFiles };
     setMessages(prev => [...prev, userMessage]);
     setQuestion("");
+    const filesForContext = uploadedFiles;
+    setUploadedFiles([]);
     setIsAsking(true);
 
     try {
@@ -271,6 +339,7 @@ GUARDRAILS:
 - Be helpful, friendly, and professional
 
 Answer the question directly and conversationally.`,
+        file_urls: filesForContext.length > 0 ? filesForContext.map(f => f.url) : undefined
       });
 
       // Clean up response - remove any remaining markdown and URLs
@@ -660,7 +729,44 @@ Consider buyer intent when determining funnel stage.`,
                   {/* Input Footer */}
                   <div className="border-t border-slate-200 bg-white">
                     <div className="px-6 py-4">
-                      <form onSubmit={handleAskQuestion} className="flex gap-3">
+                      {uploadedFiles.length > 0 && (
+                        <div className="flex gap-2 mb-3 flex-wrap">
+                          {uploadedFiles.map((file, i) => (
+                            <div key={i} className="flex items-center gap-2 bg-slate-100 rounded-lg px-3 py-1.5 text-xs">
+                              <Paperclip className="w-3 h-3 text-slate-500" />
+                              <span className="text-slate-700">{file.name}</span>
+                              <button
+                                onClick={() => setUploadedFiles(prev => prev.filter((_, idx) => idx !== i))}
+                                className="text-slate-400 hover:text-slate-600"
+                              >
+                                <X className="w-3 h-3" />
+                              </button>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                      <form onSubmit={handleAskQuestion} className="flex gap-2">
+                        <div className="relative">
+                          <input
+                            type="file"
+                            multiple
+                            accept="image/*,.pdf,.doc,.docx,.txt"
+                            onChange={handleFileUpload}
+                            className="hidden"
+                            id="file-upload"
+                          />
+                          <label htmlFor="file-upload">
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              size="icon"
+                              className="rounded-xl text-slate-400 hover:text-slate-900 hover:bg-slate-100"
+                              onClick={() => document.getElementById('file-upload').click()}
+                            >
+                              <Plus className="w-5 h-5" />
+                            </Button>
+                          </label>
+                        </div>
                         <Input
                           placeholder={`Ask ${companyName} anything...`}
                           value={question}
@@ -672,6 +778,15 @@ Consider buyer intent when determining funnel stage.`,
                             '--tw-ring-color': brandColor
                           }}
                         />
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="icon"
+                          onClick={handleVoiceInput}
+                          className={`rounded-xl ${isRecording ? 'text-red-500 animate-pulse' : 'text-slate-400 hover:text-slate-900 hover:bg-slate-100'}`}
+                        >
+                          <Mic className="w-5 h-5" />
+                        </Button>
                         <Button
                           type="submit"
                           disabled={isAsking || !question.trim()}
