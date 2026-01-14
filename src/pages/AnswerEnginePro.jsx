@@ -116,50 +116,43 @@ export default function AnswerEnginePro() {
 
     setIsCrawling(true);
     setCrawlError(null);
-    setCrawlProgress("Discovering pages...");
-    
+    setCrawlProgress("Crawling website and discovering pages...");
+
     try {
-      // Crawl and index up to 100 pages
       const crawlResponse = await base44.integrations.Core.InvokeLLM({
-        prompt: `You have internet access and Google search. Your goal: Index UP TO 100 REAL PAGES from ${websiteUrl}
+        prompt: `Use your internet access to deeply crawl ${websiteUrl} and index many pages.
 
-      STEP 1 - DISCOVER PAGES:
-      - Use Google search: "site:${websiteUrl}" to find all indexed pages
-      - Visit ${websiteUrl} homepage and extract ALL internal links
-      - Look for sitemaps: ${websiteUrl}/sitemap.xml, ${websiteUrl}/sitemap_index.xml
-      - Search specifically for: "site:${websiteUrl}/blog", "site:${websiteUrl}/product"
+  DISCOVERY METHOD:
+  1. Google search: "site:${websiteUrl}" to find indexed pages
+  2. Fetch homepage ${websiteUrl} and extract all internal links
+  3. Check sitemap: ${websiteUrl}/sitemap.xml
+  4. Look for blog pages with Google: "site:${websiteUrl}/blog"
+  5. Look for product pages with Google: "site:${websiteUrl}/product OR site:${websiteUrl}/solutions"
 
-      STEP 2 - CRAWL UP TO 100 PAGES:
-      Visit and fetch content from AS MANY pages as possible (target: 100 pages). Include:
-      - Homepage
-      - ALL blog posts you can find
-      - ALL product/solution pages
-      - About, Services, Resources, Pricing, Contact, Features, Case Studies
-      - Category pages, landing pages, documentation
+  CRAWL TARGET: 50-100 REAL pages including:
+  - Homepage, About, Contact, Pricing
+  - Product/Solution/Feature pages
+  - Blog posts and articles
+  - Case studies, resources, documentation
 
-      STEP 3 - EXTRACT FROM EACH PAGE:
-      {
-      "title": "exact page title from <title> or <h1>",
-      "url": "complete URL (http://... or https://...)",
-      "description": "2-sentence summary of THIS specific page",
-      "image_url": "REAL image URL - check: og:image meta tag, twitter:image meta tag, first hero/featured image, or logo",
-      "content": "full text content from the page"
-      }
+  For EACH page extract:
+  - title: from <title> or <h1> tag
+  - url: complete real URL
+  - description: 1-2 sentences about this page
+  - image_url: from og:image meta tag, twitter:image, or first large image (must be full URL with http/https)
 
-      CRITICAL RULES:
-      ✓ MUST crawl 50-100 pages minimum (not just 1-5 pages!)
-      ✓ Every URL must be REAL and from ${websiteUrl}
-      ✓ Every image_url must be a COMPLETE URL starting with http:// or https://
-      ✓ Use Google search to discover pages if needed
-      ✓ Prioritize blog posts and product pages
-      ✗ DO NOT invent or fabricate any URLs or content
+  IMPORTANT:
+  - Only real pages that exist on ${websiteUrl}
+  - All image URLs must be complete (http://... or https://...)
+  - Get as many pages as possible (aim for 50+)
+  - Extract full text content from each page for content_summary
 
-      Return:
-      {
-      "company_name": "from website",
-      "pages": [array of 50-100 page objects],
-      "content_summary": "combined text from ALL pages crawled"
-      }`,
+  Return JSON:
+  {
+  "company_name": "company name",
+  "pages": [{title, url, description, image_url}, ...],
+  "content_summary": "all page content combined"
+  }`,
         add_context_from_internet: true,
         response_json_schema: {
           type: "object",
@@ -181,15 +174,19 @@ export default function AnswerEnginePro() {
           }
         }
       });
-      
+
+      if (!crawlResponse || !crawlResponse.pages || crawlResponse.pages.length === 0) {
+        throw new Error("No pages found");
+      }
+
       setCompanyName(crawlResponse.company_name || new URL(websiteUrl).hostname);
       setIndexedContent(crawlResponse.content_summary || "");
       setCrawledPages(crawlResponse.pages || []);
-      setCrawlProgress(`Indexed ${crawlResponse.pages?.length || 0} pages`);
+      setCrawlProgress(`Successfully indexed ${crawlResponse.pages?.length || 0} pages`);
       setIsCrawled(true);
     } catch (error) {
       console.error("Error crawling website:", error);
-      setCrawlError("Failed to crawl website. Please check the URL and try again.");
+      setCrawlError(error.message || "Crawling failed. The website may be blocking automated access or the URL is invalid.");
     } finally {
       setIsCrawling(false);
     }
