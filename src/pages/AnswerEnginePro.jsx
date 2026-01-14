@@ -126,8 +126,9 @@ export default function AnswerEnginePro() {
 CRAWLING REQUIREMENTS:
 1. Start from homepage: ${websiteUrl}
 2. Systematically discover and visit ALL internal pages by following links
-3. Visit UP TO 20 KEY PAGES (homepage, about, products, services, blog posts, resources, pricing, contact, etc.)
-4. Extract ALL text content from every page visited
+3. Visit UP TO 100 PAGES including: homepage, all product pages, all blog posts, about, services, resources, pricing, contact, etc.
+4. PRIORITY: Ensure you get homepage, all /products or /product pages, and all /blog pages
+5. Extract ALL text content from every page visited
 
 For each page you visit:
 - Extract the full page content (paragraphs, headings, lists)
@@ -140,7 +141,7 @@ IMPORTANT: The content_summary must be COMPREHENSIVE and include content from AL
 
 Return JSON with:
 - company_name: Brand/company name from website
-- pages: Array of page objects with {title, url, description, image_url}
+- pages: Array of up to 100 page objects with {title, url, description, image_url}
 - content_summary: EXTENSIVE combined text from ALL crawled pages (should be very long with lots of details)`,
         add_context_from_internet: true,
         response_json_schema: {
