@@ -224,45 +224,33 @@ export default function AnswerEnginePro() {
       setCompanyName(urlDiscovery.company_name || new URL(websiteUrl).hostname);
       setCrawlProgress(`Step 2/3: Found ${urlDiscovery.urls.length} URLs. Extracting content from pages...`);
 
-      // Step 2: Process URLs in batches of 20
+      // Step 2: Process URLs in batches of 5
       const allPages = [];
-      const batchSize = 20;
-      const urlsToProcess = urlDiscovery.urls.slice(0, 100);
+      const batchSize = 5;
+      const urlsToProcess = urlDiscovery.urls.slice(0, 50); // Limit to 50 total
 
       for (let i = 0; i < urlsToProcess.length; i += batchSize) {
         const batch = urlsToProcess.slice(i, i + batchSize);
         setCrawlProgress(`Step 2/3: Processing pages ${i + 1}-${Math.min(i + batchSize, urlsToProcess.length)} of ${urlsToProcess.length}...`);
 
         const batchResponse = await base44.integrations.Core.InvokeLLM({
-          prompt: `Visit these ${batch.length} URLs and extract data from each. Use internet access to fetch each page.
+          prompt: `Extract data from these ${batch.length} URLs. Use internet access.
 
-  URLs to process:
-  ${batch.map((url, idx) => `${idx + 1}. ${url}`).join('\n')}
+      URLs:
+      ${batch.map((url, idx) => `${idx + 1}. ${url}`).join('\n')}
 
-  For EACH URL:
-  1. Fetch the actual page HTML
-  2. Extract title from <title> tag
-  3. Write 2-sentence description of page content
-  4. Find image URL:
-  - Check <meta property="og:image" content="...">
-  - Or <meta name="twitter:image" content="...">
-  - Or first <img src="..."> in content
-  - Convert relative URLs to absolute (prepend ${websiteUrl} if starts with /)
-  5. Extract text content
+      For each URL, extract:
+      - title (from <title> tag)
+      - description (1-2 sentences, max 200 chars)
+      - image_url (from og:image meta tag or first img, must be absolute URL starting with http)
+      - content (main text, max 500 chars)
 
-  Return array with data for all ${batch.length} pages:
-  {
-  "pages": [
-  {
-  "title": "page title",
-  "url": "original URL",
-  "description": "2 sentences",
-  "image_url": "https://absolute-url.com/image.jpg",
-  "content": "page text content"
-  },
-  ...
-  ]
-  }`,
+      Return valid JSON only:
+      {
+      "pages": [
+      {"title": "...", "url": "...", "description": "...", "image_url": "...", "content": "..."}
+      ]
+      }`,
           add_context_from_internet: true,
           response_json_schema: {
             type: "object",
