@@ -365,33 +365,35 @@ Answer the question directly and conversationally.`,
       if (messages.length >= 0 && crawledPages.length > 0) {
         try {
           const pageRecs = await base44.integrations.Core.InvokeLLM({
-            prompt: `Based on this conversation, recommend 2 most relevant pages from the ones we crawled.
+            prompt: `Based on this conversation, recommend exactly 2 most relevant pages from the crawled pages.
 
-Available pages:
-${crawledPages.map((p, i) => `${i + 1}. ${p.title} - ${p.url}`).join('\n')}
+        Available pages:
+        ${crawledPages.map((p, i) => `${i}. ${p.title} - ${p.url}`).join('\n')}
 
-Recent conversation:
-${messages.slice(-3).map(m => `${m.role}: ${m.content}`).join('\n')}
-User: ${question}
-Assistant: ${cleanedResponse}
+        Recent conversation:
+        ${messages.slice(-3).map(m => `${m.role}: ${m.content}`).join('\n')}
+        User: ${question}
+        Assistant: ${cleanedResponse}
 
-Return the 2 most relevant page numbers (as indices 0-${crawledPages.length - 1}).`,
+        Return exactly 2 page indices (0-${crawledPages.length - 1}). Example: [0, 5]`,
             response_json_schema: {
               type: "object",
               properties: {
                 page_indices: {
                   type: "array",
-                  items: { type: "number" }
+                  items: { type: "number" },
+                  minItems: 2,
+                  maxItems: 2
                 }
               }
             }
           });
-          
+
           const selectedPages = (pageRecs.page_indices || [])
             .slice(0, 2)
             .map(idx => crawledPages[idx])
             .filter(Boolean);
-          
+
           setRecommendedPages(selectedPages);
           setShowRecommendations(true);
         } catch (err) {
