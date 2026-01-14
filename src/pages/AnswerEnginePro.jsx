@@ -810,32 +810,28 @@ Consider buyer intent when determining funnel stage.`,
                          exit={{ height: 0, opacity: 0 }}
                          className="border-t border-slate-200 bg-white overflow-hidden"
                        >
-                         <div className="px-6 py-3 flex items-start gap-4">
-                           <div className="flex-1 flex items-start gap-3">
-                             <span className="text-xs text-slate-600 font-medium pt-2 whitespace-nowrap">You might also like:</span>
-                             <div className="flex gap-3 flex-1">
-                               {recommendedPages.slice(0, 2).map((page, i) => (
-                                 <a
-                                   key={i}
-                                   href={page.url}
-                                   target="_blank"
-                                   rel="noopener noreferrer"
-                                   className="flex gap-3 p-3 rounded-lg bg-slate-50 border border-slate-200 hover:border-slate-300 hover:shadow-sm transition-all flex-1 group"
-                                 >
-                                   <div className="flex-1 min-w-0">
-                                     <p className="text-xs font-semibold text-slate-900 line-clamp-1 group-hover:text-teal-600 transition-colors mb-1">
-                                       {page.title}
-                                     </p>
-                                     <p className="text-xs text-slate-600 line-clamp-2 leading-relaxed">
-                                       {page.description}
-                                     </p>
-                                   </div>
-                                 </a>
-                               ))}
-                             </div>
-                           </div>
-                           <div className="flex-1 flex flex-col items-center justify-center gap-1">
-                             <span className="text-xs text-slate-600 font-medium text-center">{bookingCta}</span>
+                         <div className="px-6 py-3 flex items-stretch gap-3">
+                           <span className="text-xs text-slate-600 font-medium pt-3 whitespace-nowrap">You might also like:</span>
+
+                           {recommendedPages.slice(0, 2).map((page, i) => (
+                             <a
+                               key={i}
+                               href={page.url}
+                               target="_blank"
+                               rel="noopener noreferrer"
+                               className="flex-1 p-3 rounded-lg bg-slate-50 border border-slate-200 hover:border-slate-300 hover:shadow-sm transition-all group"
+                             >
+                               <p className="text-xs font-semibold text-slate-900 line-clamp-1 group-hover:text-teal-600 transition-colors mb-1">
+                                 {page.title}
+                               </p>
+                               <p className="text-xs text-slate-600 line-clamp-2 leading-relaxed">
+                                 {page.description}
+                               </p>
+                             </a>
+                           ))}
+
+                           <div className="flex-1 p-3 rounded-lg bg-slate-50 border border-slate-200 flex flex-col items-center justify-center gap-2">
+                             <span className="text-xs text-slate-700 font-medium text-center leading-tight">{bookingCta}</span>
                              <Button
                                size="sm"
                                onClick={() => setShowBookingPanel(true)}
@@ -845,11 +841,12 @@ Consider buyer intent when determining funnel stage.`,
                                Book Demo
                              </Button>
                            </div>
+
                            <Button
                              size="icon"
                              variant="ghost"
                              onClick={() => setShowRecommendations(false)}
-                             className="h-7 w-7 flex-shrink-0 mt-1"
+                             className="h-7 w-7 flex-shrink-0 self-start"
                            >
                              <ChevronDown className="w-4 h-4" />
                            </Button>
