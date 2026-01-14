@@ -314,13 +314,13 @@ Consider buyer intent when determining funnel stage.`,
                   placeholder="Enter website URL (e.g., https://example.com)"
                   value={websiteUrl}
                   onChange={(e) => setWebsiteUrl(e.target.value)}
-                  disabled={isCrawling || isCrawled}
+                  disabled={isCrawling}
                   className={`pl-10 ${isDark ? 'bg-slate-900 border-slate-700 text-white placeholder:text-slate-500' : 'bg-white border-gray-300 text-gray-900 placeholder:text-gray-400'}`}
                 />
               </div>
               <Button
                 onClick={handleCrawl}
-                disabled={isCrawling || isCrawled || !websiteUrl}
+                disabled={isCrawling || !websiteUrl}
                 className="bg-gradient-to-r from-teal-500 to-cyan-500 hover:from-teal-600 hover:to-cyan-600"
               >
                 {isCrawling ? (
@@ -328,15 +328,10 @@ Consider buyer intent when determining funnel stage.`,
                     <Loader2 className="w-5 h-5 mr-2 animate-spin" />
                     Crawling...
                   </>
-                ) : isCrawled ? (
-                  <>
-                    <CheckCircle className="w-5 h-5 mr-2" />
-                    Indexed
-                  </>
                 ) : (
                   <>
                     <Search className="w-5 h-5 mr-2" />
-                    Crawl & Index
+                    {isCrawled ? 'Re-Index' : 'Crawl & Index'}
                   </>
                 )}
               </Button>
@@ -432,12 +427,13 @@ Consider buyer intent when determining funnel stage.`,
 
         {/* Website Preview with Floating Chatbot */}
         {isCrawled && activeTab === "chat" && (
-          <div className="relative w-full h-[800px] rounded-2xl overflow-hidden border border-slate-700">
+          <div className="relative w-full h-[800px] rounded-2xl overflow-hidden border border-slate-700 bg-white">
             {/* Website iframe */}
             <iframe
               src={websiteUrl}
               className="w-full h-full bg-white"
               title="Website Preview"
+              sandbox="allow-same-origin allow-scripts allow-forms"
             />
             
             {/* Floating Chatbot Overlay */}
