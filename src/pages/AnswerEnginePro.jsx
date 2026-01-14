@@ -745,59 +745,50 @@ Consider buyer intent when determining funnel stage.`,
                           ))}
                         </div>
                       )}
-                      <form onSubmit={handleAskQuestion} className="flex gap-2">
-                        <div className="relative">
-                          <input
-                            type="file"
-                            multiple
-                            accept="image/*,.pdf,.doc,.docx,.txt"
-                            onChange={handleFileUpload}
-                            className="hidden"
-                            id="file-upload"
-                          />
-                          <label htmlFor="file-upload">
-                            <Button
+                      <form onSubmit={handleAskQuestion} className="relative">
+                        <input
+                          type="file"
+                          multiple
+                          accept="image/*,.pdf,.doc,.docx,.txt"
+                          onChange={handleFileUpload}
+                          className="hidden"
+                          id="file-upload"
+                        />
+                        <div className="relative flex items-center bg-white border border-slate-300 rounded-full shadow-sm hover:shadow-md transition-shadow">
+                          <label htmlFor="file-upload" className="pl-4">
+                            <button
                               type="button"
-                              variant="ghost"
-                              size="icon"
-                              className="rounded-xl text-slate-400 hover:text-slate-900 hover:bg-slate-100"
+                              className="text-slate-400 hover:text-slate-900 transition-colors"
                               onClick={() => document.getElementById('file-upload').click()}
                             >
                               <Plus className="w-5 h-5" />
-                            </Button>
+                            </button>
                           </label>
+                          <Input
+                            placeholder={`Ask ${companyName} anything...`}
+                            value={question}
+                            onChange={(e) => setQuestion(e.target.value)}
+                            disabled={isAsking}
+                            className="flex-1 border-0 bg-transparent text-slate-900 placeholder:text-slate-400 focus-visible:ring-0 focus-visible:ring-offset-0 px-3"
+                          />
+                          <button
+                            type="button"
+                            onClick={handleVoiceInput}
+                            className={`pr-4 transition-colors ${isRecording ? 'text-red-500 animate-pulse' : 'text-slate-400 hover:text-slate-900'}`}
+                          >
+                            <Mic className="w-5 h-5" />
+                          </button>
+                          {question.trim() && (
+                            <button
+                              type="submit"
+                              disabled={isAsking}
+                              className="pr-4 transition-colors"
+                              style={{ color: brandColor }}
+                            >
+                              <Send className="w-5 h-5" />
+                            </button>
+                          )}
                         </div>
-                        <Input
-                          placeholder={`Ask ${companyName} anything...`}
-                          value={question}
-                          onChange={(e) => setQuestion(e.target.value)}
-                          disabled={isAsking}
-                          className="flex-1 border-slate-300 bg-white text-slate-900 placeholder:text-slate-400 focus:ring-2 rounded-xl"
-                          style={{
-                            borderColor: '#cbd5e1',
-                            '--tw-ring-color': brandColor
-                          }}
-                        />
-                        <Button
-                          type="button"
-                          variant="ghost"
-                          size="icon"
-                          onClick={handleVoiceInput}
-                          className={`rounded-xl ${isRecording ? 'text-red-500 animate-pulse' : 'text-slate-400 hover:text-slate-900 hover:bg-slate-100'}`}
-                        >
-                          <Mic className="w-5 h-5" />
-                        </Button>
-                        <Button
-                          type="submit"
-                          disabled={isAsking || !question.trim()}
-                          className="rounded-xl shadow-sm"
-                          style={{
-                            backgroundColor: brandColor,
-                            color: '#ffffff'
-                          }}
-                        >
-                          <Send className="w-5 h-5" />
-                        </Button>
                       </form>
                     </div>
 
