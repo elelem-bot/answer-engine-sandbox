@@ -389,12 +389,22 @@ Answer the question directly and conversationally.`,
             }
           });
 
-          const selectedPages = (pageRecs.page_indices || [])
+          let selectedPages = (pageRecs.page_indices || [])
             .slice(0, 2)
             .map(idx => crawledPages[idx])
             .filter(Boolean);
 
-          setRecommendedPages(selectedPages);
+          // Ensure we always have 2 pages if available
+          if (selectedPages.length < 2 && crawledPages.length >= 2) {
+            const usedIndices = new Set(pageRecs.page_indices || []);
+            for (let i = 0; i < crawledPages.length && selectedPages.length < 2; i++) {
+              if (!usedIndices.has(i)) {
+                selectedPages.push(crawledPages[i]);
+              }
+            }
+          }
+
+          setRecommendedPages(selectedPages.slice(0, 2));
           setShowRecommendations(true);
         } catch (err) {
           console.error("Failed to get recommendations:", err);
