@@ -116,84 +116,125 @@ export default function AnswerEnginePro() {
 
     setIsCrawling(true);
     setCrawlError(null);
-    setCrawlProgress("Crawling website and discovering pages...");
+    setCrawlProgress("Step 1/3: Discovering URLs from sitemap and search...");
 
     try {
-      const crawlResponse = await base44.integrations.Core.InvokeLLM({
-        prompt: `CRITICAL MISSION: Crawl ${websiteUrl} and get 30-50 pages. You MUST extract REAL, WORKING images for EVERY page.
+      // Step 1: Discover all URLs
+      const urlDiscovery = await base44.integrations.Core.InvokeLLM({
+        prompt: `Find 50-100 page URLs from ${websiteUrl}. Use your internet access.
 
-      🔍 STEP 1 - DISCOVER PAGES:
-      - Google: "site:${websiteUrl}" 
-      - Fetch: ${websiteUrl}/sitemap.xml
-      - Visit homepage and get all links
-      - Prioritize: /blog, /product, /solutions, /features, /about, /pricing
+  DISCOVERY METHODS:
+  1. Google search: "site:${websiteUrl}" to get indexed pages
+  2. Fetch sitemap: ${websiteUrl}/sitemap.xml and extract all <loc> URLs
+  3. Fetch homepage ${websiteUrl} and extract all internal links from <a href>
+  4. Search for blog: "site:${websiteUrl} blog"
+  5. Search for products: "site:${websiteUrl} product OR solutions OR features"
 
-      📄 STEP 2 - CRAWL 30-50 PAGES:
-      Visit each URL and extract:
+  PRIORITY PAGE TYPES:
+  - Homepage, About, Contact, Pricing
+  - Blog posts (/blog/*, /article/*, /news/*)
+  - Product/Solution/Feature pages
+  - Case studies, resources, documentation
 
-      1. title: from <title> tag
-      2. url: the full URL you visited
-      3. description: 2 sentences about the page
-      4. image_url: THIS IS CRITICAL - Extract a REAL image using this priority:
-
-      FIRST: Look for <meta property="og:image" content="IMAGE_URL_HERE">
-      SECOND: Look for <meta name="twitter:image" content="IMAGE_URL_HERE">
-      THIRD: Find first <img src="IMAGE_URL_HERE"> in main content
-      FOURTH: Use site logo
-
-      ⚠️ IMAGE URL RULES:
-      - MUST be complete URL starting with https:// or http://
-      - If relative (starts with /), convert to: ${websiteUrl}/path/to/image.jpg
-      - Validate URL is accessible
-      - Examples: "https://example.com/images/hero.jpg" ✓
-        "/images/hero.jpg" ✗ (incomplete!)
-
-      5. Extract all text content
-
-      ✅ FINAL CHECK:
-      - Return 30-50 real pages
-      - EVERY page must have a valid image_url (complete URL)
-      - If a page has no image, use site logo or homepage hero image
-
-      JSON format:
-      {
-      "company_name": "name",
-      "pages": [
-      {"title": "...", "url": "https://...", "description": "...", "image_url": "https://complete-url.com/image.jpg"},
-      ...30-50 more
-      ],
-      "content_summary": "all text combined"
-      }`,
+  Return JSON with 50-100 real URLs:
+  {
+  "company_name": "company name from website",
+  "urls": ["https://full-url.com/page1", "https://full-url.com/page2", ...]
+  }`,
         add_context_from_internet: true,
         response_json_schema: {
           type: "object",
           properties: {
             company_name: { type: "string" },
-            pages: {
-              type: "array",
-              items: {
-                type: "object",
-                properties: {
-                  title: { type: "string" },
-                  url: { type: "string" },
-                  description: { type: "string" },
-                  image_url: { type: "string" }
-                }
-              }
-            },
-            content_summary: { type: "string" }
+            urls: { type: "array", items: { type: "string" } }
           }
         }
       });
 
-      if (!crawlResponse || !crawlResponse.pages || crawlResponse.pages.length === 0) {
-        throw new Error("No pages found");
+      if (!urlDiscovery?.urls || urlDiscovery.urls.length === 0) {
+        throw new Error("No URLs discovered");
       }
 
-      setCompanyName(crawlResponse.company_name || new URL(websiteUrl).hostname);
-      setIndexedContent(crawlResponse.content_summary || "");
-      setCrawledPages(crawlResponse.pages || []);
-      setCrawlProgress(`Successfully indexed ${crawlResponse.pages?.length || 0} pages`);
+      setCompanyName(urlDiscovery.company_name || new URL(websiteUrl).hostname);
+      setCrawlProgress(`Step 2/3: Found ${urlDiscovery.urls.length} URLs. Extracting content from pages...`);
+
+      // Step 2: Process URLs in batches of 20
+      const allPages = [];
+      const batchSize = 20;
+      const urlsToProcess = urlDiscovery.urls.slice(0, 100);
+
+      for (let i = 0; i < urlsToProcess.length; i += batchSize) {
+        const batch = urlsToProcess.slice(i, i + batchSize);
+        setCrawlProgress(`Step 2/3: Processing pages ${i + 1}-${Math.min(i + batchSize, urlsToProcess.length)} of ${urlsToProcess.length}...`);
+
+        const batchResponse = await base44.integrations.Core.InvokeLLM({
+          prompt: `Visit these ${batch.length} URLs and extract data from each. Use internet access to fetch each page.
+
+  URLs to process:
+  ${batch.map((url, idx) => `${idx + 1}. ${url}`).join('\n')}
+
+  For EACH URL:
+  1. Fetch the actual page HTML
+  2. Extract title from <title> tag
+  3. Write 2-sentence description of page content
+  4. Find image URL:
+  - Check <meta property="og:image" content="...">
+  - Or <meta name="twitter:image" content="...">
+  - Or first <img src="..."> in content
+  - Convert relative URLs to absolute (prepend ${websiteUrl} if starts with /)
+  5. Extract text content
+
+  Return array with data for all ${batch.length} pages:
+  {
+  "pages": [
+  {
+  "title": "page title",
+  "url": "original URL",
+  "description": "2 sentences",
+  "image_url": "https://absolute-url.com/image.jpg",
+  "content": "page text content"
+  },
+  ...
+  ]
+  }`,
+          add_context_from_internet: true,
+          response_json_schema: {
+            type: "object",
+            properties: {
+              pages: {
+                type: "array",
+                items: {
+                  type: "object",
+                  properties: {
+                    title: { type: "string" },
+                    url: { type: "string" },
+                    description: { type: "string" },
+                    image_url: { type: "string" },
+                    content: { type: "string" }
+                  }
+                }
+              }
+            }
+          }
+        });
+
+        if (batchResponse?.pages) {
+          allPages.push(...batchResponse.pages);
+        }
+      }
+
+      if (allPages.length === 0) {
+        throw new Error("No pages could be processed");
+      }
+
+      setCrawlProgress(`Step 3/3: Finalizing ${allPages.length} pages...`);
+
+      // Combine all content
+      const combinedContent = allPages.map(p => p.content || '').join('\n\n');
+
+      setIndexedContent(combinedContent);
+      setCrawledPages(allPages);
+      setCrawlProgress(`Successfully indexed ${allPages.length} pages`);
       setIsCrawled(true);
     } catch (error) {
       console.error("Error crawling website:", error);
