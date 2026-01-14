@@ -652,16 +652,19 @@ Consider buyer intent when determining funnel stage.`,
                                  rel="noopener noreferrer"
                                  className="flex gap-3 p-2 rounded-lg bg-slate-50 border border-slate-200 hover:border-slate-300 hover:shadow-sm transition-all flex-1 group"
                                >
-                                 {page.image_url && (
-                                   <img 
-                                     src={page.image_url} 
-                                     alt={page.title}
-                                     className="w-16 h-16 rounded object-cover flex-shrink-0 bg-slate-200"
-                                     onError={(e) => {
-                                       e.target.style.display = 'none';
-                                     }}
-                                   />
-                                 )}
+                                 <div className="w-16 h-16 rounded flex-shrink-0 bg-gradient-to-br from-slate-200 to-slate-300 overflow-hidden">
+                                   {page.image_url ? (
+                                     <img 
+                                       src={page.image_url} 
+                                       alt={page.title}
+                                       className="w-full h-full object-cover"
+                                     />
+                                   ) : (
+                                     <div className="w-full h-full flex items-center justify-center">
+                                       <Globe className="w-8 h-8 text-slate-400" />
+                                     </div>
+                                   )}
+                                 </div>
                                  <div className="flex-1 min-w-0">
                                    <p className="text-xs font-semibold text-slate-900 line-clamp-1 group-hover:text-teal-600 transition-colors mb-1">
                                      {page.title}
