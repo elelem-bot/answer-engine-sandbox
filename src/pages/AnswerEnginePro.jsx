@@ -137,7 +137,7 @@ CRAWLING REQUIREMENTS:
 
 For each page you visit:
 - Extract the full page content (paragraphs, headings, lists)
-- Extract a relevant image URL from the page (og:image, first large image, or logo)
+- Extract a VALID image URL from the page (priority: og:image meta tag, twitter:image, first hero/banner image, article featured image, or company logo). Must be a complete, working URL starting with http:// or https://
 - Create a 2-sentence description summarizing what the page is about
 - Remove only navigation menus, footers, and scripts
 - Keep all valuable information: product descriptions, features, FAQs, blog posts, etc.
