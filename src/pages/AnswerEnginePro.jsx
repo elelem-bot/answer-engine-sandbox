@@ -121,12 +121,12 @@ export default function AnswerEnginePro() {
     try {
       // Crawl and index up to 100 pages
       const crawlResponse = await base44.integrations.Core.InvokeLLM({
-        prompt: `CRITICAL: You must comprehensively crawl and index this entire website: ${websiteUrl}
+        prompt: `CRITICAL: You must comprehensively crawl and index this REAL website by actually visiting it: ${websiteUrl}
 
 CRAWLING REQUIREMENTS:
 1. Start from homepage: ${websiteUrl}
-2. Systematically discover and visit ALL internal pages by following links
-3. Visit UP TO 100 PAGES
+2. Actually VISIT and FETCH the real web pages by following links on the website
+3. Crawl UP TO 100 REAL PAGES that actually exist
 4. MUST INCLUDE: 
    - Homepage (/)
    - All product pages (/products, /product, /solutions, etc.)
@@ -135,18 +135,25 @@ CRAWLING REQUIREMENTS:
 5. Look for common blog patterns: /blog, /blog/post-name, /articles, /news, /resources/blog
 6. Extract ALL text content from every page visited
 
-For each page you visit:
+For each REAL page you visit:
+- title: Extract the actual page title from <title> or h1
+- url: The actual, complete, working URL of the page
+- description: Create a 2-sentence summary of what this specific page is about
+- image_url: Extract a REAL, WORKING image URL from the page. Priority order:
+  1. <meta property="og:image" content="...">
+  2. <meta name="twitter:image" content="...">
+  3. First <img> tag with class containing "hero", "banner", "featured", or "thumbnail"
+  4. Any large image on the page (width > 400px)
+  5. Site logo as fallback
+  CRITICAL: Ensure ALL image URLs are complete (start with http:// or https://) and actually exist on the page
 - Extract the full page content (paragraphs, headings, lists)
-- Extract a VALID image URL from the page (priority: og:image meta tag, twitter:image, first hero/banner image, article featured image, or company logo). Must be a complete, working URL starting with http:// or https://
-- Create a 2-sentence description summarizing what the page is about
 - Remove only navigation menus, footers, and scripts
-- Keep all valuable information: product descriptions, features, FAQs, blog posts, etc.
 
 IMPORTANT: The content_summary must be COMPREHENSIVE and include content from ALL pages you crawled. This will be used to answer user questions, so more content = better answers.
 
 Return JSON with:
 - company_name: Brand/company name from website
-- pages: Array of up to 100 page objects with {title, url, description, image_url}
+- pages: Array of up to 100 REAL page objects with {title, url, description, image_url}
 - content_summary: EXTENSIVE combined text from ALL crawled pages (should be very long with lots of details)`,
         add_context_from_internet: true,
         response_json_schema: {
