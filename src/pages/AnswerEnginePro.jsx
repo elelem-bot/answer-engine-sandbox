@@ -60,6 +60,7 @@ export default function AnswerEnginePro() {
   const [uploadedFiles, setUploadedFiles] = useState([]);
   const [isRecording, setIsRecording] = useState(false);
   const [mediaRecorder, setMediaRecorder] = useState(null);
+  const [bookingCta, setBookingCta] = useState("Talk to our team");
 
   React.useEffect(() => {
     const handleThemeChange = () => {
@@ -339,6 +340,26 @@ Answer the question directly and conversationally.`,
 
       const assistantMessage = { role: "assistant", content: cleanedResponse };
       setMessages(prev => [...prev, assistantMessage]);
+
+      // Generate contextual booking CTA
+      try {
+        const ctaResponse = await base44.integrations.Core.InvokeLLM({
+          prompt: `Based on this question: "${question}"
+
+      Generate a short, compelling call-to-action message (max 6 words) that encourages the user to book a demo.
+
+      Examples:
+      - "How much does it cost?" → "Talk to our team about pricing"
+      - "Can it integrate with Salesforce?" → "Discuss integrations with our team"
+      - "What features do you have?" → "See a personalized demo"
+      - "Is there a free trial?" → "Explore trial options with us"
+
+      Return only the CTA text, nothing else.`
+        });
+        setBookingCta(ctaResponse);
+      } catch (err) {
+        console.error("Failed to generate CTA:", err);
+      }
 
       // Extract recommended pages based on conversation
       if (messages.length >= 0 && crawledPages.length > 0) {
@@ -790,35 +811,40 @@ Consider buyer intent when determining funnel stage.`,
                          className="border-t border-slate-200 bg-white overflow-hidden"
                        >
                          <div className="px-6 py-3 flex items-start gap-4">
-                           <span className="text-xs text-slate-600 font-medium pt-2 whitespace-nowrap">You might also like:</span>
-                           <div className="flex gap-3 flex-1">
-                             {recommendedPages.slice(0, 2).map((page, i) => (
-                               <a
-                                 key={i}
-                                 href={page.url}
-                                 target="_blank"
-                                 rel="noopener noreferrer"
-                                 className="flex gap-3 p-3 rounded-lg bg-slate-50 border border-slate-200 hover:border-slate-300 hover:shadow-sm transition-all flex-1 group"
-                               >
-                                 <div className="flex-1 min-w-0">
-                                   <p className="text-xs font-semibold text-slate-900 line-clamp-1 group-hover:text-teal-600 transition-colors mb-1">
-                                     {page.title}
-                                   </p>
-                                   <p className="text-xs text-slate-600 line-clamp-2 leading-relaxed">
-                                     {page.description}
-                                   </p>
-                                 </div>
-                               </a>
-                             ))}
+                           <div className="flex-1 flex items-start gap-3">
+                             <span className="text-xs text-slate-600 font-medium pt-2 whitespace-nowrap">You might also like:</span>
+                             <div className="flex gap-3 flex-1">
+                               {recommendedPages.slice(0, 2).map((page, i) => (
+                                 <a
+                                   key={i}
+                                   href={page.url}
+                                   target="_blank"
+                                   rel="noopener noreferrer"
+                                   className="flex gap-3 p-3 rounded-lg bg-slate-50 border border-slate-200 hover:border-slate-300 hover:shadow-sm transition-all flex-1 group"
+                                 >
+                                   <div className="flex-1 min-w-0">
+                                     <p className="text-xs font-semibold text-slate-900 line-clamp-1 group-hover:text-teal-600 transition-colors mb-1">
+                                       {page.title}
+                                     </p>
+                                     <p className="text-xs text-slate-600 line-clamp-2 leading-relaxed">
+                                       {page.description}
+                                     </p>
+                                   </div>
+                                 </a>
+                               ))}
+                             </div>
                            </div>
-                           <Button
-                             size="sm"
-                             onClick={() => setShowBookingPanel(true)}
-                             className="whitespace-nowrap mt-1"
-                             style={{ backgroundColor: brandColor, color: '#ffffff' }}
-                           >
-                             Book Demo
-                           </Button>
+                           <div className="flex-1 flex flex-col items-center justify-center gap-1">
+                             <span className="text-xs text-slate-600 font-medium text-center">{bookingCta}</span>
+                             <Button
+                               size="sm"
+                               onClick={() => setShowBookingPanel(true)}
+                               className="whitespace-nowrap"
+                               style={{ backgroundColor: brandColor, color: '#ffffff' }}
+                             >
+                               Book Demo
+                             </Button>
+                           </div>
                            <Button
                              size="icon"
                              variant="ghost"
