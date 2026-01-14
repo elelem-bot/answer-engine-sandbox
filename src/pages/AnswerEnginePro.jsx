@@ -427,17 +427,16 @@ Consider buyer intent when determining funnel stage.`,
 
         {/* Website Preview with Floating Chatbot */}
         {isCrawled && activeTab === "chat" && (
-          <div className="relative w-full h-[800px] rounded-2xl overflow-hidden border border-slate-700 bg-white">
+          <div className="relative w-full h-[800px] rounded-2xl overflow-hidden border border-slate-700 bg-slate-900">
             {/* Website iframe */}
             <iframe
               src={websiteUrl}
-              className="w-full h-full bg-white"
+              className="w-full h-full"
               title="Website Preview"
-              sandbox="allow-same-origin allow-scripts allow-forms"
             />
             
             {/* Floating Chatbot Overlay */}
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[70%] h-[70%] rounded-2xl overflow-hidden shadow-2xl bg-white flex flex-col">
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[70%] h-[70%] rounded-2xl overflow-hidden shadow-2xl bg-white/95 backdrop-blur-sm flex flex-col">
               {/* Branded Header */}
               <div className="px-6 py-4 border-b border-slate-200 flex items-center justify-between bg-white">
                 <div className="flex items-center gap-3">
