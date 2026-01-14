@@ -437,7 +437,7 @@ Consider buyer intent when determining funnel stage.`,
             />
             
             {/* Floating Chatbot Overlay */}
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-3/4 h-3/4 rounded-2xl overflow-hidden shadow-2xl bg-white flex flex-col">
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[70%] h-[70%] rounded-2xl overflow-hidden shadow-2xl bg-white flex flex-col">
               {/* Branded Header */}
               <div className="px-6 py-4 border-b border-slate-200 flex items-center justify-between bg-white">
                 <div className="flex items-center gap-3">
