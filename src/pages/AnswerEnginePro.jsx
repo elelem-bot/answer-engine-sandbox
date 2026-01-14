@@ -53,6 +53,7 @@ export default function AnswerEnginePro() {
   const [showRecommendations, setShowRecommendations] = useState(false);
   const [recommendedPages, setRecommendedPages] = useState([]);
   const [showBookingPanel, setShowBookingPanel] = useState(false);
+  const [crawledPages, setCrawledPages] = useState([]);
 
   React.useEffect(() => {
     const handleThemeChange = () => {
@@ -125,12 +126,13 @@ export default function AnswerEnginePro() {
 CRAWLING REQUIREMENTS:
 1. Start from homepage: ${websiteUrl}
 2. Systematically discover and visit ALL internal pages by following links
-3. Visit UP TO 100 PAGES (or all pages if fewer than 100)
-4. Include: /about, /products, /services, /blog, /resources, /pricing, /contact, etc.
-5. Extract ALL text content from every page visited
+3. Visit UP TO 20 KEY PAGES (homepage, about, products, services, blog posts, resources, pricing, contact, etc.)
+4. Extract ALL text content from every page visited
 
 For each page you visit:
 - Extract the full page content (paragraphs, headings, lists)
+- Extract a relevant image URL from the page (og:image, first large image, or logo)
+- Create a 2-sentence description summarizing what the page is about
 - Remove only navigation menus, footers, and scripts
 - Keep all valuable information: product descriptions, features, FAQs, blog posts, etc.
 
@@ -138,14 +140,25 @@ IMPORTANT: The content_summary must be COMPREHENSIVE and include content from AL
 
 Return JSON with:
 - company_name: Brand/company name from website
-- pages_crawled: ACTUAL number of pages you visited and indexed (should be close to 100 or all available pages)
+- pages: Array of page objects with {title, url, description, image_url}
 - content_summary: EXTENSIVE combined text from ALL crawled pages (should be very long with lots of details)`,
         add_context_from_internet: true,
         response_json_schema: {
           type: "object",
           properties: {
             company_name: { type: "string" },
-            pages_crawled: { type: "number" },
+            pages: {
+              type: "array",
+              items: {
+                type: "object",
+                properties: {
+                  title: { type: "string" },
+                  url: { type: "string" },
+                  description: { type: "string" },
+                  image_url: { type: "string" }
+                }
+              }
+            },
             content_summary: { type: "string" }
           }
         }
@@ -153,7 +166,8 @@ Return JSON with:
       
       setCompanyName(crawlResponse.company_name || new URL(websiteUrl).hostname);
       setIndexedContent(crawlResponse.content_summary || "");
-      setCrawlProgress(`Indexed ${crawlResponse.pages_crawled || 0} pages`);
+      setCrawledPages(crawlResponse.pages || []);
+      setCrawlProgress(`Indexed ${crawlResponse.pages?.length || 0} pages`);
       setIsCrawled(true);
     } catch (error) {
       console.error("Error crawling website:", error);
@@ -203,34 +217,37 @@ Answer the question directly and conversationally.`,
       setMessages(prev => [...prev, assistantMessage]);
 
       // Extract recommended pages based on conversation
-      if (messages.length >= 0) {
+      if (messages.length >= 0 && crawledPages.length > 0) {
         try {
           const pageRecs = await base44.integrations.Core.InvokeLLM({
-            prompt: `Based on this conversation, suggest 2 most relevant pages from ${websiteUrl} that the user might want to visit.
-            
+            prompt: `Based on this conversation, recommend 2 most relevant pages from the ones we crawled.
+
+Available pages:
+${crawledPages.map((p, i) => `${i + 1}. ${p.title} - ${p.url}`).join('\n')}
+
 Recent conversation:
 ${messages.slice(-3).map(m => `${m.role}: ${m.content}`).join('\n')}
 User: ${question}
 Assistant: ${cleanedResponse}
 
-Return 2 page suggestions with titles and URLs.`,
+Return the 2 most relevant page numbers (as indices 0-${crawledPages.length - 1}).`,
             response_json_schema: {
               type: "object",
               properties: {
-                pages: {
+                page_indices: {
                   type: "array",
-                  items: {
-                    type: "object",
-                    properties: {
-                      title: { type: "string" },
-                      url: { type: "string" }
-                    }
-                  }
+                  items: { type: "number" }
                 }
               }
             }
           });
-          setRecommendedPages(pageRecs.pages || []);
+          
+          const selectedPages = (pageRecs.page_indices || [])
+            .slice(0, 2)
+            .map(idx => crawledPages[idx])
+            .filter(Boolean);
+          
+          setRecommendedPages(selectedPages);
           setShowRecommendations(true);
         } catch (err) {
           console.error("Failed to get recommendations:", err);
@@ -609,27 +626,36 @@ Consider buyer intent when determining funnel stage.`,
                          initial={{ height: 0, opacity: 0 }}
                          animate={{ height: "auto", opacity: 1 }}
                          exit={{ height: 0, opacity: 0 }}
-                         className="border-t border-slate-200 bg-slate-50 overflow-hidden"
+                         className="border-t border-slate-200 bg-white overflow-hidden"
                        >
-                         <div className="px-6 py-4 flex items-center gap-4">
-                           <span className="text-sm text-slate-700 font-medium whitespace-nowrap">Recommended for you:</span>
-                           <div className="flex gap-3 flex-1 overflow-x-auto">
+                         <div className="px-6 py-3 flex items-start gap-4">
+                           <span className="text-xs text-slate-600 font-medium pt-2 whitespace-nowrap">You might also like:</span>
+                           <div className="flex gap-3 flex-1">
                              {recommendedPages.slice(0, 2).map((page, i) => (
                                <a
                                  key={i}
                                  href={page.url}
                                  target="_blank"
                                  rel="noopener noreferrer"
-                                 className="flex items-center gap-3 px-4 py-3 rounded-lg bg-white border border-slate-200 hover:border-slate-300 hover:shadow-sm transition-all min-w-[200px] group"
+                                 className="flex gap-3 p-2 rounded-lg bg-slate-50 border border-slate-200 hover:border-slate-300 hover:shadow-sm transition-all flex-1 group"
                                >
-                                 <div className="w-12 h-12 rounded bg-gradient-to-br from-slate-100 to-slate-200 flex items-center justify-center flex-shrink-0">
-                                   <Globe className="w-6 h-6 text-slate-400" />
-                                 </div>
+                                 {page.image_url && (
+                                   <img 
+                                     src={page.image_url} 
+                                     alt={page.title}
+                                     className="w-16 h-16 rounded object-cover flex-shrink-0 bg-slate-200"
+                                     onError={(e) => {
+                                       e.target.style.display = 'none';
+                                     }}
+                                   />
+                                 )}
                                  <div className="flex-1 min-w-0">
-                                   <p className="text-sm font-medium text-slate-900 truncate group-hover:text-teal-600 transition-colors">
+                                   <p className="text-xs font-semibold text-slate-900 line-clamp-1 group-hover:text-teal-600 transition-colors mb-1">
                                      {page.title}
                                    </p>
-                                   <p className="text-xs text-slate-500 truncate">{page.url.replace(/^https?:\/\//,'').substring(0, 30)}...</p>
+                                   <p className="text-xs text-slate-600 line-clamp-2 leading-relaxed">
+                                     {page.description}
+                                   </p>
                                  </div>
                                </a>
                              ))}
@@ -637,7 +663,7 @@ Consider buyer intent when determining funnel stage.`,
                            <Button
                              size="sm"
                              onClick={() => setShowBookingPanel(true)}
-                             className="ml-auto whitespace-nowrap"
+                             className="whitespace-nowrap mt-1"
                              style={{ backgroundColor: brandColor, color: '#ffffff' }}
                            >
                              Book Demo
@@ -646,7 +672,7 @@ Consider buyer intent when determining funnel stage.`,
                              size="icon"
                              variant="ghost"
                              onClick={() => setShowRecommendations(false)}
-                             className="h-8 w-8 flex-shrink-0"
+                             className="h-7 w-7 flex-shrink-0 mt-1"
                            >
                              <ChevronDown className="w-4 h-4" />
                            </Button>
