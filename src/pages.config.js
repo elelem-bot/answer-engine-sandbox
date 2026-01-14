@@ -7,6 +7,7 @@ import NewContent from './pages/NewContent';
 import Prompts from './pages/Prompts';
 import Setup from './pages/Setup';
 import Tracking from './pages/Tracking';
+import AnswerEnginePro from './pages/AnswerEnginePro';
 import __Layout from './Layout.jsx';
 
 
@@ -20,6 +21,7 @@ export const PAGES = {
     "Prompts": Prompts,
     "Setup": Setup,
     "Tracking": Tracking,
+    "AnswerEnginePro": AnswerEnginePro,
 }
 
 export const pagesConfig = {
