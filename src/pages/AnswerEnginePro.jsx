@@ -120,49 +120,49 @@ export default function AnswerEnginePro() {
 
     try {
       const crawlResponse = await base44.integrations.Core.InvokeLLM({
-        prompt: `MISSION: Crawl ${websiteUrl} and return 50-100 REAL pages with content. Use your internet access.
+        prompt: `CRITICAL MISSION: Crawl ${websiteUrl} and get 30-50 pages. You MUST extract REAL, WORKING images for EVERY page.
 
-      STEP 1 - DISCOVER ALL PAGES:
-      a) Google search "site:${websiteUrl}" - get list of all URLs Google has indexed
-      b) Fetch ${websiteUrl}/sitemap.xml and extract all <loc> URLs
-      c) Fetch homepage ${websiteUrl} and extract every <a href> link
-      d) Search "site:${websiteUrl} blog" for blog posts
-      e) Search "site:${websiteUrl} product" for products
+      🔍 STEP 1 - DISCOVER PAGES:
+      - Google: "site:${websiteUrl}" 
+      - Fetch: ${websiteUrl}/sitemap.xml
+      - Visit homepage and get all links
+      - Prioritize: /blog, /product, /solutions, /features, /about, /pricing
 
-      STEP 2 - VISIT EACH URL:
-      From the URLs discovered above, visit AT LEAST 50-100 of them. For EACH:
-      - Fetch the actual HTML page
-      - Extract <title> or <h1> for title
-      - Read page content and write 2-sentence description
-      - Find image: check <meta property="og:image">, <meta name="twitter:image">, or first <img src="">
-      - Extract all text content from <body>
+      📄 STEP 2 - CRAWL 30-50 PAGES:
+      Visit each URL and extract:
 
-      STEP 3 - PRIORITIZE THESE PAGE TYPES:
-      ✓ Homepage (/)
-      ✓ Blog posts (/blog/*, /article/*, /news/*)
-      ✓ Product pages (/product*, /solution*, /feature*)
-      ✓ About, Contact, Pricing, Services
-      ✓ Resources, Case Studies, Documentation
+      1. title: from <title> tag
+      2. url: the full URL you visited
+      3. description: 2 sentences about the page
+      4. image_url: THIS IS CRITICAL - Extract a REAL image using this priority:
 
-      VALIDATION:
-      - You MUST return 50-100+ pages (not 1-5!)
-      - Every "url" must be a real page from ${websiteUrl}
-      - Every "image_url" must start with http:// or https://
-      - "content_summary" should combine text from ALL pages visited
+      FIRST: Look for <meta property="og:image" content="IMAGE_URL_HERE">
+      SECOND: Look for <meta name="twitter:image" content="IMAGE_URL_HERE">
+      THIRD: Find first <img src="IMAGE_URL_HERE"> in main content
+      FOURTH: Use site logo
 
-      Return format:
+      ⚠️ IMAGE URL RULES:
+      - MUST be complete URL starting with https:// or http://
+      - If relative (starts with /), convert to: ${websiteUrl}/path/to/image.jpg
+      - Validate URL is accessible
+      - Examples: "https://example.com/images/hero.jpg" ✓
+        "/images/hero.jpg" ✗ (incomplete!)
+
+      5. Extract all text content
+
+      ✅ FINAL CHECK:
+      - Return 30-50 real pages
+      - EVERY page must have a valid image_url (complete URL)
+      - If a page has no image, use site logo or homepage hero image
+
+      JSON format:
       {
-      "company_name": "extracted from website",
+      "company_name": "name",
       "pages": [
-      {
-      "title": "actual page title",
-      "url": "https://full-url.com/page",
-      "description": "what this specific page is about",
-      "image_url": "https://full-image-url.com/image.jpg"
-      },
-      ... (50-100 more page objects)
+      {"title": "...", "url": "https://...", "description": "...", "image_url": "https://complete-url.com/image.jpg"},
+      ...30-50 more
       ],
-      "content_summary": "combined content from all pages"
+      "content_summary": "all text combined"
       }`,
         add_context_from_internet: true,
         response_json_schema: {
