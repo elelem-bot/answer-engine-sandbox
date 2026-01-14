@@ -460,7 +460,7 @@ Consider buyer intent when determining funnel stage.`,
               {/* Split View: Chat + Booking */}
               <div className="flex flex-1 overflow-hidden">
                 {/* Chat Section - Left */}
-                <div className="flex-1 flex flex-col border-r border-slate-200">
+                <div className="w-[70%] flex flex-col border-r border-slate-200">
                   {/* Messages Container */}
                   <div className="p-6 space-y-4 flex-1 overflow-y-auto bg-white">
               <AnimatePresence>
@@ -562,8 +562,8 @@ Consider buyer intent when determining funnel stage.`,
                 </div>
 
                 {/* Booking Section - Right */}
-                <div className="w-96 flex flex-col bg-slate-50 p-6 overflow-y-auto">
-                  <h3 className="text-lg font-semibold text-slate-900 mb-4">Book a Demo</h3>
+                <div className="w-[30%] flex flex-col bg-slate-50 p-6 overflow-y-auto">
+                  <h3 className="text-lg font-semibold text-slate-900 mb-4">Book a Demo with {companyName}</h3>
                   
                   {/* Calendar */}
                   <div className="mb-4 flex justify-center">
