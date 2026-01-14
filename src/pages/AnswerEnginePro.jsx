@@ -120,39 +120,50 @@ export default function AnswerEnginePro() {
 
     try {
       const crawlResponse = await base44.integrations.Core.InvokeLLM({
-        prompt: `Use your internet access to deeply crawl ${websiteUrl} and index many pages.
+        prompt: `MISSION: Crawl ${websiteUrl} and return 50-100 REAL pages with content. Use your internet access.
 
-  DISCOVERY METHOD:
-  1. Google search: "site:${websiteUrl}" to find indexed pages
-  2. Fetch homepage ${websiteUrl} and extract all internal links
-  3. Check sitemap: ${websiteUrl}/sitemap.xml
-  4. Look for blog pages with Google: "site:${websiteUrl}/blog"
-  5. Look for product pages with Google: "site:${websiteUrl}/product OR site:${websiteUrl}/solutions"
+      STEP 1 - DISCOVER ALL PAGES:
+      a) Google search "site:${websiteUrl}" - get list of all URLs Google has indexed
+      b) Fetch ${websiteUrl}/sitemap.xml and extract all <loc> URLs
+      c) Fetch homepage ${websiteUrl} and extract every <a href> link
+      d) Search "site:${websiteUrl} blog" for blog posts
+      e) Search "site:${websiteUrl} product" for products
 
-  CRAWL TARGET: 50-100 REAL pages including:
-  - Homepage, About, Contact, Pricing
-  - Product/Solution/Feature pages
-  - Blog posts and articles
-  - Case studies, resources, documentation
+      STEP 2 - VISIT EACH URL:
+      From the URLs discovered above, visit AT LEAST 50-100 of them. For EACH:
+      - Fetch the actual HTML page
+      - Extract <title> or <h1> for title
+      - Read page content and write 2-sentence description
+      - Find image: check <meta property="og:image">, <meta name="twitter:image">, or first <img src="">
+      - Extract all text content from <body>
 
-  For EACH page extract:
-  - title: from <title> or <h1> tag
-  - url: complete real URL
-  - description: 1-2 sentences about this page
-  - image_url: from og:image meta tag, twitter:image, or first large image (must be full URL with http/https)
+      STEP 3 - PRIORITIZE THESE PAGE TYPES:
+      ✓ Homepage (/)
+      ✓ Blog posts (/blog/*, /article/*, /news/*)
+      ✓ Product pages (/product*, /solution*, /feature*)
+      ✓ About, Contact, Pricing, Services
+      ✓ Resources, Case Studies, Documentation
 
-  IMPORTANT:
-  - Only real pages that exist on ${websiteUrl}
-  - All image URLs must be complete (http://... or https://...)
-  - Get as many pages as possible (aim for 50+)
-  - Extract full text content from each page for content_summary
+      VALIDATION:
+      - You MUST return 50-100+ pages (not 1-5!)
+      - Every "url" must be a real page from ${websiteUrl}
+      - Every "image_url" must start with http:// or https://
+      - "content_summary" should combine text from ALL pages visited
 
-  Return JSON:
-  {
-  "company_name": "company name",
-  "pages": [{title, url, description, image_url}, ...],
-  "content_summary": "all page content combined"
-  }`,
+      Return format:
+      {
+      "company_name": "extracted from website",
+      "pages": [
+      {
+      "title": "actual page title",
+      "url": "https://full-url.com/page",
+      "description": "what this specific page is about",
+      "image_url": "https://full-image-url.com/image.jpg"
+      },
+      ... (50-100 more page objects)
+      ],
+      "content_summary": "combined content from all pages"
+      }`,
         add_context_from_internet: true,
         response_json_schema: {
           type: "object",
