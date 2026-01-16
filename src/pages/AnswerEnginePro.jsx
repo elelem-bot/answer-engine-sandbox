@@ -641,7 +641,7 @@ Consider buyer intent when determining funnel stage.`,
 
         {/* Website Preview */}
         {isCrawled && activeTab === "chat" && (
-          <div className={`relative w-full overflow-hidden ${showAnswerEngine ? 'fixed inset-0 z-40' : 'h-[800px] rounded-2xl border border-slate-700'}`}>
+          <div className={`w-full overflow-hidden ${showAnswerEngine ? 'fixed inset-0 z-30' : 'relative h-[800px] rounded-2xl border border-slate-700'}`}>
             {/* Website iframe */}
             <iframe
               src={websiteUrl}
