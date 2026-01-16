@@ -679,7 +679,7 @@ Consider buyer intent when determining funnel stage.`,
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4"
+              className="fixed inset-0 z-50 flex items-center justify-center p-4"
               onClick={() => setShowAnswerEngine(false)}
             >
               <motion.div
@@ -687,7 +687,7 @@ Consider buyer intent when determining funnel stage.`,
                 animate={{ scale: 1, opacity: 1 }}
                 exit={{ scale: 0.9, opacity: 0 }}
                 onClick={(e) => e.stopPropagation()}
-                className="w-full h-full max-w-7xl max-h-[95vh] rounded-2xl overflow-hidden shadow-2xl bg-white flex flex-col"
+                className="w-full h-full max-w-4xl max-h-[90vh] rounded-2xl overflow-hidden shadow-2xl bg-white flex flex-col"
               >
                 {/* Branded Header */}
                 <div className="px-6 py-4 border-b border-slate-200 flex items-center justify-between bg-white">
