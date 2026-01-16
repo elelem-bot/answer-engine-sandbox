@@ -61,6 +61,7 @@ export default function AnswerEnginePro() {
   const [isRecording, setIsRecording] = useState(false);
   const [mediaRecorder, setMediaRecorder] = useState(null);
   const [bookingCta, setBookingCta] = useState("Talk to our team");
+  const [showAnswerEngine, setShowAnswerEngine] = useState(false);
 
   React.useEffect(() => {
     const handleThemeChange = () => {
@@ -638,7 +639,7 @@ Consider buyer intent when determining funnel stage.`,
           </Tabs>
         )}
 
-        {/* Website Preview with Floating Chatbot */}
+        {/* Website Preview */}
         {isCrawled && activeTab === "chat" && (
           <div className="relative w-full h-[800px] rounded-2xl overflow-hidden border border-slate-700">
             {/* Website iframe */}
@@ -647,37 +648,68 @@ Consider buyer intent when determining funnel stage.`,
               className="w-full h-full"
               title="Website Preview"
             />
-            
-            {/* Floating Chatbot Overlay */}
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[84%] h-[84%] rounded-2xl overflow-hidden shadow-2xl bg-white/95 backdrop-blur-sm flex flex-col">
-              {/* Branded Header */}
-              <div className="px-6 py-4 border-b border-slate-200 flex items-center justify-between bg-white">
-                <div className="flex items-center gap-3">
-                  {logoUrl && (
-                    <img 
-                      src={logoUrl} 
-                      alt={companyName}
-                      className="h-8 max-w-[40px] object-contain"
-                    />
-                  )}
-                  <span className="text-lg font-semibold text-slate-900">
-                    {companyName} Answer Engine
-                  </span>
-                </div>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="text-slate-400 hover:text-slate-900"
-                >
-                  <X className="w-5 h-5" />
-                </Button>
-              </div>
 
-              {/* Chat Section with Booking Panel */}
-              <div className="flex flex-1 overflow-hidden relative">
-                <div className={`flex flex-col transition-all ${showBookingPanel ? 'w-[70%]' : 'w-full'}`}>
-                  {/* Messages Container */}
-                  <div className="p-6 space-y-4 flex-1 overflow-y-auto bg-white">
+            {/* Launch Answer Engine Button */}
+            <div className="absolute bottom-6 right-6">
+              <Button
+                onClick={() => setShowAnswerEngine(true)}
+                className="shadow-2xl"
+                size="lg"
+                style={{ backgroundColor: brandColor, color: '#ffffff' }}
+              >
+                <MessageSquare className="w-5 h-5 mr-2" />
+                Ask a Question
+              </Button>
+            </div>
+          </div>
+        )}
+
+        {/* Fullscreen Answer Engine Popup */}
+        <AnimatePresence>
+          {showAnswerEngine && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4"
+              onClick={() => setShowAnswerEngine(false)}
+            >
+              <motion.div
+                initial={{ scale: 0.9, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                exit={{ scale: 0.9, opacity: 0 }}
+                onClick={(e) => e.stopPropagation()}
+                className="w-full h-full max-w-7xl max-h-[95vh] rounded-2xl overflow-hidden shadow-2xl bg-white flex flex-col"
+              >
+                {/* Branded Header */}
+                <div className="px-6 py-4 border-b border-slate-200 flex items-center justify-between bg-white">
+                  <div className="flex items-center gap-3">
+                    {logoUrl && (
+                      <img 
+                        src={logoUrl} 
+                        alt={companyName}
+                        className="h-8 max-w-[40px] object-contain"
+                      />
+                    )}
+                    <span className="text-lg font-semibold text-slate-900">
+                      {companyName} Answer Engine
+                    </span>
+                  </div>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => setShowAnswerEngine(false)}
+                    className="text-slate-400 hover:text-slate-900"
+                  >
+                    <X className="w-5 h-5" />
+                  </Button>
+                </div>
+
+                {/* Chat Section with Booking Panel */}
+                <div className="flex flex-1 overflow-hidden relative">
+                  <div className={`flex flex-col transition-all ${showBookingPanel ? 'w-[70%]' : 'w-full'}`}>
+                    {/* Messages Container */}
+                    <div className="p-6 space-y-4 flex-1 overflow-y-auto bg-white">
               <AnimatePresence>
                 {messages.length === 0 ? (
                   <div className="text-center py-16">
@@ -726,9 +758,9 @@ Consider buyer intent when determining funnel stage.`,
                     </motion.div>
                   ))
                 )}
-              </AnimatePresence>
+                      </AnimatePresence>
 
-              {isAsking && (
+                      {isAsking && (
                 <motion.div
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
@@ -744,251 +776,253 @@ Consider buyer intent when determining funnel stage.`,
                     </div>
                   </div>
                 </motion.div>
-              )}
-                  </div>
-
-                  {/* Input Footer */}
-                  <div className="border-t border-slate-200 bg-white">
-                    <div className="px-6 py-4">
-                      {uploadedFiles.length > 0 && (
-                        <div className="flex gap-2 mb-3 flex-wrap">
-                          {uploadedFiles.map((file, i) => (
-                            <div key={i} className="flex items-center gap-2 bg-slate-100 rounded-lg px-3 py-1.5 text-xs">
-                              <Paperclip className="w-3 h-3 text-slate-500" />
-                              <span className="text-slate-700">{file.name}</span>
-                              <button
-                                onClick={() => setUploadedFiles(prev => prev.filter((_, idx) => idx !== i))}
-                                className="text-slate-400 hover:text-slate-600"
-                              >
-                                <X className="w-3 h-3" />
-                              </button>
-                            </div>
-                          ))}
-                        </div>
                       )}
-                      <form onSubmit={handleAskQuestion} className="relative">
-                        <input
-                          type="file"
-                          multiple
-                          accept="image/*,.pdf,.doc,.docx,.txt"
-                          onChange={handleFileUpload}
-                          className="hidden"
-                          id="file-upload"
-                        />
-                        <div className="relative flex items-center bg-white border border-slate-300 rounded-full shadow-sm hover:shadow-md transition-shadow">
-                          <label htmlFor="file-upload" className="pl-4">
-                            <button
-                              type="button"
-                              className="text-slate-400 hover:text-slate-900 transition-colors"
-                              onClick={() => document.getElementById('file-upload').click()}
-                            >
-                              <Plus className="w-5 h-5" />
-                            </button>
-                          </label>
-                          <Input
-                            placeholder={`Ask ${companyName} anything...`}
-                            value={question}
-                            onChange={(e) => setQuestion(e.target.value)}
-                            disabled={isAsking}
-                            className="flex-1 border-0 bg-transparent text-slate-900 placeholder:text-slate-400 focus-visible:ring-0 focus-visible:ring-offset-0 px-3"
-                          />
-                          <button
-                            type="button"
-                            onClick={handleVoiceInput}
-                            className={`pr-4 transition-colors ${isRecording ? 'text-red-500 animate-pulse' : 'text-slate-400 hover:text-slate-900'}`}
-                          >
-                            <Mic className="w-5 h-5" />
-                          </button>
-                          {question.trim() && (
-                            <button
-                              type="submit"
-                              disabled={isAsking}
-                              className="pr-4 transition-colors"
-                              style={{ color: brandColor }}
-                            >
-                              <Send className="w-5 h-5" />
-                            </button>
-                          )}
-                        </div>
-                      </form>
                     </div>
 
-                    {/* Recommendations Bar */}
-                    <AnimatePresence>
-                     {showRecommendations && recommendedPages.length > 0 && (
-                       <motion.div
-                         initial={{ height: 0, opacity: 0 }}
-                         animate={{ height: "auto", opacity: 1 }}
-                         exit={{ height: 0, opacity: 0 }}
-                         className="border-t border-slate-200 bg-white overflow-hidden"
-                       >
-                         <div className="px-6 py-3 flex items-start gap-3">
-                           <span className="text-xs text-slate-600 font-medium pt-3 whitespace-nowrap">You might also like:</span>
-
-                           <div className="flex-1 grid grid-cols-3 gap-3">
-                             {recommendedPages.slice(0, 2).map((page, i) => (
-                               <a
-                                 key={i}
-                                 href={page.url}
-                                 target="_blank"
-                                 rel="noopener noreferrer"
-                                 className="p-3 rounded-lg bg-slate-50 border border-slate-200 hover:border-slate-300 hover:shadow-sm transition-all group"
-                               >
-                                 <p className="text-xs font-semibold text-slate-900 line-clamp-1 group-hover:text-teal-600 transition-colors mb-1">
-                                   {page.title}
-                                 </p>
-                                 <p className="text-xs text-slate-600 line-clamp-2 leading-relaxed">
-                                   {page.description}
-                                 </p>
-                               </a>
-                             ))}
-
-                             <div className="p-3 rounded-lg bg-slate-50 border border-slate-200 flex flex-col items-center justify-center gap-2">
-                               <span className="text-xs text-slate-700 font-medium text-center leading-tight">{bookingCta}</span>
-                               <Button
-                                 size="sm"
-                                 onClick={() => setShowBookingPanel(true)}
-                                 className="whitespace-nowrap"
-                                 style={{ backgroundColor: brandColor, color: '#ffffff' }}
-                               >
-                                 Book Demo
-                               </Button>
-                             </div>
-                           </div>
-
-                           <Button
-                             size="icon"
-                             variant="ghost"
-                             onClick={() => setShowRecommendations(false)}
-                             className="h-7 w-7 flex-shrink-0"
-                           >
-                             <ChevronDown className="w-4 h-4" />
-                           </Button>
-                         </div>
-                       </motion.div>
-                     )}
-                    </AnimatePresence>
-
-                    {/* Toggle Button */}
-                    {!showRecommendations && recommendedPages.length > 0 && (
-                     <div className="px-6 py-2 border-t border-slate-200 bg-slate-50">
-                       <Button
-                         size="sm"
-                         variant="ghost"
-                         onClick={() => setShowRecommendations(true)}
-                         className="w-full text-xs text-slate-600 hover:text-slate-900"
-                       >
-                         <ChevronUp className="w-4 h-4 mr-1" />
-                         Show Recommendations
-                       </Button>
-                     </div>
-                    )}
-                  </div>
-                </div>
-
-                {/* Booking Side Panel */}
-                <AnimatePresence>
-                  {showBookingPanel && (
-                    <motion.div
-                      initial={{ width: 0, opacity: 0 }}
-                      animate={{ width: "30%", opacity: 1 }}
-                      exit={{ width: 0, opacity: 0 }}
-                      className="border-l border-slate-200 bg-slate-50 flex flex-col overflow-hidden"
-                    >
-                      <div className="px-6 py-4 border-b border-slate-200 bg-white flex items-center justify-between">
-                        <h3 className="text-lg font-semibold text-slate-900">Book a Demo with {companyName}</h3>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          onClick={() => setShowBookingPanel(false)}
-                          className="text-slate-400 hover:text-slate-900"
-                        >
-                          <X className="w-5 h-5" />
-                        </Button>
-                      </div>
-
-                      <div className="flex-1 overflow-y-auto p-6 space-y-4">
-                        {/* Calendar */}
-                        <div className="flex justify-center">
-                          <Calendar
-                            mode="single"
-                            selected={selectedDate}
-                            onSelect={setSelectedDate}
-                            disabled={(date) => date < new Date()}
-                            className="rounded-md border border-slate-200 bg-white"
-                          />
-                        </div>
-
-                        {/* Time Slots */}
-                        <div>
-                          <Label className="text-sm font-medium text-slate-700 mb-2 block">Select Time</Label>
-                          <div className="grid grid-cols-2 gap-2">
-                            {timeSlots.map((time) => (
-                              <Button
-                                key={time}
-                                variant={selectedTime === time ? "default" : "outline"}
-                                size="sm"
-                                onClick={() => setSelectedTime(time)}
-                                className={selectedTime === time ? "" : "bg-white border-slate-300 text-slate-700 hover:bg-slate-100"}
-                                style={selectedTime === time ? {
-                                  backgroundColor: brandColor,
-                                  borderColor: brandColor
-                                } : {}}
-                              >
-                                {time}
-                              </Button>
+                    {/* Input Footer */}
+                    <div className="border-t border-slate-200 bg-white">
+                      <div className="px-6 py-4">
+                        {uploadedFiles.length > 0 && (
+                          <div className="flex gap-2 mb-3 flex-wrap">
+                            {uploadedFiles.map((file, i) => (
+                              <div key={i} className="flex items-center gap-2 bg-slate-100 rounded-lg px-3 py-1.5 text-xs">
+                                <Paperclip className="w-3 h-3 text-slate-500" />
+                                <span className="text-slate-700">{file.name}</span>
+                                <button
+                                  onClick={() => setUploadedFiles(prev => prev.filter((_, idx) => idx !== i))}
+                                  className="text-slate-400 hover:text-slate-600"
+                                >
+                                  <X className="w-3 h-3" />
+                                </button>
+                              </div>
                             ))}
                           </div>
-                        </div>
-
-                        {/* Booking Form */}
-                        <div className="space-y-3">
-                          <div>
-                            <Label className="text-sm font-medium text-slate-700 mb-1 block">Name</Label>
+                        )}
+                        <form onSubmit={handleAskQuestion} className="relative">
+                          <input
+                            type="file"
+                            multiple
+                            accept="image/*,.pdf,.doc,.docx,.txt"
+                            onChange={handleFileUpload}
+                            className="hidden"
+                            id="file-upload"
+                          />
+                          <div className="relative flex items-center bg-white border border-slate-300 rounded-full shadow-sm hover:shadow-md transition-shadow">
+                            <label htmlFor="file-upload" className="pl-4">
+                              <button
+                                type="button"
+                                className="text-slate-400 hover:text-slate-900 transition-colors"
+                                onClick={() => document.getElementById('file-upload').click()}
+                              >
+                                <Plus className="w-5 h-5" />
+                              </button>
+                            </label>
                             <Input
-                              placeholder="Your name"
-                              value={bookingName}
-                              onChange={(e) => setBookingName(e.target.value)}
-                              className="bg-white border-slate-300"
+                              placeholder={`Ask ${companyName} anything...`}
+                              value={question}
+                              onChange={(e) => setQuestion(e.target.value)}
+                              disabled={isAsking}
+                              className="flex-1 border-0 bg-transparent text-slate-900 placeholder:text-slate-400 focus-visible:ring-0 focus-visible:ring-offset-0 px-3"
                             />
-                          </div>
-                          <div>
-                            <Label className="text-sm font-medium text-slate-700 mb-1 block">Email</Label>
-                            <Input
-                              type="email"
-                              placeholder="your@email.com"
-                              value={bookingEmail}
-                              onChange={(e) => setBookingEmail(e.target.value)}
-                              className="bg-white border-slate-300"
-                            />
-                          </div>
-                          <Button
-                            onClick={handleBookDemo}
-                            disabled={!bookingName || !bookingEmail || !selectedTime || isBooking}
-                            className="w-full"
-                            style={{
-                              backgroundColor: brandColor,
-                              color: '#ffffff'
-                            }}
-                          >
-                            {isBooking ? (
-                              <>
-                                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                                Booking...
-                              </>
-                            ) : (
-                              "Book Demo"
+                            <button
+                              type="button"
+                              onClick={handleVoiceInput}
+                              className={`pr-4 transition-colors ${isRecording ? 'text-red-500 animate-pulse' : 'text-slate-400 hover:text-slate-900'}`}
+                            >
+                              <Mic className="w-5 h-5" />
+                            </button>
+                            {question.trim() && (
+                              <button
+                                type="submit"
+                                disabled={isAsking}
+                                className="pr-4 transition-colors"
+                                style={{ color: brandColor }}
+                              >
+                                <Send className="w-5 h-5" />
+                              </button>
                             )}
+                          </div>
+                        </form>
+                      </div>
+
+                      {/* Recommendations Bar */}
+                      <AnimatePresence>
+                        {showRecommendations && recommendedPages.length > 0 && (
+                          <motion.div
+                            initial={{ height: 0, opacity: 0 }}
+                            animate={{ height: "auto", opacity: 1 }}
+                            exit={{ height: 0, opacity: 0 }}
+                            className="border-t border-slate-200 bg-white overflow-hidden"
+                          >
+                            <div className="px-6 py-3 flex items-start gap-3">
+                              <span className="text-xs text-slate-600 font-medium pt-3 whitespace-nowrap">You might also like:</span>
+
+                              <div className="flex-1 grid grid-cols-3 gap-3">
+                                {recommendedPages.slice(0, 2).map((page, i) => (
+                                  <a
+                                    key={i}
+                                    href={page.url}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="p-3 rounded-lg bg-slate-50 border border-slate-200 hover:border-slate-300 hover:shadow-sm transition-all group"
+                                  >
+                                    <p className="text-xs font-semibold text-slate-900 line-clamp-1 group-hover:text-teal-600 transition-colors mb-1">
+                                      {page.title}
+                                    </p>
+                                    <p className="text-xs text-slate-600 line-clamp-2 leading-relaxed">
+                                      {page.description}
+                                    </p>
+                                  </a>
+                                ))}
+
+                                <div className="p-3 rounded-lg bg-slate-50 border border-slate-200 flex flex-col items-center justify-center gap-2">
+                                  <span className="text-xs text-slate-700 font-medium text-center leading-tight">{bookingCta}</span>
+                                  <Button
+                                    size="sm"
+                                    onClick={() => setShowBookingPanel(true)}
+                                    className="whitespace-nowrap"
+                                    style={{ backgroundColor: brandColor, color: '#ffffff' }}
+                                  >
+                                    Book Demo
+                                  </Button>
+                                </div>
+                              </div>
+
+                              <Button
+                                size="icon"
+                                variant="ghost"
+                                onClick={() => setShowRecommendations(false)}
+                                className="h-7 w-7 flex-shrink-0"
+                              >
+                                <ChevronDown className="w-4 h-4" />
+                              </Button>
+                            </div>
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
+
+                      {/* Toggle Button */}
+                      {!showRecommendations && recommendedPages.length > 0 && (
+                        <div className="px-6 py-2 border-t border-slate-200 bg-slate-50">
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            onClick={() => setShowRecommendations(true)}
+                            className="w-full text-xs text-slate-600 hover:text-slate-900"
+                          >
+                            <ChevronUp className="w-4 h-4 mr-1" />
+                            Show Recommendations
                           </Button>
                         </div>
-                      </div>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-              </div>
-            </div>
-          </div>
-        )}
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Booking Side Panel */}
+                  <AnimatePresence>
+                    {showBookingPanel && (
+                      <motion.div
+                        initial={{ width: 0, opacity: 0 }}
+                        animate={{ width: "30%", opacity: 1 }}
+                        exit={{ width: 0, opacity: 0 }}
+                        className="border-l border-slate-200 bg-slate-50 flex flex-col overflow-hidden"
+                      >
+                        <div className="px-6 py-4 border-b border-slate-200 bg-white flex items-center justify-between">
+                          <h3 className="text-lg font-semibold text-slate-900">Book a Demo with {companyName}</h3>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => setShowBookingPanel(false)}
+                            className="text-slate-400 hover:text-slate-900"
+                          >
+                            <X className="w-5 h-5" />
+                          </Button>
+                        </div>
+
+                        <div className="flex-1 overflow-y-auto p-6 space-y-4">
+                          {/* Calendar */}
+                          <div className="flex justify-center">
+                            <Calendar
+                              mode="single"
+                              selected={selectedDate}
+                              onSelect={setSelectedDate}
+                              disabled={(date) => date < new Date()}
+                              className="rounded-md border border-slate-200 bg-white"
+                            />
+                          </div>
+
+                          {/* Time Slots */}
+                          <div>
+                            <Label className="text-sm font-medium text-slate-700 mb-2 block">Select Time</Label>
+                            <div className="grid grid-cols-2 gap-2">
+                              {timeSlots.map((time) => (
+                                <Button
+                                  key={time}
+                                  variant={selectedTime === time ? "default" : "outline"}
+                                  size="sm"
+                                  onClick={() => setSelectedTime(time)}
+                                  className={selectedTime === time ? "" : "bg-white border-slate-300 text-slate-700 hover:bg-slate-100"}
+                                  style={selectedTime === time ? {
+                                    backgroundColor: brandColor,
+                                    borderColor: brandColor
+                                  } : {}}
+                                >
+                                  {time}
+                                </Button>
+                              ))}
+                            </div>
+                          </div>
+
+                          {/* Booking Form */}
+                          <div className="space-y-3">
+                            <div>
+                              <Label className="text-sm font-medium text-slate-700 mb-1 block">Name</Label>
+                              <Input
+                                placeholder="Your name"
+                                value={bookingName}
+                                onChange={(e) => setBookingName(e.target.value)}
+                                className="bg-white border-slate-300"
+                              />
+                            </div>
+                            <div>
+                              <Label className="text-sm font-medium text-slate-700 mb-1 block">Email</Label>
+                              <Input
+                                type="email"
+                                placeholder="your@email.com"
+                                value={bookingEmail}
+                                onChange={(e) => setBookingEmail(e.target.value)}
+                                className="bg-white border-slate-300"
+                              />
+                            </div>
+                            <Button
+                              onClick={handleBookDemo}
+                              disabled={!bookingName || !bookingEmail || !selectedTime || isBooking}
+                              className="w-full"
+                              style={{
+                                backgroundColor: brandColor,
+                                color: '#ffffff'
+                              }}
+                            >
+                              {isBooking ? (
+                                <>
+                                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                                  Booking...
+                                </>
+                              ) : (
+                                "Book Demo"
+                              )}
+                            </Button>
+                          </div>
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
+                </div>
+              </motion.div>
+            </motion.div>
+          )}
+        </AnimatePresence>
 
         {/* Questions List */}
         {isCrawled && activeTab === "questions" && (
