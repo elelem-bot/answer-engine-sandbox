@@ -653,9 +653,9 @@ Consider buyer intent when determining funnel stage.`,
             <motion.div
               drag
               dragMomentum={false}
-              dragElastic={0}
-              dragConstraints={{ left: 0, right: 0, top: 0, bottom: 0 }}
-              className="absolute top-4 right-4 cursor-move"
+              dragElastic={0.1}
+              initial={{ x: 0, y: 0 }}
+              className="absolute top-4 right-4 cursor-move z-10"
             >
               <Button
                 onClick={() => setShowAnswerEngine(true)}
