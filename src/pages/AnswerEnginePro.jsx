@@ -62,6 +62,7 @@ export default function AnswerEnginePro() {
   const [mediaRecorder, setMediaRecorder] = useState(null);
   const [bookingCta, setBookingCta] = useState("Talk to our team");
   const [showAnswerEngine, setShowAnswerEngine] = useState(false);
+  const [isDragging, setIsDragging] = useState(false);
 
   React.useEffect(() => {
     const handleThemeChange = () => {
@@ -656,10 +657,14 @@ Consider buyer intent when determining funnel stage.`,
                 dragMomentum={false}
                 dragElastic={0.1}
                 initial={{ x: 0, y: 0 }}
+                onDragStart={() => setIsDragging(true)}
+                onDragEnd={() => setTimeout(() => setIsDragging(false), 50)}
                 className="absolute top-4 right-4 cursor-move z-10"
               >
                 <Button
-                  onClick={() => setShowAnswerEngine(true)}
+                  onClick={() => {
+                    if (!isDragging) setShowAnswerEngine(true);
+                  }}
                   className="shadow-lg pointer-events-auto"
                   size="sm"
                   style={{ backgroundColor: brandColor, color: '#ffffff' }}
