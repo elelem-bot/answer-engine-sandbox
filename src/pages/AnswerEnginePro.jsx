@@ -649,20 +649,11 @@ Consider buyer intent when determining funnel stage.`,
               title="Website Preview"
             />
 
-            {/* Top Menu Bar */}
-            <div className="absolute top-0 left-0 right-0 bg-white/95 backdrop-blur-sm border-b border-slate-200 px-6 py-3 flex items-center justify-between shadow-sm">
-              <div className="flex items-center gap-3">
-                {logoUrl && (
-                  <img 
-                    src={logoUrl} 
-                    alt={companyName}
-                    className="h-6 object-contain"
-                  />
-                )}
-                <span className="text-sm font-semibold text-slate-900">{companyName}</span>
-              </div>
+            {/* Floating Ask AI Button */}
+            <div className="absolute top-4 right-4">
               <Button
                 onClick={() => setShowAnswerEngine(true)}
+                className="shadow-lg"
                 size="sm"
                 style={{ backgroundColor: brandColor, color: '#ffffff' }}
               >
