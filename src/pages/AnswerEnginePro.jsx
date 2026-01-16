@@ -650,17 +650,23 @@ Consider buyer intent when determining funnel stage.`,
             />
 
             {/* Floating Ask AI Button */}
-            <div className="absolute top-4 right-4">
+            <motion.div
+              drag
+              dragMomentum={false}
+              dragElastic={0}
+              dragConstraints={{ left: 0, right: 0, top: 0, bottom: 0 }}
+              className="absolute top-4 right-4 cursor-move"
+            >
               <Button
                 onClick={() => setShowAnswerEngine(true)}
-                className="shadow-lg"
+                className="shadow-lg pointer-events-auto"
                 size="sm"
                 style={{ backgroundColor: brandColor, color: '#ffffff' }}
               >
                 <MessageSquare className="w-4 h-4 mr-2" />
                 Ask AI
               </Button>
-            </div>
+            </motion.div>
           </div>
         )}
 
