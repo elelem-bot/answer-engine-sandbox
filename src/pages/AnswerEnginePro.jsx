@@ -687,7 +687,7 @@ Consider buyer intent when determining funnel stage.`,
                 animate={{ scale: 1, opacity: 1 }}
                 exit={{ scale: 0.9, opacity: 0 }}
                 onClick={(e) => e.stopPropagation()}
-                className="w-full h-full max-w-4xl max-h-[90vh] rounded-2xl overflow-hidden shadow-2xl bg-white flex flex-col"
+                className="w-full h-full max-w-5xl max-h-[90vh] rounded-2xl overflow-hidden shadow-2xl bg-white flex flex-col"
               >
                 {/* Branded Header */}
                 <div className="px-6 py-4 border-b border-slate-200 flex items-center justify-between bg-white">
