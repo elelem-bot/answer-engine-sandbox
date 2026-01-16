@@ -1018,7 +1018,6 @@ Consider buyer intent when determining funnel stage.`,
                     )}
                   </AnimatePresence>
                 </div>
-                </div>
               </motion.div>
             </motion.div>
           )}
