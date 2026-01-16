@@ -710,8 +710,8 @@ Consider buyer intent when determining funnel stage.`,
                   <div className={`flex flex-col transition-all ${showBookingPanel ? 'w-[70%]' : 'w-full'}`}>
                     {/* Messages Container */}
                     <div className="p-6 space-y-4 flex-1 overflow-y-auto bg-white">
-              <AnimatePresence>
-                {messages.length === 0 ? (
+                      <AnimatePresence>
+                        {messages.length === 0 ? (
                   <div className="text-center py-16">
                     <div 
                       className="w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-4"
