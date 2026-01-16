@@ -641,7 +641,7 @@ Consider buyer intent when determining funnel stage.`,
 
         {/* Website Preview */}
         {isCrawled && activeTab === "chat" && (
-          <div className="relative w-full h-[800px] rounded-2xl overflow-hidden border border-slate-700">
+          <div className={`relative w-full overflow-hidden ${showAnswerEngine ? 'fixed inset-0 z-40' : 'h-[800px] rounded-2xl border border-slate-700'}`}>
             {/* Website iframe */}
             <iframe
               src={websiteUrl}
@@ -650,23 +650,25 @@ Consider buyer intent when determining funnel stage.`,
             />
 
             {/* Floating Ask AI Button */}
-            <motion.div
-              drag
-              dragMomentum={false}
-              dragElastic={0.1}
-              initial={{ x: 0, y: 0 }}
-              className="absolute top-4 right-4 cursor-move z-10"
-            >
-              <Button
-                onClick={() => setShowAnswerEngine(true)}
-                className="shadow-lg pointer-events-auto"
-                size="sm"
-                style={{ backgroundColor: brandColor, color: '#ffffff' }}
+            {!showAnswerEngine && (
+              <motion.div
+                drag
+                dragMomentum={false}
+                dragElastic={0.1}
+                initial={{ x: 0, y: 0 }}
+                className="absolute top-4 right-4 cursor-move z-10"
               >
-                <MessageSquare className="w-4 h-4 mr-2" />
-                Ask AI
-              </Button>
-            </motion.div>
+                <Button
+                  onClick={() => setShowAnswerEngine(true)}
+                  className="shadow-lg pointer-events-auto"
+                  size="sm"
+                  style={{ backgroundColor: brandColor, color: '#ffffff' }}
+                >
+                  <MessageSquare className="w-4 h-4 mr-2" />
+                  Ask AI
+                </Button>
+              </motion.div>
+            )}
           </div>
         )}
 
