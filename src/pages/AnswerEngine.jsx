@@ -12,13 +12,19 @@ import {
   ChevronDown,
   MessageSquare,
   List,
-  ArrowRight
+  ArrowRight,
+  X,
+  Plus,
+  Mic,
+  Paperclip
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Calendar } from "@/components/ui/calendar";
+import { Label } from "@/components/ui/label";
 
 export default function AnswerEngine() {
   const [websiteUrl, setWebsiteUrl] = useState("");
@@ -42,6 +48,21 @@ export default function AnswerEngine() {
   const [theme, setTheme] = useState(() => {
     return localStorage.getItem('elelem-theme') || 'dark';
   });
+  const [selectedDate, setSelectedDate] = useState(new Date());
+  const [selectedTime, setSelectedTime] = useState(null);
+  const [bookingEmail, setBookingEmail] = useState("");
+  const [bookingName, setBookingName] = useState("");
+  const [isBooking, setIsBooking] = useState(false);
+  const [showRecommendations, setShowRecommendations] = useState(false);
+  const [recommendedPages, setRecommendedPages] = useState([]);
+  const [showBookingPanel, setShowBookingPanel] = useState(false);
+  const [crawledPages, setCrawledPages] = useState([]);
+  const [uploadedFiles, setUploadedFiles] = useState([]);
+  const [isRecording, setIsRecording] = useState(false);
+  const [mediaRecorder, setMediaRecorder] = useState(null);
+  const [bookingCta, setBookingCta] = useState("Talk to our team");
+  const [showAnswerEngine, setShowAnswerEngine] = useState(false);
+  const [isDragging, setIsDragging] = useState(false);
 
   React.useEffect(() => {
     const handleThemeChange = () => {
@@ -87,6 +108,66 @@ export default function AnswerEngine() {
     }
   };
 
+  const handleFileUpload = async (e) => {
+    const files = Array.from(e.target.files);
+    const uploadedUrls = [];
+
+    for (const file of files) {
+      try {
+        const { file_url } = await base44.integrations.Core.UploadFile({ file });
+        uploadedUrls.push({ name: file.name, url: file_url, type: file.type });
+      } catch (error) {
+        console.error("Error uploading file:", error);
+      }
+    }
+
+    setUploadedFiles(prev => [...prev, ...uploadedUrls]);
+  };
+
+  const handleVoiceInput = async () => {
+    if (!isRecording) {
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        const recorder = new MediaRecorder(stream);
+        const audioChunks = [];
+
+        recorder.ondataavailable = (e) => {
+          audioChunks.push(e.data);
+        };
+
+        recorder.onstop = async () => {
+          const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
+          const audioFile = new File([audioBlob], 'voice.webm', { type: 'audio/webm' });
+
+          try {
+            const { file_url } = await base44.integrations.Core.UploadFile({ file: audioFile });
+            const transcription = await base44.integrations.Core.InvokeLLM({
+              prompt: "Transcribe this audio to text. Return only the transcription, no other text.",
+              file_urls: [file_url]
+            });
+            setQuestion(prev => prev + (prev ? ' ' : '') + transcription);
+          } catch (error) {
+            console.error("Error transcribing audio:", error);
+          }
+
+          stream.getTracks().forEach(track => track.stop());
+        };
+
+        recorder.start();
+        setMediaRecorder(recorder);
+        setIsRecording(true);
+      } catch (error) {
+        console.error("Error accessing microphone:", error);
+      }
+    } else {
+      if (mediaRecorder) {
+        mediaRecorder.stop();
+        setIsRecording(false);
+        setMediaRecorder(null);
+      }
+    }
+  };
+
   const handleLogoUpload = async (e) => {
     const file = e.target.files[0];
     if (file) {
@@ -104,49 +185,117 @@ export default function AnswerEngine() {
 
     setIsCrawling(true);
     setCrawlError(null);
-    setCrawlProgress("Discovering pages...");
-    
+    setCrawlProgress("Step 1/3: Discovering URLs from sitemap and search...");
+
     try {
-      // Crawl and index up to 100 pages
-      const crawlResponse = await base44.integrations.Core.InvokeLLM({
-        prompt: `CRITICAL: You must comprehensively crawl and index this entire website: ${websiteUrl}
+      // Step 1: Discover all URLs
+      const urlDiscovery = await base44.integrations.Core.InvokeLLM({
+        prompt: `Find 50-100 page URLs from ${websiteUrl}. Use your internet access.
 
-CRAWLING REQUIREMENTS:
-1. Start from homepage: ${websiteUrl}
-2. Systematically discover and visit ALL internal pages by following links
-3. Visit UP TO 100 PAGES (or all pages if fewer than 100)
-4. Include: /about, /products, /services, /blog, /resources, /pricing, /contact, etc.
-5. Extract ALL text content from every page visited
+  DISCOVERY METHODS:
+  1. Google search: "site:${websiteUrl}" to get indexed pages
+  2. Fetch sitemap: ${websiteUrl}/sitemap.xml and extract all <loc> URLs
+  3. Fetch homepage ${websiteUrl} and extract all internal links from <a href>
+  4. Search for blog: "site:${websiteUrl} blog"
+  5. Search for products: "site:${websiteUrl} product OR solutions OR features"
 
-For each page you visit:
-- Extract the full page content (paragraphs, headings, lists)
-- Remove only navigation menus, footers, and scripts
-- Keep all valuable information: product descriptions, features, FAQs, blog posts, etc.
+  PRIORITY PAGE TYPES:
+  - Homepage, About, Contact, Pricing
+  - Blog posts (/blog/*, /article/*, /news/*)
+  - Product/Solution/Feature pages
+  - Case studies, resources, documentation
 
-IMPORTANT: The content_summary must be COMPREHENSIVE and include content from ALL pages you crawled. This will be used to answer user questions, so more content = better answers.
-
-Return JSON with:
-- company_name: Brand/company name from website
-- pages_crawled: ACTUAL number of pages you visited and indexed (should be close to 100 or all available pages)
-- content_summary: EXTENSIVE combined text from ALL crawled pages (should be very long with lots of details)`,
+  Return JSON with 50-100 real URLs:
+  {
+  "company_name": "company name from website",
+  "urls": ["https://full-url.com/page1", "https://full-url.com/page2", ...]
+  }`,
         add_context_from_internet: true,
         response_json_schema: {
           type: "object",
           properties: {
             company_name: { type: "string" },
-            pages_crawled: { type: "number" },
-            content_summary: { type: "string" }
+            urls: { type: "array", items: { type: "string" } }
           }
         }
       });
-      
-      setCompanyName(crawlResponse.company_name || new URL(websiteUrl).hostname);
-      setIndexedContent(crawlResponse.content_summary || "");
-      setCrawlProgress(`Indexed ${crawlResponse.pages_crawled || 0} pages`);
+
+      if (!urlDiscovery?.urls || urlDiscovery.urls.length === 0) {
+        throw new Error("No URLs discovered");
+      }
+
+      setCompanyName(urlDiscovery.company_name || new URL(websiteUrl).hostname);
+      setCrawlProgress(`Step 2/3: Found ${urlDiscovery.urls.length} URLs. Extracting content from pages...`);
+
+      // Step 2: Process URLs in batches of 5
+      const allPages = [];
+      const batchSize = 5;
+      const urlsToProcess = urlDiscovery.urls.slice(0, 50); // Limit to 50 total
+
+      for (let i = 0; i < urlsToProcess.length; i += batchSize) {
+        const batch = urlsToProcess.slice(i, i + batchSize);
+        setCrawlProgress(`Step 2/3: Processing pages ${i + 1}-${Math.min(i + batchSize, urlsToProcess.length)} of ${urlsToProcess.length}...`);
+
+        const batchResponse = await base44.integrations.Core.InvokeLLM({
+          prompt: `Extract data from these ${batch.length} URLs. Use internet access.
+
+      URLs:
+      ${batch.map((url, idx) => `${idx + 1}. ${url}`).join('\n')}
+
+      For each URL, extract:
+      - title (from <title> tag)
+      - description (1-2 sentences, max 200 chars)
+      - image_url (from og:image meta tag or first img, must be absolute URL starting with http)
+      - content (main text, max 500 chars)
+
+      Return valid JSON only:
+      {
+      "pages": [
+      {"title": "...", "url": "...", "description": "...", "image_url": "...", "content": "..."}
+      ]
+      }`,
+          add_context_from_internet: true,
+          response_json_schema: {
+            type: "object",
+            properties: {
+              pages: {
+                type: "array",
+                items: {
+                  type: "object",
+                  properties: {
+                    title: { type: "string" },
+                    url: { type: "string" },
+                    description: { type: "string" },
+                    image_url: { type: "string" },
+                    content: { type: "string" }
+                  }
+                }
+              }
+            }
+          }
+        });
+
+        if (batchResponse?.pages) {
+          allPages.push(...batchResponse.pages);
+        }
+      }
+
+      if (allPages.length === 0) {
+        throw new Error("No pages could be processed");
+      }
+
+      setCrawlProgress(`Step 3/3: Finalizing ${allPages.length} pages...`);
+
+      // Combine all content
+      const combinedContent = allPages.map(p => p.content || '').join('\n\n');
+
+      setIndexedContent(combinedContent);
+      setCrawledPages(allPages);
+      setCrawlProgress(`Successfully indexed ${allPages.length} pages`);
       setIsCrawled(true);
     } catch (error) {
       console.error("Error crawling website:", error);
-      setCrawlError("Failed to crawl website. Please check the URL and try again.");
+      setCrawlError(error.message || "Crawling failed. The website may be blocking automated access or the URL is invalid.");
     } finally {
       setIsCrawling(false);
     }
@@ -156,9 +305,11 @@ Return JSON with:
     e.preventDefault();
     if (!question.trim() || !isCrawled) return;
 
-    const userMessage = { role: "user", content: question };
+    const userMessage = { role: "user", content: question, files: uploadedFiles };
     setMessages(prev => [...prev, userMessage]);
     setQuestion("");
+    const filesForContext = uploadedFiles;
+    setUploadedFiles([]);
     setIsAsking(true);
 
     try {
@@ -179,6 +330,7 @@ GUARDRAILS:
 - Be helpful, friendly, and professional
 
 Answer the question directly and conversationally.`,
+        file_urls: filesForContext.length > 0 ? filesForContext.map(f => f.url) : undefined
       });
 
       // Clean up response - remove any remaining markdown and URLs
@@ -190,6 +342,76 @@ Answer the question directly and conversationally.`,
 
       const assistantMessage = { role: "assistant", content: cleanedResponse };
       setMessages(prev => [...prev, assistantMessage]);
+
+      // Generate contextual booking CTA
+      try {
+        const ctaResponse = await base44.integrations.Core.InvokeLLM({
+          prompt: `Based on this question: "${question}"
+
+      Generate a short, compelling call-to-action message (max 6 words) that encourages the user to book a demo.
+
+      Examples:
+      - "How much does it cost?" → "Talk to our team about pricing"
+      - "Can it integrate with Salesforce?" → "Discuss integrations with our team"
+      - "What features do you have?" → "See a personalized demo"
+      - "Is there a free trial?" → "Explore trial options with us"
+
+      Return only the CTA text, nothing else.`
+        });
+        setBookingCta(ctaResponse);
+      } catch (err) {
+        console.error("Failed to generate CTA:", err);
+      }
+
+      // Extract recommended pages based on conversation
+      if (messages.length >= 0 && crawledPages.length > 0) {
+        try {
+          const pageRecs = await base44.integrations.Core.InvokeLLM({
+            prompt: `Based on this conversation, recommend exactly 2 most relevant pages from the crawled pages.
+
+        Available pages:
+        ${crawledPages.map((p, i) => `${i}. ${p.title} - ${p.url}`).join('\n')}
+
+        Recent conversation:
+        ${messages.slice(-3).map(m => `${m.role}: ${m.content}`).join('\n')}
+        User: ${question}
+        Assistant: ${cleanedResponse}
+
+        Return exactly 2 page indices (0-${crawledPages.length - 1}). Example: [0, 5]`,
+            response_json_schema: {
+              type: "object",
+              properties: {
+                page_indices: {
+                  type: "array",
+                  items: { type: "number" },
+                  minItems: 2,
+                  maxItems: 2
+                }
+              }
+            }
+          });
+
+          let selectedPages = (pageRecs.page_indices || [])
+            .slice(0, 2)
+            .map(idx => crawledPages[idx])
+            .filter(Boolean);
+
+          // Ensure we always have 2 pages if available
+          if (selectedPages.length < 2 && crawledPages.length >= 2) {
+            const usedIndices = new Set(pageRecs.page_indices || []);
+            for (let i = 0; i < crawledPages.length && selectedPages.length < 2; i++) {
+              if (!usedIndices.has(i)) {
+                selectedPages.push(crawledPages[i]);
+              }
+            }
+          }
+
+          setRecommendedPages(selectedPages.slice(0, 2));
+          setShowRecommendations(true);
+        } catch (err) {
+          console.error("Failed to get recommendations:", err);
+        }
+      }
 
       // Analyze and store the question
       if (company) {
@@ -234,6 +456,29 @@ Consider buyer intent when determining funnel stage.`,
   };
 
   const isDark = theme === 'dark';
+
+  const timeSlots = [
+    "09:00 AM", "10:00 AM", "11:00 AM", "12:00 PM",
+    "01:00 PM", "02:00 PM", "03:00 PM", "04:00 PM"
+  ];
+
+  const handleBookDemo = async () => {
+    if (!bookingName || !bookingEmail || !selectedTime) return;
+    
+    setIsBooking(true);
+    try {
+      // Simulate booking API call
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      alert(`Demo booked for ${bookingName} on ${selectedDate.toLocaleDateString()} at ${selectedTime}`);
+      setBookingName("");
+      setBookingEmail("");
+      setSelectedTime(null);
+    } catch (error) {
+      console.error("Booking error:", error);
+    } finally {
+      setIsBooking(false);
+    }
+  };
 
   return (
     <div className={`min-h-screen p-6 lg:p-8 ${isDark ? 'bg-slate-950' : 'bg-gray-50'}`}>
@@ -284,13 +529,13 @@ Consider buyer intent when determining funnel stage.`,
                   placeholder="Enter website URL (e.g., https://example.com)"
                   value={websiteUrl}
                   onChange={(e) => setWebsiteUrl(e.target.value)}
-                  disabled={isCrawling || isCrawled}
+                  disabled={isCrawling}
                   className={`pl-10 ${isDark ? 'bg-slate-900 border-slate-700 text-white placeholder:text-slate-500' : 'bg-white border-gray-300 text-gray-900 placeholder:text-gray-400'}`}
                 />
               </div>
               <Button
                 onClick={handleCrawl}
-                disabled={isCrawling || isCrawled || !websiteUrl}
+                disabled={isCrawling || !websiteUrl}
                 className="bg-gradient-to-r from-teal-500 to-cyan-500 hover:from-teal-600 hover:to-cyan-600"
               >
                 {isCrawling ? (
@@ -298,15 +543,10 @@ Consider buyer intent when determining funnel stage.`,
                     <Loader2 className="w-5 h-5 mr-2 animate-spin" />
                     Crawling...
                   </>
-                ) : isCrawled ? (
-                  <>
-                    <CheckCircle className="w-5 h-5 mr-2" />
-                    Indexed
-                  </>
                 ) : (
                   <>
                     <Search className="w-5 h-5 mr-2" />
-                    Crawl & Index
+                    {isCrawled ? 'Re-Index' : 'Crawl & Index'}
                   </>
                 )}
               </Button>
@@ -400,33 +640,91 @@ Consider buyer intent when determining funnel stage.`,
           </Tabs>
         )}
 
-        {/* Branded Chat Interface */}
+        {/* Website Preview */}
         {isCrawled && activeTab === "chat" && (
-          <div className="rounded-2xl overflow-hidden shadow-2xl bg-white">
-            {/* Branded Header */}
-            <div className="px-6 py-4 border-b border-slate-200 flex items-center justify-between bg-white">
-              <div className="flex items-center gap-3">
-                {logoUrl ? (
-                  <img 
-                    src={logoUrl} 
-                    alt={companyName}
-                    className="h-10 max-w-[200px] object-contain"
-                  />
-                ) : (
-                  <span className="text-lg font-semibold text-slate-900">
-                    {companyName}
-                  </span>
-                )}
-              </div>
-              <Badge className="text-xs bg-slate-100 text-slate-600 border-slate-200">
-                {companyName} AI Answer Engine
-              </Badge>
-            </div>
+          <div className={`w-full overflow-hidden ${showAnswerEngine ? 'fixed inset-0 z-30' : 'relative h-[800px] rounded-2xl border border-slate-700'}`}>
+            {/* Website iframe */}
+            <iframe
+              src={websiteUrl}
+              className="w-full h-full"
+              title="Website Preview"
+            />
 
-            {/* Messages Container */}
-            <div className="p-6 space-y-4 max-h-[600px] overflow-y-auto bg-white">
-              <AnimatePresence>
-                {messages.length === 0 ? (
+            {/* Floating Ask AI Button */}
+            {!showAnswerEngine && (
+              <motion.div
+                drag
+                dragMomentum={false}
+                dragElastic={0.1}
+                initial={{ x: 0, y: 0 }}
+                onDragStart={() => setIsDragging(true)}
+                onDragEnd={() => setTimeout(() => setIsDragging(false), 50)}
+                className="absolute top-4 right-4 cursor-move z-10"
+              >
+                <Button
+                  onClick={() => {
+                    if (!isDragging) setShowAnswerEngine(true);
+                  }}
+                  className="shadow-lg pointer-events-auto"
+                  size="sm"
+                  style={{ backgroundColor: brandColor, color: '#ffffff' }}
+                >
+                  <MessageSquare className="w-4 h-4 mr-2" />
+                  Ask AI
+                </Button>
+              </motion.div>
+            )}
+          </div>
+        )}
+
+        {/* Fullscreen Answer Engine Popup */}
+        <AnimatePresence>
+          {showAnswerEngine && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 z-50 flex items-center justify-center p-4"
+              onClick={() => setShowAnswerEngine(false)}
+            >
+              <motion.div
+                initial={{ scale: 0.9, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                exit={{ scale: 0.9, opacity: 0 }}
+                onClick={(e) => e.stopPropagation()}
+                className="w-full h-full max-w-5xl max-h-[90vh] rounded-2xl overflow-hidden shadow-2xl bg-white flex flex-col"
+              >
+                {/* Branded Header */}
+                <div className="px-6 py-4 border-b border-slate-200 flex items-center justify-between bg-white">
+                  <div className="flex items-center gap-3">
+                    {logoUrl && (
+                      <img 
+                        src={logoUrl} 
+                        alt={companyName}
+                        className="h-8 max-w-[40px] object-contain"
+                      />
+                    )}
+                    <span className="text-lg font-semibold text-slate-900">
+                      {companyName} Answer Engine
+                    </span>
+                  </div>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => setShowAnswerEngine(false)}
+                    className="text-slate-400 hover:text-slate-900"
+                  >
+                    <X className="w-5 h-5" />
+                  </Button>
+                </div>
+
+                {/* Chat Section with Booking Panel */}
+                <div className="flex flex-1 overflow-hidden relative">
+                  <div className={`flex flex-col transition-all ${showBookingPanel ? 'w-[70%]' : 'w-full'}`}>
+                    {/* Messages Container */}
+                    <div className="p-6 space-y-4 flex-1 overflow-y-auto bg-white">
+                      <AnimatePresence>
+                        {messages.length === 0 ? (
                   <div className="text-center py-16">
                     <div 
                       className="w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-4"
@@ -473,9 +771,9 @@ Consider buyer intent when determining funnel stage.`,
                     </motion.div>
                   ))
                 )}
-              </AnimatePresence>
+                      </AnimatePresence>
 
-              {isAsking && (
+                      {isAsking && (
                 <motion.div
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
@@ -491,38 +789,252 @@ Consider buyer intent when determining funnel stage.`,
                     </div>
                   </div>
                 </motion.div>
-              )}
-            </div>
+                      )}
+                    </div>
 
-            {/* Input Footer */}
-            <div className="px-6 py-4 border-t border-slate-200 bg-white">
-              <form onSubmit={handleAskQuestion} className="flex gap-3">
-                <Input
-                  placeholder={`Ask ${companyName} anything...`}
-                  value={question}
-                  onChange={(e) => setQuestion(e.target.value)}
-                  disabled={isAsking}
-                  className="flex-1 border-slate-300 bg-white text-slate-900 placeholder:text-slate-400 focus:ring-2 rounded-xl"
-                  style={{
-                    borderColor: '#cbd5e1',
-                    '--tw-ring-color': brandColor
-                  }}
-                />
-                <Button
-                  type="submit"
-                  disabled={isAsking || !question.trim()}
-                  className="rounded-xl shadow-sm"
-                  style={{
-                    backgroundColor: brandColor,
-                    color: '#ffffff'
-                  }}
-                >
-                  <Send className="w-5 h-5" />
-                </Button>
-              </form>
-            </div>
-          </div>
-        )}
+                    {/* Input Footer */}
+                    <div className="border-t border-slate-200 bg-white">
+                      <div className="px-6 py-4">
+                        {uploadedFiles.length > 0 && (
+                          <div className="flex gap-2 mb-3 flex-wrap">
+                            {uploadedFiles.map((file, i) => (
+                              <div key={i} className="flex items-center gap-2 bg-slate-100 rounded-lg px-3 py-1.5 text-xs">
+                                <Paperclip className="w-3 h-3 text-slate-500" />
+                                <span className="text-slate-700">{file.name}</span>
+                                <button
+                                  onClick={() => setUploadedFiles(prev => prev.filter((_, idx) => idx !== i))}
+                                  className="text-slate-400 hover:text-slate-600"
+                                >
+                                  <X className="w-3 h-3" />
+                                </button>
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                        <form onSubmit={handleAskQuestion} className="relative">
+                          <input
+                            type="file"
+                            multiple
+                            accept="image/*,.pdf,.doc,.docx,.txt"
+                            onChange={handleFileUpload}
+                            className="hidden"
+                            id="file-upload"
+                          />
+                          <div className="relative flex items-center bg-white border border-slate-300 rounded-full shadow-sm hover:shadow-md transition-shadow">
+                            <label htmlFor="file-upload" className="pl-4">
+                              <button
+                                type="button"
+                                className="text-slate-400 hover:text-slate-900 transition-colors"
+                                onClick={() => document.getElementById('file-upload').click()}
+                              >
+                                <Plus className="w-5 h-5" />
+                              </button>
+                            </label>
+                            <Input
+                              placeholder={`Ask ${companyName} anything...`}
+                              value={question}
+                              onChange={(e) => setQuestion(e.target.value)}
+                              disabled={isAsking}
+                              className="flex-1 border-0 bg-transparent text-slate-900 placeholder:text-slate-400 focus-visible:ring-0 focus-visible:ring-offset-0 px-3"
+                            />
+                            <button
+                              type="button"
+                              onClick={handleVoiceInput}
+                              className={`pr-4 transition-colors ${isRecording ? 'text-red-500 animate-pulse' : 'text-slate-400 hover:text-slate-900'}`}
+                            >
+                              <Mic className="w-5 h-5" />
+                            </button>
+                            {question.trim() && (
+                              <button
+                                type="submit"
+                                disabled={isAsking}
+                                className="pr-4 transition-colors"
+                                style={{ color: brandColor }}
+                              >
+                                <Send className="w-5 h-5" />
+                              </button>
+                            )}
+                          </div>
+                        </form>
+                      </div>
+
+                      {/* Recommendations Bar */}
+                      <AnimatePresence>
+                        {showRecommendations && recommendedPages.length > 0 && (
+                          <motion.div
+                            initial={{ height: 0, opacity: 0 }}
+                            animate={{ height: "auto", opacity: 1 }}
+                            exit={{ height: 0, opacity: 0 }}
+                            className="border-t border-slate-200 bg-white overflow-hidden"
+                          >
+                            <div className="px-6 py-3 flex items-start gap-3">
+                              <span className="text-xs text-slate-600 font-medium pt-3 whitespace-nowrap">You might also like:</span>
+
+                              <div className="flex-1 grid grid-cols-3 gap-3">
+                                {recommendedPages.slice(0, 2).map((page, i) => (
+                                  <a
+                                    key={i}
+                                    href={page.url}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="p-3 rounded-lg bg-slate-50 border border-slate-200 hover:border-slate-300 hover:shadow-sm transition-all group"
+                                  >
+                                    <p className="text-xs font-semibold text-slate-900 line-clamp-1 group-hover:text-teal-600 transition-colors mb-1">
+                                      {page.title}
+                                    </p>
+                                    <p className="text-xs text-slate-600 line-clamp-2 leading-relaxed">
+                                      {page.description}
+                                    </p>
+                                  </a>
+                                ))}
+
+                                <div className="p-3 rounded-lg bg-slate-50 border border-slate-200 flex flex-col items-center justify-center gap-2">
+                                  <span className="text-xs text-slate-700 font-medium text-center leading-tight">{bookingCta}</span>
+                                  <Button
+                                    size="sm"
+                                    onClick={() => setShowBookingPanel(true)}
+                                    className="whitespace-nowrap"
+                                    style={{ backgroundColor: brandColor, color: '#ffffff' }}
+                                  >
+                                    Book Demo
+                                  </Button>
+                                </div>
+                              </div>
+
+                              <Button
+                                size="icon"
+                                variant="ghost"
+                                onClick={() => setShowRecommendations(false)}
+                                className="h-7 w-7 flex-shrink-0"
+                              >
+                                <ChevronDown className="w-4 h-4" />
+                              </Button>
+                            </div>
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
+
+                      {/* Toggle Button */}
+                      {!showRecommendations && recommendedPages.length > 0 && (
+                        <div className="px-6 py-2 border-t border-slate-200 bg-slate-50">
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            onClick={() => setShowRecommendations(true)}
+                            className="w-full text-xs text-slate-600 hover:text-slate-900"
+                          >
+                            <ChevronUp className="w-4 h-4 mr-1" />
+                            Show Recommendations
+                          </Button>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Booking Side Panel */}
+                  <AnimatePresence>
+                    {showBookingPanel && (
+                      <motion.div
+                        initial={{ width: 0, opacity: 0 }}
+                        animate={{ width: "30%", opacity: 1 }}
+                        exit={{ width: 0, opacity: 0 }}
+                        className="border-l border-slate-200 bg-slate-50 flex flex-col overflow-hidden"
+                      >
+                        <div className="px-6 py-4 border-b border-slate-200 bg-white flex items-center justify-between">
+                          <h3 className="text-lg font-semibold text-slate-900">Book a Demo with {companyName}</h3>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => setShowBookingPanel(false)}
+                            className="text-slate-400 hover:text-slate-900"
+                          >
+                            <X className="w-5 h-5" />
+                          </Button>
+                        </div>
+
+                        <div className="flex-1 overflow-y-auto p-6 space-y-4">
+                          {/* Calendar */}
+                          <div className="flex justify-center">
+                            <Calendar
+                              mode="single"
+                              selected={selectedDate}
+                              onSelect={setSelectedDate}
+                              disabled={(date) => date < new Date()}
+                              className="rounded-md border border-slate-200 bg-white"
+                            />
+                          </div>
+
+                          {/* Time Slots */}
+                          <div>
+                            <Label className="text-sm font-medium text-slate-700 mb-2 block">Select Time</Label>
+                            <div className="grid grid-cols-2 gap-2">
+                              {timeSlots.map((time) => (
+                                <Button
+                                  key={time}
+                                  variant={selectedTime === time ? "default" : "outline"}
+                                  size="sm"
+                                  onClick={() => setSelectedTime(time)}
+                                  className={selectedTime === time ? "" : "bg-white border-slate-300 text-slate-700 hover:bg-slate-100"}
+                                  style={selectedTime === time ? {
+                                    backgroundColor: brandColor,
+                                    borderColor: brandColor
+                                  } : {}}
+                                >
+                                  {time}
+                                </Button>
+                              ))}
+                            </div>
+                          </div>
+
+                          {/* Booking Form */}
+                          <div className="space-y-3">
+                            <div>
+                              <Label className="text-sm font-medium text-slate-700 mb-1 block">Name</Label>
+                              <Input
+                                placeholder="Your name"
+                                value={bookingName}
+                                onChange={(e) => setBookingName(e.target.value)}
+                                className="bg-white border-slate-300"
+                              />
+                            </div>
+                            <div>
+                              <Label className="text-sm font-medium text-slate-700 mb-1 block">Email</Label>
+                              <Input
+                                type="email"
+                                placeholder="your@email.com"
+                                value={bookingEmail}
+                                onChange={(e) => setBookingEmail(e.target.value)}
+                                className="bg-white border-slate-300"
+                              />
+                            </div>
+                            <Button
+                              onClick={handleBookDemo}
+                              disabled={!bookingName || !bookingEmail || !selectedTime || isBooking}
+                              className="w-full"
+                              style={{
+                                backgroundColor: brandColor,
+                                color: '#ffffff'
+                              }}
+                            >
+                              {isBooking ? (
+                                <>
+                                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                                  Booking...
+                                </>
+                              ) : (
+                                "Book Demo"
+                              )}
+                            </Button>
+                          </div>
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
+              </motion.div>
+            </motion.div>
+          )}
+        </AnimatePresence>
 
         {/* Questions List */}
         {isCrawled && activeTab === "questions" && (
