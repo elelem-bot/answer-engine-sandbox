@@ -16,7 +16,8 @@ import {
   X,
   Plus,
   Mic,
-  Paperclip
+  Paperclip,
+  BarChart3
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -25,8 +26,11 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Calendar } from "@/components/ui/calendar";
 import { Label } from "@/components/ui/label";
+import { useNavigate } from "react-router-dom";
+import { createPageUrl } from "@/utils";
 
 export default function AnswerEngine() {
+  const navigate = useNavigate();
   const [websiteUrl, setWebsiteUrl] = useState("");
   const [isCrawling, setIsCrawling] = useState(false);
   const [isCrawled, setIsCrawled] = useState(false);
@@ -484,9 +488,19 @@ Consider buyer intent when determining funnel stage.`,
     <div className={`min-h-screen p-6 lg:p-8 ${isDark ? 'bg-slate-950' : 'bg-gray-50'}`}>
       <div className="max-w-5xl mx-auto">
         {/* Header */}
-        <div className="mb-8">
-          <h1 className={`text-2xl font-bold mb-2 ${isDark ? 'text-white' : 'text-gray-900'}`}>Answer Engine</h1>
-          <p className={isDark ? 'text-slate-400' : 'text-gray-600'}>Turn any website into an intelligent Q&A system</p>
+        <div className="mb-8 flex items-start justify-between">
+          <div>
+            <h1 className={`text-2xl font-bold mb-2 ${isDark ? 'text-white' : 'text-gray-900'}`}>Answer Engine</h1>
+            <p className={isDark ? 'text-slate-400' : 'text-gray-600'}>Turn any website into an intelligent Q&A system</p>
+          </div>
+          <Button
+            onClick={() => navigate(createPageUrl("Analytics"))}
+            variant="outline"
+            className={isDark ? 'border-slate-700 text-slate-300 hover:bg-slate-800' : 'border-gray-300 text-gray-700 hover:bg-gray-100'}
+          >
+            <BarChart3 className="w-4 h-4 mr-2" />
+            Analytics
+          </Button>
         </div>
 
         {/* Website Input */}

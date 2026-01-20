@@ -7,6 +7,7 @@ import Prompts from './pages/Prompts';
 import Setup from './pages/Setup';
 import Tracking from './pages/Tracking';
 import AnswerVisibility from './pages/AnswerVisibility';
+import Analytics from './pages/Analytics';
 import __Layout from './Layout.jsx';
 
 
@@ -20,6 +21,7 @@ export const PAGES = {
     "Setup": Setup,
     "Tracking": Tracking,
     "AnswerVisibility": AnswerVisibility,
+    "Analytics": Analytics,
 }
 
 export const pagesConfig = {
