@@ -12,7 +12,8 @@ import {
   Zap,
   ArrowUp,
   ArrowDown,
-  Loader2
+  Loader2,
+  AlertCircle
 } from "lucide-react";
 import { LineChart, Line, BarChart, Bar, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend, Area, AreaChart } from "recharts";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -98,6 +99,14 @@ export default function Analytics() {
     .slice()
     .sort((a, b) => b.created_date - a.created_date)
     .slice(0, 10);
+
+  // Failed answers - questions without answers or with error responses
+  const failedAnswers = questions.filter(q => 
+    !q.answer || 
+    q.answer.includes("I'm afraid I can't answer") ||
+    q.answer.includes("error") ||
+    q.answer.includes("Sorry, I encountered an error")
+  );
 
   // Time series data (last 30 days)
   const dailyData = {};
@@ -204,7 +213,7 @@ export default function Analytics() {
         </div>
 
         {/* Key Metrics */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 mb-8">
           <StatCard
             icon={MessageSquare}
             title="Total Questions"
@@ -228,6 +237,14 @@ export default function Analytics() {
             change="+3.2%"
             trend="up"
             subtitle="Moved to prompts"
+          />
+          <StatCard
+            icon={AlertCircle}
+            title="Failed Answers"
+            value={failedAnswers.length}
+            change={failedAnswers.length > 5 ? "Action needed" : "Good"}
+            trend={failedAnswers.length > 5 ? "down" : "up"}
+            subtitle={`${totalQuestions > 0 ? Math.round((failedAnswers.length/totalQuestions)*100) : 0}% failure rate`}
           />
           <StatCard
             icon={Clock}
@@ -352,6 +369,68 @@ export default function Analytics() {
             </div>
           </CardContent>
         </Card>
+
+        {/* Failed Answers Alert */}
+        {failedAnswers.length > 0 && (
+          <Card className={`${isDark ? 'bg-red-500/10 border-red-500/30' : 'bg-red-50 border-red-200'} mb-8`}>
+            <CardHeader>
+              <div className="flex items-center justify-between">
+                <CardTitle className={isDark ? 'text-red-400' : 'text-red-700'}>
+                  ⚠️ Failed Answers ({failedAnswers.length})
+                </CardTitle>
+                <Badge variant="outline" className="bg-red-500/20 text-red-400 border-red-500/30">
+                  {totalQuestions > 0 ? Math.round((failedAnswers.length/totalQuestions)*100) : 0}% failure rate
+                </Badge>
+              </div>
+            </CardHeader>
+            <CardContent>
+              <p className={`text-sm mb-4 ${isDark ? 'text-slate-400' : 'text-gray-600'}`}>
+                These questions couldn't be answered properly. Review them to improve your content coverage.
+              </p>
+              <div className="space-y-3 max-h-[400px] overflow-y-auto">
+                {failedAnswers.slice(0, 10).map((q) => (
+                  <div
+                    key={q.id}
+                    className={`p-4 rounded-lg border ${isDark ? 'bg-slate-900/50 border-slate-700' : 'bg-white border-gray-200'}`}
+                  >
+                    <p className={`text-sm font-medium mb-2 ${isDark ? 'text-white' : 'text-gray-900'}`}>
+                      {q.question}
+                    </p>
+                    <div className="flex gap-2 flex-wrap mb-2">
+                      <Badge
+                        variant="outline"
+                        className={`text-xs ${
+                          q.funnel_stage === "bottom"
+                            ? "bg-pink-500/20 text-pink-400 border-pink-500/30"
+                            : q.funnel_stage === "middle"
+                            ? "bg-purple-500/20 text-purple-400 border-purple-500/30"
+                            : "bg-blue-500/20 text-blue-400 border-blue-500/30"
+                        }`}
+                      >
+                        {q.funnel_stage} funnel
+                      </Badge>
+                      {q.keywords && q.keywords.slice(0, 2).map((keyword, j) => (
+                        <Badge key={j} variant="outline" className={`text-xs ${isDark ? 'bg-slate-700/50 text-slate-300 border-slate-600' : 'bg-gray-100 text-gray-700 border-gray-300'}`}>
+                          {keyword}
+                        </Badge>
+                      ))}
+                    </div>
+                    {q.answer && (
+                      <p className={`text-xs italic ${isDark ? 'text-slate-500' : 'text-gray-500'}`}>
+                        Response: {q.answer.substring(0, 100)}...
+                      </p>
+                    )}
+                  </div>
+                ))}
+                {failedAnswers.length > 10 && (
+                  <p className={`text-xs text-center pt-2 ${isDark ? 'text-slate-500' : 'text-gray-500'}`}>
+                    And {failedAnswers.length - 10} more failed answers
+                  </p>
+                )}
+              </div>
+            </CardContent>
+          </Card>
+        )}
 
         {/* Top Topics and Top Prompts */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
