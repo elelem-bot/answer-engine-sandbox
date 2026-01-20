@@ -66,7 +66,8 @@ export default function Analytics() {
   // Calculate analytics metrics
   const totalQuestions = questions.length;
   const totalAnswers = questions.filter(q => q.answer).length;
-  const conversionRate = totalQuestions > 0 ? ((questions.filter(q => q.moved_to_prompts).length / totalQuestions) * 100).toFixed(1) : 0;
+  const demoBookings = questions.filter(q => q.booked_demo).length;
+  const conversionRate = totalQuestions > 0 ? ((demoBookings / totalQuestions) * 100).toFixed(1) : 0;
   
   // Mock data for demo purposes - in production, this would come from real analytics
   const avgTimeOnEngine = "3:45";
@@ -115,15 +116,16 @@ export default function Analytics() {
     const date = new Date(now);
     date.setDate(date.getDate() - i);
     const dateStr = date.toISOString().split('T')[0];
-    dailyData[dateStr] = { questions: 0, conversions: 0 };
+    dailyData[dateStr] = { questions: 0, conversions: 0, bookings: 0 };
   }
 
   questions.forEach(q => {
     const dateStr = new Date(q.created_date).toISOString().split('T')[0];
     if (dailyData[dateStr]) {
       dailyData[dateStr].questions++;
-      if (q.moved_to_prompts) {
+      if (q.booked_demo) {
         dailyData[dateStr].conversions++;
+        dailyData[dateStr].bookings++;
       }
     }
   });
@@ -146,7 +148,7 @@ export default function Analytics() {
     { stage: "Page Views", value: Math.round(pageViews), percentage: 100 },
     { stage: "Questions Asked", value: totalQuestions, percentage: totalQuestions > 0 ? 100 : 0 },
     { stage: "Answers Provided", value: totalAnswers, percentage: totalQuestions > 0 ? Math.round((totalAnswers / totalQuestions) * 100) : 0 },
-    { stage: "Moved to Prompts", value: questions.filter(q => q.moved_to_prompts).length, percentage: totalQuestions > 0 ? Math.round((questions.filter(q => q.moved_to_prompts).length / totalQuestions) * 100) : 0 }
+    { stage: "Demo Bookings", value: demoBookings, percentage: totalQuestions > 0 ? Math.round((demoBookings / totalQuestions) * 100) : 0 }
   ];
 
   if (loading) {
@@ -236,7 +238,7 @@ export default function Analytics() {
             value={`${conversionRate}%`}
             change="+3.2%"
             trend="up"
-            subtitle="Moved to prompts"
+            subtitle="Demo bookings"
           />
           <StatCard
             icon={AlertCircle}
@@ -540,9 +542,9 @@ export default function Analytics() {
 
               <div>
                 <div className="flex items-center justify-between mb-2">
-                  <span className={`text-sm ${isDark ? 'text-slate-400' : 'text-gray-600'}`}>Prompt Conversions</span>
+                  <span className={`text-sm ${isDark ? 'text-slate-400' : 'text-gray-600'}`}>Demo Bookings</span>
                   <span className={`text-sm font-medium ${isDark ? 'text-white' : 'text-gray-900'}`}>
-                    {questions.filter(q => q.moved_to_prompts).length} ({conversionRate}%)
+                    {demoBookings} ({conversionRate}%)
                   </span>
                 </div>
                 <div className={`h-2 rounded-full overflow-hidden ${isDark ? 'bg-slate-700' : 'bg-gray-200'}`}>
