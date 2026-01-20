@@ -38,6 +38,7 @@ export default function Prompts() {
   const [filteredPrompts, setFilteredPrompts] = useState([]);
   const [company, setCompany] = useState(null);
   const [funnelStage, setFunnelStage] = useState("all");
+  const [sourceTag, setSourceTag] = useState("all");
   const [searchTerm, setSearchTerm] = useState("");
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [newPromptText, setNewPromptText] = useState("");
@@ -66,7 +67,7 @@ export default function Prompts() {
     if (prompts.length > 0) {
       filterPrompts();
     }
-  }, [funnelStage, searchTerm]);
+  }, [funnelStage, sourceTag, searchTerm]);
 
   const loadData = async () => {
     try {
@@ -90,6 +91,11 @@ export default function Prompts() {
     // Filter by funnel stage
     if (funnelStage !== "all") {
       filtered = filtered.filter(p => p.funnel_stage === funnelStage);
+    }
+
+    // Filter by source tag
+    if (sourceTag !== "all") {
+      filtered = filtered.filter(p => p.source_tag === sourceTag);
     }
 
     // Filter by search term
@@ -231,6 +237,15 @@ export default function Prompts() {
               <SelectItem value="top">Top of Funnel</SelectItem>
               <SelectItem value="middle">Middle of Funnel</SelectItem>
               <SelectItem value="bottom">Bottom of Funnel</SelectItem>
+            </SelectContent>
+          </Select>
+          <Select value={sourceTag} onValueChange={setSourceTag}>
+            <SelectTrigger className={`w-full sm:w-48 ${isDark ? 'bg-slate-800 border-slate-700 text-white' : 'bg-white border-gray-300 text-gray-900'}`}>
+              <SelectValue placeholder="Source tag" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Sources</SelectItem>
+              <SelectItem value="REAL">REAL</SelectItem>
             </SelectContent>
           </Select>
         </div>
