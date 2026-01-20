@@ -692,7 +692,7 @@ Consider buyer intent when determining funnel stage.`,
               <img
                 src={screenshotUrl}
                 alt="Website Screenshot"
-                className="w-full h-full object-cover"
+                className="w-full h-full object-cover object-top"
               />
             ) : (
               <iframe
