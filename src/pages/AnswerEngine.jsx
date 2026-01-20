@@ -471,12 +471,21 @@ Consider buyer intent when determining funnel stage.`,
     
     setIsBooking(true);
     try {
+      // Mark the last question as having booked a demo
+      if (messages.length > 0 && askedQuestions.length > 0) {
+        const lastQuestion = askedQuestions[0];
+        await base44.entities.AnswerEngineQuestion.update(lastQuestion.id, {
+          booked_demo: true
+        });
+      }
+      
       // Simulate booking API call
       await new Promise(resolve => setTimeout(resolve, 1000));
       alert(`Demo booked for ${bookingName} on ${selectedDate.toLocaleDateString()} at ${selectedTime}`);
       setBookingName("");
       setBookingEmail("");
       setSelectedTime(null);
+      setShowBookingPanel(false);
     } catch (error) {
       console.error("Booking error:", error);
     } finally {
