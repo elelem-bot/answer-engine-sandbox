@@ -8,6 +8,7 @@ import NewContent from './pages/NewContent';
 import Prompts from './pages/Prompts';
 import Setup from './pages/Setup';
 import Tracking from './pages/Tracking';
+import PromptResearch from './pages/PromptResearch';
 import __Layout from './Layout.jsx';
 
 
@@ -22,6 +23,7 @@ export const PAGES = {
     "Prompts": Prompts,
     "Setup": Setup,
     "Tracking": Tracking,
+    "PromptResearch": PromptResearch,
 }
 
 export const pagesConfig = {
