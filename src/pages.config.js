@@ -1,4 +1,3 @@
-import AIVisibility from './pages/AIVisibility';
 import AnswerEngine from './pages/AnswerEngine';
 import AnswerEngineering from './pages/AnswerEngineering';
 import Approvals from './pages/Approvals';
@@ -7,11 +6,11 @@ import NewContent from './pages/NewContent';
 import Prompts from './pages/Prompts';
 import Setup from './pages/Setup';
 import Tracking from './pages/Tracking';
+import AnswerVisibility from './pages/AnswerVisibility';
 import __Layout from './Layout.jsx';
 
 
 export const PAGES = {
-    "AIVisibility": AIVisibility,
     "AnswerEngine": AnswerEngine,
     "AnswerEngineering": AnswerEngineering,
     "Approvals": Approvals,
@@ -20,6 +19,7 @@ export const PAGES = {
     "Prompts": Prompts,
     "Setup": Setup,
     "Tracking": Tracking,
+    "AnswerVisibility": AnswerVisibility,
 }
 
 export const pagesConfig = {

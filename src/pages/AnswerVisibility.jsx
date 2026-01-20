@@ -32,7 +32,7 @@ import BrandTable from "@/components/dashboard/BrandTable";
 
 const COLORS = ['#14b8a6', '#22d3ee', '#84cc16', '#10b981', '#06b6d4', '#a3e635', '#2dd4bf', '#0ea5e9'];
 
-export default function AIVisibility() {
+export default function AnswerVisibility() {
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(true);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
@@ -264,7 +264,7 @@ Be accurate - only list brands you actually mentioned in your response.`,
         <div className="flex flex-col gap-6 mb-8">
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
             <div>
-              <h1 className={`text-2xl font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>AI Visibility Dashboard</h1>
+              <h1 className={`text-2xl font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>Answer Visibility Dashboard</h1>
               <p className={isDark ? 'text-slate-400' : 'text-gray-600'}>Track performance across AI search engines and optimize your content strategy</p>
             </div>
             <div className="flex items-center gap-3">
