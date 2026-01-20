@@ -35,9 +35,9 @@ const platformPages = ["AnswerEngine", "Prompts", "AnswerEngineering", "AnswerVi
 
     const navItems = [
       { name: "AnswerEngine", label: "Answer Engine", icon: Search },
-      { name: "Prompts", label: "Prompts", icon: MessageSquare },
       { name: "AnswerEngineering", label: "Answer Engineering", icon: FileEdit },
       { name: "AnswerVisibility", label: "Answer Visibility", icon: LayoutDashboard },
+      { name: "Prompts", label: "Prompts", icon: MessageSquare },
       { name: "Tracking", label: "Tracking", icon: LineChart },
     ];
 
