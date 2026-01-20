@@ -902,12 +902,12 @@ Consider buyer intent when determining funnel stage.`,
                                   </a>
                                 ))}
 
-                                <div className="p-3 rounded-lg bg-slate-50 border border-slate-200 flex flex-col items-center justify-center gap-2">
-                                  <span className="text-xs text-slate-700 font-medium text-center leading-tight">{bookingCta}</span>
+                                <div className="p-3 rounded-lg bg-slate-50 border border-slate-200 flex flex-col items-center justify-center gap-1.5">
+                                  <span className="text-xs text-slate-700 font-medium text-center leading-snug line-clamp-2">{bookingCta}</span>
                                   <Button
                                     size="sm"
                                     onClick={() => setShowBookingPanel(true)}
-                                    className="whitespace-nowrap"
+                                    className="whitespace-nowrap text-xs px-3 py-1 h-auto"
                                     style={{ backgroundColor: brandColor, color: '#ffffff' }}
                                   >
                                     Book Demo
