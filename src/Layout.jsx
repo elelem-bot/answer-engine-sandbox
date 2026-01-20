@@ -22,11 +22,12 @@ import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 
-const platformPages = ["AnswerEngine", "Prompts", "AnswerEngineering", "AnswerVisibility", "Analytics"];
+const platformPages = ["AnswerEngine", "Prompts", "AnswerEngineering", "AnswerVisibility", "Analytics", "Tracking"];
 
   export default function Layout({ children, currentPageName }) {
     const [mobileOpen, setMobileOpen] = React.useState(false);
     const [answerEngineExpanded, setAnswerEngineExpanded] = React.useState(false);
+    const [answerVisibilityExpanded, setAnswerVisibilityExpanded] = React.useState(false);
     const [theme, setTheme] = React.useState(() => {
       return localStorage.getItem('elelem-theme') || 'dark';
     });
@@ -42,7 +43,9 @@ const platformPages = ["AnswerEngine", "Prompts", "AnswerEngineering", "AnswerVi
         { name: "Analytics", label: "Analytics", icon: BarChart3 }
       ]},
       { name: "AnswerEngineering", label: "Answer Engineering", icon: FileEdit },
-      { name: "AnswerVisibility", label: "Answer Visibility", icon: LayoutDashboard },
+      { name: "AnswerVisibility", label: "Answer Visibility", icon: LayoutDashboard, hasChildren: true, children: [
+        { name: "Tracking", label: "Tracking", icon: LineChart }
+      ]},
       { name: "Prompts", label: "Prompts", icon: MessageSquare },
     ];
 
@@ -76,7 +79,13 @@ const platformPages = ["AnswerEngine", "Prompts", "AnswerEngineering", "AnswerVi
                   <>
                     <Link
                       to={createPageUrl(item.name)}
-                      onClick={() => setAnswerEngineExpanded(!answerEngineExpanded)}
+                      onClick={() => {
+                        if (item.name === "AnswerEngine") {
+                          setAnswerEngineExpanded(!answerEngineExpanded);
+                        } else if (item.name === "AnswerVisibility") {
+                          setAnswerVisibilityExpanded(!answerVisibilityExpanded);
+                        }
+                      }}
                       className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-all ${
                         isActive || hasActiveChild
                           ? "bg-gradient-to-r from-teal-500/20 to-cyan-500/20 text-teal-600 border border-teal-500/30"
@@ -87,9 +96,9 @@ const platformPages = ["AnswerEngine", "Prompts", "AnswerEngineering", "AnswerVi
                     >
                       <item.icon className="w-5 h-5" />
                       <span className="font-medium flex-1 text-left">{item.label}</span>
-                      {answerEngineExpanded ? <ChevronDown className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />}
+                      {(item.name === "AnswerEngine" ? answerEngineExpanded : answerVisibilityExpanded) ? <ChevronDown className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />}
                     </Link>
-                    {answerEngineExpanded && item.children && (
+                    {((item.name === "AnswerEngine" && answerEngineExpanded) || (item.name === "AnswerVisibility" && answerVisibilityExpanded)) && item.children && (
                       <div className="ml-4 mt-1 space-y-1">
                         {item.children.map((child) => (
                           <Link
@@ -187,7 +196,13 @@ const platformPages = ["AnswerEngine", "Prompts", "AnswerEngineering", "AnswerVi
                         <>
                           <Link
                             to={createPageUrl(item.name)}
-                            onClick={() => setAnswerEngineExpanded(!answerEngineExpanded)}
+                            onClick={() => {
+                              if (item.name === "AnswerEngine") {
+                                setAnswerEngineExpanded(!answerEngineExpanded);
+                              } else if (item.name === "AnswerVisibility") {
+                                setAnswerVisibilityExpanded(!answerVisibilityExpanded);
+                              }
+                            }}
                             className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-all ${
                               isActive || hasActiveChild
                                 ? "bg-gradient-to-r from-teal-500/20 to-cyan-500/20 text-teal-600 border border-teal-500/30"
@@ -198,9 +213,9 @@ const platformPages = ["AnswerEngine", "Prompts", "AnswerEngineering", "AnswerVi
                           >
                             <item.icon className="w-5 h-5" />
                             <span className="font-medium flex-1 text-left">{item.label}</span>
-                            {answerEngineExpanded ? <ChevronDown className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />}
+                            {(item.name === "AnswerEngine" ? answerEngineExpanded : answerVisibilityExpanded) ? <ChevronDown className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />}
                           </Link>
-                          {answerEngineExpanded && item.children && (
+                          {((item.name === "AnswerEngine" && answerEngineExpanded) || (item.name === "AnswerVisibility" && answerVisibilityExpanded)) && item.children && (
                             <div className="ml-4 mt-1 space-y-1">
                               {item.children.map((child) => (
                                 <Link
