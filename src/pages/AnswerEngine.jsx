@@ -67,6 +67,8 @@ export default function AnswerEngine() {
   const [bookingCta, setBookingCta] = useState("Talk to our team");
   const [showAnswerEngine, setShowAnswerEngine] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
+  const [screenshotUrl, setScreenshotUrl] = useState(null);
+  const [showScreenshot, setShowScreenshot] = useState(false);
 
   React.useEffect(() => {
     const handleThemeChange = () => {
@@ -178,6 +180,15 @@ export default function AnswerEngine() {
       setLogoFile(file);
       const { file_url } = await base44.integrations.Core.UploadFile({ file });
       setLogoUrl(file_url);
+    }
+  };
+
+  const handleScreenshotUpload = async (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const { file_url } = await base44.integrations.Core.UploadFile({ file });
+      setScreenshotUrl(file_url);
+      setShowScreenshot(true);
     }
   };
 
@@ -666,12 +677,89 @@ Consider buyer intent when determining funnel stage.`,
         {/* Website Preview */}
         {isCrawled && activeTab === "chat" && (
           <div className={`w-full overflow-hidden ${showAnswerEngine ? 'fixed inset-0 z-30' : 'relative h-[800px] rounded-2xl border border-slate-700'}`}>
+            {/* Toggle between iframe and screenshot */}
+            <div className="absolute top-4 left-4 z-20 flex gap-2">
+              <Button
+                size="sm"
+                variant={!showScreenshot ? "default" : "outline"}
+                onClick={() => setShowScreenshot(false)}
+                className={!showScreenshot ? "bg-teal-600" : isDark ? "border-slate-700 bg-slate-800" : ""}
+              >
+                Live Preview
+              </Button>
+              <Button
+                size="sm"
+                variant={showScreenshot ? "default" : "outline"}
+                onClick={() => setShowScreenshot(true)}
+                className={showScreenshot ? "bg-teal-600" : isDark ? "border-slate-700 bg-slate-800" : ""}
+              >
+                Screenshot
+              </Button>
+              {showScreenshot && (
+                <label htmlFor="screenshot-upload">
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    className={isDark ? "border-slate-700 bg-slate-800" : ""}
+                    onClick={() => document.getElementById('screenshot-upload').click()}
+                    type="button"
+                  >
+                    Upload Screenshot
+                  </Button>
+                  <input
+                    id="screenshot-upload"
+                    type="file"
+                    accept="image/*"
+                    onChange={handleScreenshotUpload}
+                    className="hidden"
+                  />
+                </label>
+              )}
+            </div>
+
             {/* Website iframe */}
-            <iframe
-              src={websiteUrl}
-              className="w-full h-full"
-              title="Website Preview"
-            />
+            {!showScreenshot && (
+              <iframe
+                src={websiteUrl}
+                className="w-full h-full"
+                title="Website Preview"
+              />
+            )}
+
+            {/* Screenshot view */}
+            {showScreenshot && (
+              <div className="w-full h-full bg-slate-900 flex items-center justify-center">
+                {screenshotUrl ? (
+                  <img
+                    src={screenshotUrl}
+                    alt="Website Screenshot"
+                    className="max-w-full max-h-full object-contain"
+                  />
+                ) : (
+                  <div className="text-center">
+                    <p className={`mb-4 ${isDark ? 'text-slate-400' : 'text-gray-600'}`}>
+                      No screenshot uploaded yet
+                    </p>
+                    <label htmlFor="screenshot-upload-center">
+                      <Button
+                        className="bg-teal-600 hover:bg-teal-700"
+                        onClick={() => document.getElementById('screenshot-upload-center').click()}
+                        type="button"
+                      >
+                        Upload Screenshot
+                      </Button>
+                      <input
+                        id="screenshot-upload-center"
+                        type="file"
+                        accept="image/*"
+                        onChange={handleScreenshotUpload}
+                        className="hidden"
+                      />
+                    </label>
+                  </div>
+                )}
+              </div>
+            )}
 
             {/* Floating Ask AI Button */}
             {!showAnswerEngine && (
