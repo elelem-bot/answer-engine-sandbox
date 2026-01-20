@@ -162,7 +162,7 @@ Provide a comprehensive answer that would help a marketer understand the landsca
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <div className={`prose prose-sm max-w-none ${isDark ? 'prose-invert' : ''}`}>
+                <div className={`prose prose-sm max-w-none ${isDark ? 'text-slate-300' : 'text-gray-700'}`}>
                   <ReactMarkdown>{result.answer}</ReactMarkdown>
                 </div>
               </CardContent>
