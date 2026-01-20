@@ -74,9 +74,10 @@ const platformPages = ["AnswerEngine", "Prompts", "AnswerEngineering", "AnswerVi
               <div key={item.name}>
                 {item.hasChildren ? (
                   <>
-                    <button
+                    <Link
+                      to={createPageUrl(item.name)}
                       onClick={() => setAnswerEngineExpanded(!answerEngineExpanded)}
-                      className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-all w-full ${
+                      className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-all ${
                         isActive || hasActiveChild
                           ? "bg-gradient-to-r from-teal-500/20 to-cyan-500/20 text-teal-600 border border-teal-500/30"
                           : isDark 
@@ -87,7 +88,7 @@ const platformPages = ["AnswerEngine", "Prompts", "AnswerEngineering", "AnswerVi
                       <item.icon className="w-5 h-5" />
                       <span className="font-medium flex-1 text-left">{item.label}</span>
                       {answerEngineExpanded ? <ChevronDown className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />}
-                    </button>
+                    </Link>
                     {answerEngineExpanded && item.children && (
                       <div className="ml-4 mt-1 space-y-1">
                         {item.children.map((child) => (
@@ -184,9 +185,10 @@ const platformPages = ["AnswerEngine", "Prompts", "AnswerEngineering", "AnswerVi
                     <div key={item.name}>
                       {item.hasChildren ? (
                         <>
-                          <button
+                          <Link
+                            to={createPageUrl(item.name)}
                             onClick={() => setAnswerEngineExpanded(!answerEngineExpanded)}
-                            className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-all w-full ${
+                            className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-all ${
                               isActive || hasActiveChild
                                 ? "bg-gradient-to-r from-teal-500/20 to-cyan-500/20 text-teal-600 border border-teal-500/30"
                                 : isDark 
@@ -197,7 +199,7 @@ const platformPages = ["AnswerEngine", "Prompts", "AnswerEngineering", "AnswerVi
                             <item.icon className="w-5 h-5" />
                             <span className="font-medium flex-1 text-left">{item.label}</span>
                             {answerEngineExpanded ? <ChevronDown className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />}
-                          </button>
+                          </Link>
                           {answerEngineExpanded && item.children && (
                             <div className="ml-4 mt-1 space-y-1">
                               {item.children.map((child) => (
