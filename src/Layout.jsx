@@ -13,7 +13,9 @@ import {
   Search,
   Sun,
   Moon,
-  BarChart3
+  BarChart3,
+  ChevronDown,
+  ChevronRight
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
@@ -24,6 +26,7 @@ const platformPages = ["AnswerEngine", "Prompts", "AnswerEngineering", "AnswerVi
 
   export default function Layout({ children, currentPageName }) {
     const [mobileOpen, setMobileOpen] = React.useState(false);
+    const [answerEngineExpanded, setAnswerEngineExpanded] = React.useState(false);
     const [theme, setTheme] = React.useState(() => {
       return localStorage.getItem('elelem-theme') || 'dark';
     });
@@ -35,7 +38,9 @@ const platformPages = ["AnswerEngine", "Prompts", "AnswerEngineering", "AnswerVi
     const showPlatformNav = platformPages.includes(currentPageName);
 
     const navItems = [
-      { name: "AnswerEngine", label: "Answer Engine", icon: Search },
+      { name: "AnswerEngine", label: "Answer Engine", icon: Search, hasChildren: true, children: [
+        { name: "Analytics", label: "Analytics", icon: BarChart3 }
+      ]},
       { name: "AnswerEngineering", label: "Answer Engineering", icon: FileEdit },
       { name: "AnswerVisibility", label: "Answer Visibility", icon: LayoutDashboard },
       { name: "Prompts", label: "Prompts", icon: MessageSquare },
@@ -64,21 +69,62 @@ const platformPages = ["AnswerEngine", "Prompts", "AnswerEngineering", "AnswerVi
         <nav className="flex-1 p-4 space-y-1">
           {navItems.map((item) => {
             const isActive = currentPageName === item.name;
+            const hasActiveChild = item.children?.some(child => child.name === currentPageName);
             return (
-              <Link
-                key={item.name}
-                to={createPageUrl(item.name)}
-                className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-all ${
-                  isActive
-                    ? "bg-gradient-to-r from-teal-500/20 to-cyan-500/20 text-teal-600 border border-teal-500/30"
-                    : isDark 
-                      ? "text-slate-400 hover:text-white hover:bg-slate-800"
-                      : "text-gray-600 hover:text-gray-900 hover:bg-gray-100"
-                }`}
-              >
-                <item.icon className="w-5 h-5" />
-                <span className="font-medium">{item.label}</span>
-              </Link>
+              <div key={item.name}>
+                {item.hasChildren ? (
+                  <>
+                    <button
+                      onClick={() => setAnswerEngineExpanded(!answerEngineExpanded)}
+                      className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-all w-full ${
+                        isActive || hasActiveChild
+                          ? "bg-gradient-to-r from-teal-500/20 to-cyan-500/20 text-teal-600 border border-teal-500/30"
+                          : isDark 
+                            ? "text-slate-400 hover:text-white hover:bg-slate-800"
+                            : "text-gray-600 hover:text-gray-900 hover:bg-gray-100"
+                      }`}
+                    >
+                      <item.icon className="w-5 h-5" />
+                      <span className="font-medium flex-1 text-left">{item.label}</span>
+                      {answerEngineExpanded ? <ChevronDown className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />}
+                    </button>
+                    {answerEngineExpanded && item.children && (
+                      <div className="ml-4 mt-1 space-y-1">
+                        {item.children.map((child) => (
+                          <Link
+                            key={child.name}
+                            to={createPageUrl(child.name)}
+                            className={`flex items-center gap-3 px-4 py-2 rounded-lg transition-all ${
+                              currentPageName === child.name
+                                ? "bg-gradient-to-r from-teal-500/20 to-cyan-500/20 text-teal-600 border border-teal-500/30"
+                                : isDark 
+                                  ? "text-slate-400 hover:text-white hover:bg-slate-800"
+                                  : "text-gray-600 hover:text-gray-900 hover:bg-gray-100"
+                            }`}
+                          >
+                            <child.icon className="w-4 h-4" />
+                            <span className="text-sm font-medium">{child.label}</span>
+                          </Link>
+                        ))}
+                      </div>
+                    )}
+                  </>
+                ) : (
+                  <Link
+                    to={createPageUrl(item.name)}
+                    className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-all ${
+                      isActive
+                        ? "bg-gradient-to-r from-teal-500/20 to-cyan-500/20 text-teal-600 border border-teal-500/30"
+                        : isDark 
+                          ? "text-slate-400 hover:text-white hover:bg-slate-800"
+                          : "text-gray-600 hover:text-gray-900 hover:bg-gray-100"
+                    }`}
+                  >
+                    <item.icon className="w-5 h-5" />
+                    <span className="font-medium">{item.label}</span>
+                  </Link>
+                )}
+              </div>
             );
           })}
         </nav>
@@ -133,22 +179,64 @@ const platformPages = ["AnswerEngine", "Prompts", "AnswerEngineering", "AnswerVi
               <nav className="p-4 space-y-1">
                 {navItems.map((item) => {
                   const isActive = currentPageName === item.name;
+                  const hasActiveChild = item.children?.some(child => child.name === currentPageName);
                   return (
-                    <Link
-                      key={item.name}
-                      to={createPageUrl(item.name)}
-                      onClick={() => setMobileOpen(false)}
-                      className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-all ${
-                        isActive
-                          ? "bg-gradient-to-r from-teal-500/20 to-cyan-500/20 text-teal-600 border border-teal-500/30"
-                          : isDark
-                            ? "text-slate-400 hover:text-white hover:bg-slate-800"
-                            : "text-gray-600 hover:text-gray-900 hover:bg-gray-100"
-                      }`}
-                    >
-                      <item.icon className="w-5 h-5" />
-                      <span className="font-medium">{item.label}</span>
-                    </Link>
+                    <div key={item.name}>
+                      {item.hasChildren ? (
+                        <>
+                          <button
+                            onClick={() => setAnswerEngineExpanded(!answerEngineExpanded)}
+                            className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-all w-full ${
+                              isActive || hasActiveChild
+                                ? "bg-gradient-to-r from-teal-500/20 to-cyan-500/20 text-teal-600 border border-teal-500/30"
+                                : isDark 
+                                  ? "text-slate-400 hover:text-white hover:bg-slate-800"
+                                  : "text-gray-600 hover:text-gray-900 hover:bg-gray-100"
+                            }`}
+                          >
+                            <item.icon className="w-5 h-5" />
+                            <span className="font-medium flex-1 text-left">{item.label}</span>
+                            {answerEngineExpanded ? <ChevronDown className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />}
+                          </button>
+                          {answerEngineExpanded && item.children && (
+                            <div className="ml-4 mt-1 space-y-1">
+                              {item.children.map((child) => (
+                                <Link
+                                  key={child.name}
+                                  to={createPageUrl(child.name)}
+                                  onClick={() => setMobileOpen(false)}
+                                  className={`flex items-center gap-3 px-4 py-2 rounded-lg transition-all ${
+                                    currentPageName === child.name
+                                      ? "bg-gradient-to-r from-teal-500/20 to-cyan-500/20 text-teal-600 border border-teal-500/30"
+                                      : isDark 
+                                        ? "text-slate-400 hover:text-white hover:bg-slate-800"
+                                        : "text-gray-600 hover:text-gray-900 hover:bg-gray-100"
+                                  }`}
+                                >
+                                  <child.icon className="w-4 h-4" />
+                                  <span className="text-sm font-medium">{child.label}</span>
+                                </Link>
+                              ))}
+                            </div>
+                          )}
+                        </>
+                      ) : (
+                        <Link
+                          to={createPageUrl(item.name)}
+                          onClick={() => setMobileOpen(false)}
+                          className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-all ${
+                            isActive
+                              ? "bg-gradient-to-r from-teal-500/20 to-cyan-500/20 text-teal-600 border border-teal-500/30"
+                              : isDark
+                                ? "text-slate-400 hover:text-white hover:bg-slate-800"
+                                : "text-gray-600 hover:text-gray-900 hover:bg-gray-100"
+                          }`}
+                        >
+                          <item.icon className="w-5 h-5" />
+                          <span className="font-medium">{item.label}</span>
+                        </Link>
+                      )}
+                    </div>
                   );
                 })}
               </nav>
