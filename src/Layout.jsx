@@ -19,7 +19,7 @@ import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 
-const platformPages = ["AnswerEngine", "Prompts", "AnswerEngineering", "AnswerVisibility", "Tracking"];
+const platformPages = ["AnswerEngine", "Prompts", "AnswerEngineering", "AnswerVisibility"];
 
   export default function Layout({ children, currentPageName }) {
     const [mobileOpen, setMobileOpen] = React.useState(false);
@@ -38,7 +38,6 @@ const platformPages = ["AnswerEngine", "Prompts", "AnswerEngineering", "AnswerVi
       { name: "AnswerEngineering", label: "Answer Engineering", icon: FileEdit },
       { name: "AnswerVisibility", label: "Answer Visibility", icon: LayoutDashboard },
       { name: "Prompts", label: "Prompts", icon: MessageSquare },
-      { name: "Tracking", label: "Tracking", icon: LineChart },
     ];
 
   if (!showPlatformNav) {
