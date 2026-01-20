@@ -12,7 +12,7 @@ import {
   RefreshCw,
   Filter,
   Settings,
-  LineChart
+  LineChart as LineChartIcon
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -298,7 +298,7 @@ Be accurate - only list brands you actually mentioned in your response.`,
                       : "bg-white text-gray-700 hover:bg-gray-100 border border-gray-300"
                   }
                 >
-                  <LineChart className="w-4 h-4 mr-2" />
+                  <LineChartIcon className="w-4 h-4 mr-2" />
                   Tracking
                 </Button>
               </div>
@@ -721,7 +721,7 @@ Be accurate - only list brands you actually mentioned in your response.`,
                         </div>
                       ) : (
                         <div className={`text-center py-8 border rounded-lg ${isDark ? 'border-slate-700 bg-slate-900/50' : 'border-gray-200 bg-gray-50'}`}>
-                          <LineChart className={`w-12 h-12 mx-auto mb-3 ${isDark ? 'text-slate-600' : 'text-gray-400'}`} />
+                          <LineChartIcon className={`w-12 h-12 mx-auto mb-3 ${isDark ? 'text-slate-600' : 'text-gray-400'}`} />
                           <p className={`text-sm ${isDark ? 'text-slate-500' : 'text-gray-500'}`}>
                             Trend data will appear here as we track this prompt over time
                           </p>
