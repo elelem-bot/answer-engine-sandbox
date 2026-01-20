@@ -8,7 +8,8 @@ import {
   Search,
   Filter,
   Settings,
-  Plus
+  Plus,
+  TrendingUp
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -185,7 +186,7 @@ export default function Prompts() {
         <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4 mb-8">
           <div>
             <h1 className={`text-2xl font-bold mb-2 ${isDark ? 'text-white' : 'text-gray-900'}`}>
-              Generated Prompts
+              Your Prompts
             </h1>
             <p className={isDark ? 'text-slate-400' : 'text-gray-600'}>
               Review and manage all generated prompts
@@ -292,7 +293,7 @@ export default function Prompts() {
                         <div className="flex gap-2 flex-wrap">
                           {prompt.is_tracked && (
                             <Badge className="bg-gradient-to-r from-teal-500/20 to-cyan-500/20 text-teal-400 border-teal-500/30">
-                              Engineered
+                              Tracking
                             </Badge>
                           )}
                           <Badge 
@@ -319,13 +320,39 @@ export default function Prompts() {
                           ))}
                         </div>
                       </div>
-                      {prompt.is_tracked && prompt.visibility_trend && prompt.visibility_trend.length > 0 && (
-                        <div className="text-right">
-                          <Badge className="bg-green-500/20 text-green-400 border-green-500/30 mb-1">
+                      <div className="flex flex-col gap-2 items-end">
+                        {!prompt.is_tracked && (
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={async () => {
+                              try {
+                                await base44.entities.PromptAnalysis.update(prompt.id, {
+                                  is_tracked: true,
+                                  tracked_date: new Date().toISOString().split('T')[0]
+                                });
+                                setPrompts(prev => prev.map(p => 
+                                  p.id === prompt.id ? { ...p, is_tracked: true } : p
+                                ));
+                                setFilteredPrompts(prev => prev.map(p => 
+                                  p.id === prompt.id ? { ...p, is_tracked: true } : p
+                                ));
+                              } catch (error) {
+                                console.error("Error tracking prompt:", error);
+                              }
+                            }}
+                            className="bg-gradient-to-r from-teal-500 to-cyan-500 hover:from-teal-600 hover:to-cyan-600 text-white border-0"
+                          >
+                            <TrendingUp className="w-4 h-4 mr-1" />
+                            Track
+                          </Button>
+                        )}
+                        {prompt.is_tracked && prompt.visibility_trend && prompt.visibility_trend.length > 0 && (
+                          <Badge className="bg-green-500/20 text-green-400 border-green-500/30">
                             +{prompt.visibility_trend[prompt.visibility_trend.length - 1]?.share_percentage || 0}% Share
                           </Badge>
-                        </div>
-                      )}
+                        )}
+                      </div>
                     </div>
                   </motion.div>
                 ))
