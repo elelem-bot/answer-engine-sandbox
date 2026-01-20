@@ -20,7 +20,7 @@ import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 
-const platformPages = ["AnswerEngine", "Prompts", "AnswerEngineering", "AnswerVisibility"];
+const platformPages = ["AnswerEngine", "Prompts", "AnswerEngineering", "AnswerVisibility", "Analytics"];
 
   export default function Layout({ children, currentPageName }) {
     const [mobileOpen, setMobileOpen] = React.useState(false);
