@@ -5,6 +5,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Search, Loader2, ExternalLink, Tag, TrendingUp } from "lucide-react";
+import ReactMarkdown from "react-markdown";
 
 export default function PromptResearch() {
   const [prompt, setPrompt] = useState("");
@@ -161,9 +162,9 @@ Provide a comprehensive answer that would help a marketer understand the landsca
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <p className={`whitespace-pre-wrap ${isDark ? 'text-slate-300' : 'text-gray-700'}`}>
-                  {result.answer}
-                </p>
+                <div className={`prose prose-sm max-w-none ${isDark ? 'prose-invert' : ''}`}>
+                  <ReactMarkdown>{result.answer}</ReactMarkdown>
+                </div>
               </CardContent>
             </Card>
 
