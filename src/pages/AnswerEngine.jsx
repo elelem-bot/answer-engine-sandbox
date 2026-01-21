@@ -708,7 +708,7 @@ Consider buyer intent when determining funnel stage.`,
   btn.onmouseenter = () => btn.style.transform = 'translateX(-50%) scale(1.05)';
   btn.onmouseleave = () => btn.style.transform = 'translateX(-50%) scale(1)';
   
-  // Create modal
+  // Create fullscreen modal
   const modal = document.createElement('div');
   modal.style.cssText = \`
     display: none;
@@ -717,58 +717,135 @@ Consider buyer intent when determining funnel stage.`,
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(0,0,0,0.7);
+    background: #0f172a;
     z-index: 10001;
-    align-items: center;
-    justify-content: center;
+    overflow: auto;
   \`;
   
-  const modalContent = document.createElement('div');
-  modalContent.style.cssText = \`
-    background: white;
-    width: 90%;
-    max-width: 600px;
-    max-height: 80vh;
-    border-radius: 12px;
-    padding: 24px;
-    position: relative;
-    overflow-y: auto;
-  \`;
-  
+  // Close button
   const closeBtn = document.createElement('button');
   closeBtn.innerHTML = '×';
   closeBtn.style.cssText = \`
-    position: absolute;
-    top: 12px;
-    right: 12px;
-    background: none;
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: rgba(255,255,255,0.1);
     border: none;
-    font-size: 28px;
+    font-size: 32px;
     cursor: pointer;
-    color: #666;
+    color: white;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    z-index: 10002;
+    transition: all 0.3s;
   \`;
+  closeBtn.onmouseenter = () => closeBtn.style.background = 'rgba(255,255,255,0.2)';
+  closeBtn.onmouseleave = () => closeBtn.style.background = 'rgba(255,255,255,0.1)';
   closeBtn.onclick = () => modal.style.display = 'none';
   
-  const content = document.createElement('div');
-  content.innerHTML = \`
-    <div style="text-align: center; margin-bottom: 20px;">
-      \${config.logoUrl ? \`<img src="\${config.logoUrl}" style="height: 40px; margin-bottom: 12px;" />\` : ''}
-      <h2 style="margin: 0; color: #333;">Ask AI Anything</h2>
-    </div>
-    <div style="position: relative;">
-      \${config.screenshotUrl ? \`<img src="\${config.screenshotUrl}" style="width: 100%; border-radius: 8px; margin-bottom: 16px;" />\` : ''}
-    </div>
-    <textarea id="aiQuestion" placeholder="Type your question here..." style="width: 100%; min-height: 100px; padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 14px; resize: vertical;"></textarea>
-    <button id="askBtn" style="margin-top: 12px; width: 100%; padding: 12px; background: \${config.brandColor}; color: white; border: none; border-radius: 8px; font-size: 16px; font-weight: 600; cursor: pointer;">Ask AI</button>
-    <div id="aiResponse" style="margin-top: 16px; padding: 12px; background: #f5f5f5; border-radius: 8px; display: none;"></div>
+  // Container
+  const container = document.createElement('div');
+  container.style.cssText = \`
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 40px 20px;
   \`;
   
-  modalContent.appendChild(closeBtn);
-  modalContent.appendChild(content);
-  modal.appendChild(modalContent);
+  // Content with screenshot background
+  const content = document.createElement('div');
+  content.innerHTML = \`
+    <div style="position: relative; border-radius: 16px; overflow: hidden; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5);">
+      \${config.screenshotUrl ? \`
+        <img src="\${config.screenshotUrl}" style="
+          width: 100%;
+          height: 600px;
+          object-fit: cover;
+          object-position: top;
+          display: block;
+        " />
+        <div style="
+          position: absolute;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          background: linear-gradient(to bottom, rgba(0,0,0,0.3), rgba(0,0,0,0.6));
+        "></div>
+      \` : ''}
+      <div style="
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 90%;
+        max-width: 600px;
+      ">
+        \${config.logoUrl ? \`
+          <div style="text-align: center; margin-bottom: 24px;">
+            <img src="\${config.logoUrl}" style="height: 50px;" />
+          </div>
+        \` : ''}
+        <div style="
+          background: white;
+          border-radius: 12px;
+          padding: 24px;
+          box-shadow: 0 20px 25px -5px rgba(0,0,0,0.3);
+        ">
+          <input 
+            id="aiQuestion" 
+            type="text"
+            placeholder="Ask anything about \${config.companyName}..."
+            style="
+              width: 100%;
+              padding: 16px;
+              border: 2px solid #e2e8f0;
+              border-radius: 8px;
+              font-size: 16px;
+              outline: none;
+              transition: border 0.3s;
+            "
+            onfocus="this.style.borderColor='\${config.brandColor}'"
+            onblur="this.style.borderColor='#e2e8f0'"
+          />
+          <button 
+            id="askBtn"
+            style="
+              margin-top: 12px;
+              width: 100%;
+              padding: 14px;
+              background: \${config.brandColor};
+              color: white;
+              border: none;
+              border-radius: 8px;
+              font-size: 16px;
+              font-weight: 600;
+              cursor: pointer;
+              transition: all 0.3s;
+            "
+            onmouseenter="this.style.transform='scale(1.02)'"
+            onmouseleave="this.style.transform='scale(1)'"
+          >
+            Ask AI
+          </button>
+        </div>
+        <div id="aiResponse" style="
+          margin-top: 16px;
+          padding: 20px;
+          background: white;
+          border-radius: 12px;
+          display: none;
+          box-shadow: 0 20px 25px -5px rgba(0,0,0,0.3);
+        "></div>
+      </div>
+    </div>
+  \`;
   
-  btn.onclick = () => modal.style.display = 'flex';
-  modal.onclick = (e) => { if (e.target === modal) modal.style.display = 'none'; };
+  container.appendChild(content);
+  modal.appendChild(closeBtn);
+  modal.appendChild(container);
+  
+  btn.onclick = () => modal.style.display = 'block';
   
   document.body.appendChild(btn);
   document.body.appendChild(modal);
@@ -781,8 +858,10 @@ Consider buyer intent when determining funnel stage.`,
       if (!question) return;
       responseDiv.style.display = 'block';
       responseDiv.innerHTML = '<p style="color: #666;">Processing your question...</p>';
-      // Add your API call here to get the answer
-      responseDiv.innerHTML = '<p style="color: #333;"><strong>Answer:</strong> Connect this to your Answer Engine API.</p>';
+      // Add your API call here
+      setTimeout(() => {
+        responseDiv.innerHTML = '<p style="color: #333; line-height: 1.6;"><strong>Answer:</strong> Connect this to your Answer Engine API to get real answers.</p>';
+      }, 1000);
     };
   }, 100);
 })();
@@ -791,7 +870,7 @@ Consider buyer intent when determining funnel stage.`,
                     <Button
                       size="sm"
                       onClick={() => {
-                        const code = `<script>\n(function() {\n  const config = {\n    websiteUrl: "${websiteUrl}",\n    logoUrl: "${logoUrl || ''}",\n    brandColor: "${brandColor}",\n    screenshotUrl: "${screenshotUrl || ''}",\n    companyName: "${companyName}"\n  };\n  \n  const btn = document.createElement('button');\n  btn.innerHTML = '💬 Ask AI';\n  btn.style.cssText = \`position: fixed; top: 20px; left: 50%; transform: translateX(-50%); padding: 10px 24px; background: \${config.brandColor}; color: white; border: none; border-radius: 20px; cursor: pointer; font-size: 14px; font-weight: 600; box-shadow: 0 4px 12px rgba(0,0,0,0.15); z-index: 10000; transition: all 0.3s;\`;\n  btn.onmouseenter = () => btn.style.transform = 'translateX(-50%) scale(1.05)';\n  btn.onmouseleave = () => btn.style.transform = 'translateX(-50%) scale(1)';\n  \n  const modal = document.createElement('div');\n  modal.style.cssText = \`display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 10001; align-items: center; justify-content: center;\`;\n  \n  const modalContent = document.createElement('div');\n  modalContent.style.cssText = \`background: white; width: 90%; max-width: 600px; max-height: 80vh; border-radius: 12px; padding: 24px; position: relative; overflow-y: auto;\`;\n  \n  const closeBtn = document.createElement('button');\n  closeBtn.innerHTML = '×';\n  closeBtn.style.cssText = \`position: absolute; top: 12px; right: 12px; background: none; border: none; font-size: 28px; cursor: pointer; color: #666;\`;\n  closeBtn.onclick = () => modal.style.display = 'none';\n  \n  const content = document.createElement('div');\n  content.innerHTML = \`<div style="text-align: center; margin-bottom: 20px;">\${config.logoUrl ? \`<img src="\${config.logoUrl}" style="height: 40px; margin-bottom: 12px;" />\` : ''}<h2 style="margin: 0; color: #333;">Ask AI Anything</h2></div><div style="position: relative;">\${config.screenshotUrl ? \`<img src="\${config.screenshotUrl}" style="width: 100%; border-radius: 8px; margin-bottom: 16px;" />\` : ''}</div><textarea id="aiQuestion" placeholder="Type your question here..." style="width: 100%; min-height: 100px; padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 14px; resize: vertical;"></textarea><button id="askBtn" style="margin-top: 12px; width: 100%; padding: 12px; background: \${config.brandColor}; color: white; border: none; border-radius: 8px; font-size: 16px; font-weight: 600; cursor: pointer;">Ask AI</button><div id="aiResponse" style="margin-top: 16px; padding: 12px; background: #f5f5f5; border-radius: 8px; display: none;"></div>\`;\n  \n  modalContent.appendChild(closeBtn);\n  modalContent.appendChild(content);\n  modal.appendChild(modalContent);\n  \n  btn.onclick = () => modal.style.display = 'flex';\n  modal.onclick = (e) => { if (e.target === modal) modal.style.display = 'none'; };\n  \n  document.body.appendChild(btn);\n  document.body.appendChild(modal);\n  \n  setTimeout(() => {\n    document.getElementById('askBtn').onclick = async () => {\n      const question = document.getElementById('aiQuestion').value;\n      const responseDiv = document.getElementById('aiResponse');\n      if (!question) return;\n      responseDiv.style.display = 'block';\n      responseDiv.innerHTML = '<p style="color: #666;">Processing your question...</p>';\n      responseDiv.innerHTML = '<p style="color: #333;"><strong>Answer:</strong> Connect this to your Answer Engine API.</p>';\n    };\n  }, 100);\n})();\n</script>`;
+                        const code = `<script>\n(function() {\n  const config = {\n    websiteUrl: "${websiteUrl}",\n    logoUrl: "${logoUrl || ''}",\n    brandColor: "${brandColor}",\n    screenshotUrl: "${screenshotUrl || ''}",\n    companyName: "${companyName}"\n  };\n  \n  const btn = document.createElement('button');\n  btn.innerHTML = '💬 Ask AI';\n  btn.style.cssText = \`position: fixed; top: 20px; left: 50%; transform: translateX(-50%); padding: 10px 24px; background: \${config.brandColor}; color: white; border: none; border-radius: 20px; cursor: pointer; font-size: 14px; font-weight: 600; box-shadow: 0 4px 12px rgba(0,0,0,0.15); z-index: 10000; transition: all 0.3s;\`;\n  btn.onmouseenter = () => btn.style.transform = 'translateX(-50%) scale(1.05)';\n  btn.onmouseleave = () => btn.style.transform = 'translateX(-50%) scale(1)';\n  \n  const modal = document.createElement('div');\n  modal.style.cssText = \`display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #0f172a; z-index: 10001; overflow: auto;\`;\n  \n  const closeBtn = document.createElement('button');\n  closeBtn.innerHTML = '×';\n  closeBtn.style.cssText = \`position: fixed; top: 20px; right: 20px; background: rgba(255,255,255,0.1); border: none; font-size: 32px; cursor: pointer; color: white; width: 40px; height: 40px; border-radius: 50%; z-index: 10002; transition: all 0.3s;\`;\n  closeBtn.onmouseenter = () => closeBtn.style.background = 'rgba(255,255,255,0.2)';\n  closeBtn.onmouseleave = () => closeBtn.style.background = 'rgba(255,255,255,0.1)';\n  closeBtn.onclick = () => modal.style.display = 'none';\n  \n  const container = document.createElement('div');\n  container.style.cssText = \`max-width: 1200px; margin: 0 auto; padding: 40px 20px;\`;\n  \n  const content = document.createElement('div');\n  content.innerHTML = \`<div style="position: relative; border-radius: 16px; overflow: hidden; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5);">\${config.screenshotUrl ? \`<img src="\${config.screenshotUrl}" style="width: 100%; height: 600px; object-fit: cover; object-position: top; display: block;" /><div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: linear-gradient(to bottom, rgba(0,0,0,0.3), rgba(0,0,0,0.6));"></div>\` : ''}<div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 90%; max-width: 600px;">\${config.logoUrl ? \`<div style="text-align: center; margin-bottom: 24px;"><img src="\${config.logoUrl}" style="height: 50px;" /></div>\` : ''}<div style="background: white; border-radius: 12px; padding: 24px; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.3);"><input id="aiQuestion" type="text" placeholder="Ask anything about \${config.companyName}..." style="width: 100%; padding: 16px; border: 2px solid #e2e8f0; border-radius: 8px; font-size: 16px; outline: none; transition: border 0.3s;" onfocus="this.style.borderColor='\${config.brandColor}'" onblur="this.style.borderColor='#e2e8f0'" /><button id="askBtn" style="margin-top: 12px; width: 100%; padding: 14px; background: \${config.brandColor}; color: white; border: none; border-radius: 8px; font-size: 16px; font-weight: 600; cursor: pointer; transition: all 0.3s;" onmouseenter="this.style.transform='scale(1.02)'" onmouseleave="this.style.transform='scale(1)'">Ask AI</button></div><div id="aiResponse" style="margin-top: 16px; padding: 20px; background: white; border-radius: 12px; display: none; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.3);"></div></div></div>\`;\n  \n  container.appendChild(content);\n  modal.appendChild(closeBtn);\n  modal.appendChild(container);\n  \n  btn.onclick = () => modal.style.display = 'block';\n  \n  document.body.appendChild(btn);\n  document.body.appendChild(modal);\n  \n  setTimeout(() => {\n    document.getElementById('askBtn').onclick = async () => {\n      const question = document.getElementById('aiQuestion').value;\n      const responseDiv = document.getElementById('aiResponse');\n      if (!question) return;\n      responseDiv.style.display = 'block';\n      responseDiv.innerHTML = '<p style="color: #666;">Processing your question...</p>';\n      setTimeout(() => {\n        responseDiv.innerHTML = '<p style="color: #333; line-height: 1.6;"><strong>Answer:</strong> Connect this to your Answer Engine API to get real answers.</p>';\n      }, 1000);\n    };\n  }, 100);\n})();\n</script>`;
                         navigator.clipboard.writeText(code);
                         alert('Code copied to clipboard!');
                       }}
