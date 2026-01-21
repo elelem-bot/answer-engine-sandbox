@@ -747,97 +747,69 @@ Consider buyer intent when determining funnel stage.`,
   // Container
   const container = document.createElement('div');
   container.style.cssText = \`
-    max-width: 1200px;
+    max-width: 700px;
     margin: 0 auto;
-    padding: 40px 20px;
+    padding: 80px 20px;
   \`;
   
-  // Content with screenshot background
+  // Content
   const content = document.createElement('div');
   content.innerHTML = \`
-    <div style="position: relative; border-radius: 16px; overflow: hidden; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5);">
-      \${config.screenshotUrl ? \`
-        <img src="\${config.screenshotUrl}" style="
-          width: 100%;
-          height: 600px;
-          object-fit: cover;
-          object-position: top;
-          display: block;
-        " />
-        <div style="
-          position: absolute;
-          top: 0;
-          left: 0;
-          right: 0;
-          bottom: 0;
-          background: linear-gradient(to bottom, rgba(0,0,0,0.3), rgba(0,0,0,0.6));
-        "></div>
-      \` : ''}
-      <div style="
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        width: 90%;
-        max-width: 600px;
-      ">
-        \${config.logoUrl ? \`
-          <div style="text-align: center; margin-bottom: 24px;">
-            <img src="\${config.logoUrl}" style="height: 50px;" />
-          </div>
-        \` : ''}
-        <div style="
-          background: white;
-          border-radius: 12px;
-          padding: 24px;
-          box-shadow: 0 20px 25px -5px rgba(0,0,0,0.3);
-        ">
-          <input 
-            id="aiQuestion" 
-            type="text"
-            placeholder="Ask anything about \${config.companyName}..."
-            style="
-              width: 100%;
-              padding: 16px;
-              border: 2px solid #e2e8f0;
-              border-radius: 8px;
-              font-size: 16px;
-              outline: none;
-              transition: border 0.3s;
-            "
-            onfocus="this.style.borderColor='\${config.brandColor}'"
-            onblur="this.style.borderColor='#e2e8f0'"
-          />
-          <button 
-            id="askBtn"
-            style="
-              margin-top: 12px;
-              width: 100%;
-              padding: 14px;
-              background: \${config.brandColor};
-              color: white;
-              border: none;
-              border-radius: 8px;
-              font-size: 16px;
-              font-weight: 600;
-              cursor: pointer;
-              transition: all 0.3s;
-            "
-            onmouseenter="this.style.transform='scale(1.02)'"
-            onmouseleave="this.style.transform='scale(1)'"
-          >
-            Ask AI
-          </button>
+    <div style="
+      background: white;
+      border-radius: 16px;
+      padding: 40px;
+      box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5);
+    ">
+      \${config.logoUrl ? \`
+        <div style="text-align: center; margin-bottom: 32px;">
+          <img src="\${config.logoUrl}" style="height: 50px;" />
         </div>
-        <div id="aiResponse" style="
+      \` : ''}
+      <input 
+        id="aiQuestion" 
+        type="text"
+        placeholder="Ask anything about \${config.companyName}..."
+        style="
+          width: 100%;
+          padding: 18px;
+          border: 2px solid #e2e8f0;
+          border-radius: 10px;
+          font-size: 16px;
+          outline: none;
+          transition: border 0.3s;
+        "
+        onfocus="this.style.borderColor='\${config.brandColor}'"
+        onblur="this.style.borderColor='#e2e8f0'"
+      />
+      <button 
+        id="askBtn"
+        style="
           margin-top: 16px;
-          padding: 20px;
-          background: white;
-          border-radius: 12px;
-          display: none;
-          box-shadow: 0 20px 25px -5px rgba(0,0,0,0.3);
-        "></div>
-      </div>
+          width: 100%;
+          padding: 16px;
+          background: \${config.brandColor};
+          color: white;
+          border: none;
+          border-radius: 10px;
+          font-size: 16px;
+          font-weight: 600;
+          cursor: pointer;
+          transition: all 0.3s;
+        "
+        onmouseenter="this.style.transform='scale(1.02)'"
+        onmouseleave="this.style.transform='scale(1)'"
+      >
+        Ask AI
+      </button>
+      <div id="aiResponse" style="
+        margin-top: 20px;
+        padding: 20px;
+        background: #f8fafc;
+        border-radius: 10px;
+        display: none;
+        border: 1px solid #e2e8f0;
+      "></div>
     </div>
   \`;
   
