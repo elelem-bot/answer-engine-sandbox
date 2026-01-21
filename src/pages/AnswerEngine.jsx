@@ -669,6 +669,62 @@ Consider buyer intent when determining funnel stage.`,
                     )}
                   </div>
                 </div>
+
+                {/* Embed Code */}
+                <div className="border-t border-slate-700 pt-4 space-y-2">
+                  <label className={`text-sm font-medium ${isDark ? 'text-slate-300' : 'text-gray-700'}`}>Embed Code for Your Website</label>
+                  <div className={`relative rounded-lg ${isDark ? 'bg-slate-900 border border-slate-700' : 'bg-gray-50 border border-gray-300'}`}>
+                    <pre className={`p-4 text-xs overflow-x-auto ${isDark ? 'text-slate-300' : 'text-gray-700'}`}>
+{`<script>
+(function() {
+  const config = {
+    websiteUrl: "${websiteUrl}",
+    logoUrl: "${logoUrl || ''}",
+    brandColor: "${brandColor}",
+    companyName: "${companyName}"
+  };
+  
+  // Create button
+  const btn = document.createElement('button');
+  btn.innerHTML = '💬 Ask AI';
+  btn.style.cssText = \`
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    padding: 12px 20px;
+    background: \${config.brandColor};
+    color: white;
+    border: none;
+    border-radius: 25px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    z-index: 9999;
+  \`;
+  
+  btn.onclick = function() {
+    alert('Answer Engine popup opens here');
+    // Your answer engine logic
+  };
+  
+  document.body.appendChild(btn);
+})();
+</script>`}
+                    </pre>
+                    <Button
+                      size="sm"
+                      onClick={() => {
+                        const code = `<script>\n(function() {\n  const config = {\n    websiteUrl: "${websiteUrl}",\n    logoUrl: "${logoUrl || ''}",\n    brandColor: "${brandColor}",\n    companyName: "${companyName}"\n  };\n  \n  const btn = document.createElement('button');\n  btn.innerHTML = '💬 Ask AI';\n  btn.style.cssText = \`position: fixed; bottom: 20px; right: 20px; padding: 12px 20px; background: \${config.brandColor}; color: white; border: none; border-radius: 25px; cursor: pointer; font-size: 14px; font-weight: 500; box-shadow: 0 4px 12px rgba(0,0,0,0.15); z-index: 9999;\`;\n  \n  btn.onclick = function() {\n    alert('Answer Engine popup opens here');\n  };\n  \n  document.body.appendChild(btn);\n})();\n</script>`;
+                        navigator.clipboard.writeText(code);
+                        alert('Code copied to clipboard!');
+                      }}
+                      className="absolute top-2 right-2 bg-teal-600 hover:bg-teal-700"
+                    >
+                      Copy Code
+                    </Button>
+                  </div>
+                </div>
               </>
             )}
           </CardContent>
