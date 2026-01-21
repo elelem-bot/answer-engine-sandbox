@@ -201,40 +201,49 @@ export default function AnswerEngine() {
     setCrawlProgress("Step 1/3: Discovering URLs from sitemap and search...");
 
     try {
-      // Step 1: Discover all URLs
+      // Step 1: Discover all URLs - Simplified approach
       const urlDiscovery = await base44.integrations.Core.InvokeLLM({
-        prompt: `Find 50-100 page URLs from ${websiteUrl}. Use your internet access.
+        prompt: `You need to find as many page URLs as possible from the website: ${websiteUrl}
 
-  DISCOVERY METHODS:
-  1. Google search: "site:${websiteUrl}" to get indexed pages
-  2. Fetch sitemap: ${websiteUrl}/sitemap.xml and extract all <loc> URLs
-  3. Fetch homepage ${websiteUrl} and extract all internal links from <a href>
-  4. Search for blog: "site:${websiteUrl} blog"
-  5. Search for products: "site:${websiteUrl} product OR solutions OR features"
+INSTRUCTIONS:
+1. Use Google search with "site:${websiteUrl}" to find ALL pages indexed by Google
+2. Try to access ${websiteUrl}/sitemap.xml and extract URLs from it
+3. Visit the homepage ${websiteUrl} and extract all internal navigation links
+4. Look for common pages like /about, /pricing, /contact, /blog, /products, /features, /solutions
+5. Find blog posts, case studies, documentation pages
 
-  PRIORITY PAGE TYPES:
-  - Homepage, About, Contact, Pricing
-  - Blog posts (/blog/*, /article/*, /news/*)
-  - Product/Solution/Feature pages
-  - Case studies, resources, documentation
+IMPORTANT:
+- You MUST return at least 20 URLs minimum
+- Include the full absolute URL starting with http:// or https://
+- Only include pages from the same domain (${websiteUrl})
+- Extract the company name from the website
 
-  Return JSON with 50-100 real URLs:
-  {
-  "company_name": "company name from website",
-  "urls": ["https://full-url.com/page1", "https://full-url.com/page2", ...]
-  }`,
+Return this exact JSON format:
+{
+  "company_name": "Company Name Here",
+  "urls": ["https://example.com/page1", "https://example.com/page2", ...]
+}
+
+Make sure urls is an array with at least 20 full URLs.`,
         add_context_from_internet: true,
         response_json_schema: {
           type: "object",
           properties: {
             company_name: { type: "string" },
-            urls: { type: "array", items: { type: "string" } }
-          }
+            urls: { 
+              type: "array", 
+              items: { type: "string" },
+              minItems: 1
+            }
+          },
+          required: ["company_name", "urls"]
         }
       });
 
+      console.log("URL Discovery Response:", urlDiscovery);
+
       if (!urlDiscovery?.urls || urlDiscovery.urls.length === 0) {
-        throw new Error(`No URLs discovered. The website may not have a sitemap or accessible pages. Response: ${JSON.stringify(urlDiscovery)}`);
+        throw new Error(`Failed to discover URLs. Please check if the website is accessible. Website: ${websiteUrl}`);
       }
 
       setCompanyName(urlDiscovery.company_name || new URL(websiteUrl).hostname);
