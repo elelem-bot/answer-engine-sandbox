@@ -234,7 +234,7 @@ export default function AnswerEngine() {
       });
 
       if (!urlDiscovery?.urls || urlDiscovery.urls.length === 0) {
-        throw new Error("No URLs discovered");
+        throw new Error(`No URLs discovered. The website may not have a sitemap or accessible pages. Response: ${JSON.stringify(urlDiscovery)}`);
       }
 
       setCompanyName(urlDiscovery.company_name || new URL(websiteUrl).hostname);
