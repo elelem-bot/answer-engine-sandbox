@@ -681,6 +681,7 @@ Consider buyer intent when determining funnel stage.`,
     websiteUrl: "${websiteUrl}",
     logoUrl: "${logoUrl || ''}",
     brandColor: "${brandColor}",
+    screenshotUrl: "${screenshotUrl || ''}",
     companyName: "${companyName}"
   };
   
@@ -689,33 +690,108 @@ Consider buyer intent when determining funnel stage.`,
   btn.innerHTML = '💬 Ask AI';
   btn.style.cssText = \`
     position: fixed;
-    bottom: 20px;
-    right: 20px;
-    padding: 12px 20px;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 10px 24px;
     background: \${config.brandColor};
     color: white;
     border: none;
-    border-radius: 25px;
+    border-radius: 20px;
     cursor: pointer;
     font-size: 14px;
-    font-weight: 500;
+    font-weight: 600;
     box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-    z-index: 9999;
+    z-index: 10000;
+    transition: all 0.3s;
+  \`;
+  btn.onmouseenter = () => btn.style.transform = 'translateX(-50%) scale(1.05)';
+  btn.onmouseleave = () => btn.style.transform = 'translateX(-50%) scale(1)';
+  
+  // Create modal
+  const modal = document.createElement('div');
+  modal.style.cssText = \`
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.7);
+    z-index: 10001;
+    align-items: center;
+    justify-content: center;
   \`;
   
-  btn.onclick = function() {
-    alert('Answer Engine popup opens here');
-    // Your answer engine logic
-  };
+  const modalContent = document.createElement('div');
+  modalContent.style.cssText = \`
+    background: white;
+    width: 90%;
+    max-width: 600px;
+    max-height: 80vh;
+    border-radius: 12px;
+    padding: 24px;
+    position: relative;
+    overflow-y: auto;
+  \`;
+  
+  const closeBtn = document.createElement('button');
+  closeBtn.innerHTML = '×';
+  closeBtn.style.cssText = \`
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    background: none;
+    border: none;
+    font-size: 28px;
+    cursor: pointer;
+    color: #666;
+  \`;
+  closeBtn.onclick = () => modal.style.display = 'none';
+  
+  const content = document.createElement('div');
+  content.innerHTML = \`
+    <div style="text-align: center; margin-bottom: 20px;">
+      \${config.logoUrl ? \`<img src="\${config.logoUrl}" style="height: 40px; margin-bottom: 12px;" />\` : ''}
+      <h2 style="margin: 0; color: #333;">Ask AI Anything</h2>
+    </div>
+    <div style="position: relative;">
+      \${config.screenshotUrl ? \`<img src="\${config.screenshotUrl}" style="width: 100%; border-radius: 8px; margin-bottom: 16px;" />\` : ''}
+    </div>
+    <textarea id="aiQuestion" placeholder="Type your question here..." style="width: 100%; min-height: 100px; padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 14px; resize: vertical;"></textarea>
+    <button id="askBtn" style="margin-top: 12px; width: 100%; padding: 12px; background: \${config.brandColor}; color: white; border: none; border-radius: 8px; font-size: 16px; font-weight: 600; cursor: pointer;">Ask AI</button>
+    <div id="aiResponse" style="margin-top: 16px; padding: 12px; background: #f5f5f5; border-radius: 8px; display: none;"></div>
+  \`;
+  
+  modalContent.appendChild(closeBtn);
+  modalContent.appendChild(content);
+  modal.appendChild(modalContent);
+  
+  btn.onclick = () => modal.style.display = 'flex';
+  modal.onclick = (e) => { if (e.target === modal) modal.style.display = 'none'; };
   
   document.body.appendChild(btn);
+  document.body.appendChild(modal);
+  
+  // Handle question submission
+  setTimeout(() => {
+    document.getElementById('askBtn').onclick = async () => {
+      const question = document.getElementById('aiQuestion').value;
+      const responseDiv = document.getElementById('aiResponse');
+      if (!question) return;
+      responseDiv.style.display = 'block';
+      responseDiv.innerHTML = '<p style="color: #666;">Processing your question...</p>';
+      // Add your API call here to get the answer
+      responseDiv.innerHTML = '<p style="color: #333;"><strong>Answer:</strong> Connect this to your Answer Engine API.</p>';
+    };
+  }, 100);
 })();
 </script>`}
                     </pre>
                     <Button
                       size="sm"
                       onClick={() => {
-                        const code = `<script>\n(function() {\n  const config = {\n    websiteUrl: "${websiteUrl}",\n    logoUrl: "${logoUrl || ''}",\n    brandColor: "${brandColor}",\n    companyName: "${companyName}"\n  };\n  \n  const btn = document.createElement('button');\n  btn.innerHTML = '💬 Ask AI';\n  btn.style.cssText = \`position: fixed; bottom: 20px; right: 20px; padding: 12px 20px; background: \${config.brandColor}; color: white; border: none; border-radius: 25px; cursor: pointer; font-size: 14px; font-weight: 500; box-shadow: 0 4px 12px rgba(0,0,0,0.15); z-index: 9999;\`;\n  \n  btn.onclick = function() {\n    alert('Answer Engine popup opens here');\n  };\n  \n  document.body.appendChild(btn);\n})();\n</script>`;
+                        const code = `<script>\n(function() {\n  const config = {\n    websiteUrl: "${websiteUrl}",\n    logoUrl: "${logoUrl || ''}",\n    brandColor: "${brandColor}",\n    screenshotUrl: "${screenshotUrl || ''}",\n    companyName: "${companyName}"\n  };\n  \n  const btn = document.createElement('button');\n  btn.innerHTML = '💬 Ask AI';\n  btn.style.cssText = \`position: fixed; top: 20px; left: 50%; transform: translateX(-50%); padding: 10px 24px; background: \${config.brandColor}; color: white; border: none; border-radius: 20px; cursor: pointer; font-size: 14px; font-weight: 600; box-shadow: 0 4px 12px rgba(0,0,0,0.15); z-index: 10000; transition: all 0.3s;\`;\n  btn.onmouseenter = () => btn.style.transform = 'translateX(-50%) scale(1.05)';\n  btn.onmouseleave = () => btn.style.transform = 'translateX(-50%) scale(1)';\n  \n  const modal = document.createElement('div');\n  modal.style.cssText = \`display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 10001; align-items: center; justify-content: center;\`;\n  \n  const modalContent = document.createElement('div');\n  modalContent.style.cssText = \`background: white; width: 90%; max-width: 600px; max-height: 80vh; border-radius: 12px; padding: 24px; position: relative; overflow-y: auto;\`;\n  \n  const closeBtn = document.createElement('button');\n  closeBtn.innerHTML = '×';\n  closeBtn.style.cssText = \`position: absolute; top: 12px; right: 12px; background: none; border: none; font-size: 28px; cursor: pointer; color: #666;\`;\n  closeBtn.onclick = () => modal.style.display = 'none';\n  \n  const content = document.createElement('div');\n  content.innerHTML = \`<div style="text-align: center; margin-bottom: 20px;">\${config.logoUrl ? \`<img src="\${config.logoUrl}" style="height: 40px; margin-bottom: 12px;" />\` : ''}<h2 style="margin: 0; color: #333;">Ask AI Anything</h2></div><div style="position: relative;">\${config.screenshotUrl ? \`<img src="\${config.screenshotUrl}" style="width: 100%; border-radius: 8px; margin-bottom: 16px;" />\` : ''}</div><textarea id="aiQuestion" placeholder="Type your question here..." style="width: 100%; min-height: 100px; padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 14px; resize: vertical;"></textarea><button id="askBtn" style="margin-top: 12px; width: 100%; padding: 12px; background: \${config.brandColor}; color: white; border: none; border-radius: 8px; font-size: 16px; font-weight: 600; cursor: pointer;">Ask AI</button><div id="aiResponse" style="margin-top: 16px; padding: 12px; background: #f5f5f5; border-radius: 8px; display: none;"></div>\`;\n  \n  modalContent.appendChild(closeBtn);\n  modalContent.appendChild(content);\n  modal.appendChild(modalContent);\n  \n  btn.onclick = () => modal.style.display = 'flex';\n  modal.onclick = (e) => { if (e.target === modal) modal.style.display = 'none'; };\n  \n  document.body.appendChild(btn);\n  document.body.appendChild(modal);\n  \n  setTimeout(() => {\n    document.getElementById('askBtn').onclick = async () => {\n      const question = document.getElementById('aiQuestion').value;\n      const responseDiv = document.getElementById('aiResponse');\n      if (!question) return;\n      responseDiv.style.display = 'block';\n      responseDiv.innerHTML = '<p style="color: #666;">Processing your question...</p>';\n      responseDiv.innerHTML = '<p style="color: #333;"><strong>Answer:</strong> Connect this to your Answer Engine API.</p>';\n    };\n  }, 100);\n})();\n</script>`;
                         navigator.clipboard.writeText(code);
                         alert('Code copied to clipboard!');
                       }}
