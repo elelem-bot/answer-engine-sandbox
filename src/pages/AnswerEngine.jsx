@@ -67,6 +67,7 @@ export default function AnswerEngine() {
   const [bookingCta, setBookingCta] = useState("Talk to our team");
   const [showAnswerEngine, setShowAnswerEngine] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
+  const [screenshotUrl, setScreenshotUrl] = useState(null);
 
 
   React.useEffect(() => {
@@ -179,6 +180,14 @@ export default function AnswerEngine() {
       setLogoFile(file);
       const { file_url } = await base44.integrations.Core.UploadFile({ file });
       setLogoUrl(file_url);
+    }
+  };
+
+  const handleScreenshotUpload = async (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const { file_url } = await base44.integrations.Core.UploadFile({ file });
+      setScreenshotUrl(file_url);
     }
   };
 
@@ -629,6 +638,51 @@ Consider buyer intent when determining funnel stage.`,
             )}
           </AnimatePresence>
         </Card>
+
+        {/* Website Preview */}
+        {isCrawled && activeTab === "chat" && (
+          <div className={`w-full overflow-hidden ${showAnswerEngine ? 'fixed inset-0 z-30' : 'relative h-[800px] rounded-2xl border border-slate-700'}`}>
+            {/* Website iframe or screenshot */}
+            {screenshotUrl ? (
+              <img
+                src={screenshotUrl}
+                alt="Website Screenshot"
+                className="w-full h-full object-cover object-top"
+              />
+            ) : (
+              <iframe
+                src={websiteUrl}
+                className="w-full h-full"
+                title="Website Preview"
+              />
+            )}
+
+            {/* Floating Ask AI Button */}
+            {!showAnswerEngine && (
+              <motion.div
+                drag
+                dragMomentum={false}
+                dragElastic={0.1}
+                initial={{ x: 0, y: 0 }}
+                onDragStart={() => setIsDragging(true)}
+                onDragEnd={() => setTimeout(() => setIsDragging(false), 50)}
+                className="absolute top-4 right-4 cursor-move z-10"
+              >
+                <Button
+                  onClick={() => {
+                    if (!isDragging) setShowAnswerEngine(true);
+                  }}
+                  className="shadow-lg pointer-events-auto"
+                  size="sm"
+                  style={{ backgroundColor: brandColor, color: '#ffffff' }}
+                >
+                  <MessageSquare className="w-4 h-4 mr-2" />
+                  Ask AI
+                </Button>
+              </motion.div>
+            )}
+          </div>
+        )}
 
         {/* Tabs for Chat and Questions */}
         {isCrawled && (
