@@ -69,7 +69,6 @@ export default function AnswerEngine() {
   const [isDragging, setIsDragging] = useState(false);
   const [screenshotUrl, setScreenshotUrl] = useState(null);
 
-
   React.useEffect(() => {
     const handleThemeChange = () => {
       setTheme(localStorage.getItem('elelem-theme') || 'dark');
@@ -190,8 +189,6 @@ export default function AnswerEngine() {
       setScreenshotUrl(file_url);
     }
   };
-
-
 
   const handleCrawl = async () => {
     if (!websiteUrl || !websiteUrl.startsWith('http')) {
@@ -630,7 +627,48 @@ Consider buyer intent when determining funnel stage.`,
                   </Button>
                 </div>
 
-
+                {/* Brand Customization */}
+                <div className="border-t border-slate-700 pt-4 grid md:grid-cols-3 gap-4">
+                  <div className="space-y-2">
+                    <label className={`text-sm font-medium ${isDark ? 'text-slate-300' : 'text-gray-700'}`}>Upload Logo</label>
+                    <Input
+                      type="file"
+                      accept="image/*"
+                      onChange={handleLogoUpload}
+                      className={`h-auto py-2 file:mr-4 file:px-4 file:py-2 file:rounded file:border-0 file:bg-teal-500 file:text-white file:cursor-pointer ${isDark ? 'bg-slate-900 border-slate-700 text-white' : 'bg-white border-gray-300 text-gray-900'}`}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <label className={`text-sm font-medium ${isDark ? 'text-slate-300' : 'text-gray-700'}`}>Brand Color</label>
+                    <div className="flex gap-2">
+                      <Input
+                        type="color"
+                        value={brandColor}
+                        onChange={(e) => setBrandColor(e.target.value)}
+                        className={`w-20 h-10 cursor-pointer ${isDark ? 'bg-slate-900 border-slate-700' : 'bg-white border-gray-300'}`}
+                      />
+                      <Input
+                        type="text"
+                        value={brandColor}
+                        onChange={(e) => setBrandColor(e.target.value)}
+                        placeholder="#14b8a6"
+                        className={`flex-1 ${isDark ? 'bg-slate-900 border-slate-700 text-white' : 'bg-white border-gray-300 text-gray-900'}`}
+                      />
+                    </div>
+                  </div>
+                  <div className="space-y-2">
+                    <label className={`text-sm font-medium ${isDark ? 'text-slate-300' : 'text-gray-700'}`}>Upload Screenshot</label>
+                    <Input
+                      type="file"
+                      accept="image/*"
+                      onChange={handleScreenshotUpload}
+                      className={`h-auto py-2 file:mr-4 file:px-4 file:py-2 file:rounded file:border-0 file:bg-teal-500 file:text-white file:cursor-pointer ${isDark ? 'bg-slate-900 border-slate-700 text-white' : 'bg-white border-gray-300 text-gray-900'}`}
+                    />
+                    {screenshotUrl && (
+                      <p className="text-xs text-teal-400">Screenshot uploaded ✓</p>
+                    )}
+                  </div>
+                </div>
               </>
             )}
           </CardContent>
@@ -638,6 +676,22 @@ Consider buyer intent when determining funnel stage.`,
             )}
           </AnimatePresence>
         </Card>
+
+        {/* Tabs for Chat and Questions */}
+        {isCrawled && (
+          <Tabs value={activeTab} onValueChange={setActiveTab} className="mb-6">
+            <TabsList className={isDark ? 'bg-slate-800/50 border border-slate-700/50' : 'bg-white border border-gray-200'}>
+              <TabsTrigger value="chat" className={isDark ? 'data-[state=active]:bg-slate-700' : 'data-[state=active]:bg-gray-100'}>
+                <MessageSquare className="w-4 h-4 mr-2" />
+                Chat
+              </TabsTrigger>
+              <TabsTrigger value="questions" className={isDark ? 'data-[state=active]:bg-slate-700' : 'data-[state=active]:bg-gray-100'}>
+                <List className="w-4 h-4 mr-2" />
+                Questions ({askedQuestions.length})
+              </TabsTrigger>
+            </TabsList>
+          </Tabs>
+        )}
 
         {/* Website Preview */}
         {isCrawled && activeTab === "chat" && (
@@ -683,24 +737,6 @@ Consider buyer intent when determining funnel stage.`,
             )}
           </div>
         )}
-
-        {/* Tabs for Chat and Questions */}
-        {isCrawled && (
-          <Tabs value={activeTab} onValueChange={setActiveTab} className="mb-6">
-            <TabsList className={isDark ? 'bg-slate-800/50 border border-slate-700/50' : 'bg-white border border-gray-200'}>
-              <TabsTrigger value="chat" className={isDark ? 'data-[state=active]:bg-slate-700' : 'data-[state=active]:bg-gray-100'}>
-                <MessageSquare className="w-4 h-4 mr-2" />
-                Chat
-              </TabsTrigger>
-              <TabsTrigger value="questions" className={isDark ? 'data-[state=active]:bg-slate-700' : 'data-[state=active]:bg-gray-100'}>
-                <List className="w-4 h-4 mr-2" />
-                Questions ({askedQuestions.length})
-              </TabsTrigger>
-            </TabsList>
-          </Tabs>
-        )}
-
-
 
         {/* Fullscreen Answer Engine Popup */}
         <AnimatePresence>
