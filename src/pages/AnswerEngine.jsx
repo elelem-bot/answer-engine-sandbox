@@ -67,7 +67,7 @@ export default function AnswerEngine() {
   const [bookingCta, setBookingCta] = useState("Talk to our team");
   const [showAnswerEngine, setShowAnswerEngine] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
-  const [screenshotUrl, setScreenshotUrl] = useState(null);
+
 
   React.useEffect(() => {
     const handleThemeChange = () => {
@@ -182,13 +182,7 @@ export default function AnswerEngine() {
     }
   };
 
-  const handleScreenshotUpload = async (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      const { file_url } = await base44.integrations.Core.UploadFile({ file });
-      setScreenshotUrl(file_url);
-    }
-  };
+
 
   const handleCrawl = async () => {
     if (!websiteUrl || !websiteUrl.startsWith('http')) {
@@ -627,234 +621,7 @@ Consider buyer intent when determining funnel stage.`,
                   </Button>
                 </div>
 
-                {/* Brand Customization */}
-                <div className="border-t border-slate-700 pt-4 grid md:grid-cols-3 gap-4">
-                  <div className="space-y-2">
-                    <label className={`text-sm font-medium ${isDark ? 'text-slate-300' : 'text-gray-700'}`}>Upload Logo</label>
-                    <Input
-                      type="file"
-                      accept="image/*"
-                      onChange={handleLogoUpload}
-                      className={`h-auto py-2 file:mr-4 file:px-4 file:py-2 file:rounded file:border-0 file:bg-teal-500 file:text-white file:cursor-pointer ${isDark ? 'bg-slate-900 border-slate-700 text-white' : 'bg-white border-gray-300 text-gray-900'}`}
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <label className={`text-sm font-medium ${isDark ? 'text-slate-300' : 'text-gray-700'}`}>Brand Color</label>
-                    <div className="flex gap-2">
-                      <Input
-                        type="color"
-                        value={brandColor}
-                        onChange={(e) => setBrandColor(e.target.value)}
-                        className={`w-20 h-10 cursor-pointer ${isDark ? 'bg-slate-900 border-slate-700' : 'bg-white border-gray-300'}`}
-                      />
-                      <Input
-                        type="text"
-                        value={brandColor}
-                        onChange={(e) => setBrandColor(e.target.value)}
-                        placeholder="#14b8a6"
-                        className={`flex-1 ${isDark ? 'bg-slate-900 border-slate-700 text-white' : 'bg-white border-gray-300 text-gray-900'}`}
-                      />
-                    </div>
-                  </div>
-                  <div className="space-y-2">
-                    <label className={`text-sm font-medium ${isDark ? 'text-slate-300' : 'text-gray-700'}`}>Upload Screenshot</label>
-                    <Input
-                      type="file"
-                      accept="image/*"
-                      onChange={handleScreenshotUpload}
-                      className={`h-auto py-2 file:mr-4 file:px-4 file:py-2 file:rounded file:border-0 file:bg-teal-500 file:text-white file:cursor-pointer ${isDark ? 'bg-slate-900 border-slate-700 text-white' : 'bg-white border-gray-300 text-gray-900'}`}
-                    />
-                    {screenshotUrl && (
-                      <p className="text-xs text-teal-400">Screenshot uploaded ✓</p>
-                    )}
-                  </div>
-                </div>
 
-                {/* Embed Code */}
-                <div className="border-t border-slate-700 pt-4 space-y-2">
-                  <label className={`text-sm font-medium ${isDark ? 'text-slate-300' : 'text-gray-700'}`}>Embed Code for Your Website</label>
-                  <div className={`relative rounded-lg ${isDark ? 'bg-slate-900 border border-slate-700' : 'bg-gray-50 border border-gray-300'}`}>
-                    <pre className={`p-4 text-xs overflow-x-auto ${isDark ? 'text-slate-300' : 'text-gray-700'}`}>
-{`<script>
-(function() {
-  const config = {
-    websiteUrl: "${websiteUrl}",
-    logoUrl: "${logoUrl || ''}",
-    brandColor: "${brandColor}",
-    screenshotUrl: "${screenshotUrl || ''}",
-    companyName: "${companyName}"
-  };
-  
-  // Create button
-  const btn = document.createElement('button');
-  btn.innerHTML = '💬 Ask AI';
-  btn.style.cssText = \`
-    position: fixed !important;
-    top: 20px !important;
-    left: 50% !important;
-    transform: translateX(-50%) !important;
-    padding: 12px 28px !important;
-    background: \${config.brandColor} !important;
-    color: white !important;
-    border: none !important;
-    border-radius: 25px !important;
-    cursor: pointer !important;
-    font-size: 15px !important;
-    font-weight: 700 !important;
-    box-shadow: 0 6px 20px rgba(0,0,0,0.25) !important;
-    z-index: 999999 !important;
-    transition: all 0.3s !important;
-    display: block !important;
-    visibility: visible !important;
-    opacity: 1 !important;
-  \`;
-  btn.onmouseenter = () => btn.style.transform = 'translateX(-50%) scale(1.05)';
-  btn.onmouseleave = () => btn.style.transform = 'translateX(-50%) scale(1)';
-  
-  // Create fullscreen modal
-  const modal = document.createElement('div');
-  modal.style.cssText = \`
-    display: none;
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: #0f172a;
-    z-index: 10001;
-    overflow: auto;
-  \`;
-  
-  // Close button
-  const closeBtn = document.createElement('button');
-  closeBtn.innerHTML = '×';
-  closeBtn.style.cssText = \`
-    position: fixed;
-    top: 20px;
-    right: 20px;
-    background: rgba(255,255,255,0.1);
-    border: none;
-    font-size: 32px;
-    cursor: pointer;
-    color: white;
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    z-index: 10002;
-    transition: all 0.3s;
-  \`;
-  closeBtn.onmouseenter = () => closeBtn.style.background = 'rgba(255,255,255,0.2)';
-  closeBtn.onmouseleave = () => closeBtn.style.background = 'rgba(255,255,255,0.1)';
-  closeBtn.onclick = () => modal.style.display = 'none';
-  
-  // Container
-  const container = document.createElement('div');
-  container.style.cssText = \`
-    max-width: 700px;
-    margin: 0 auto;
-    padding: 80px 20px;
-  \`;
-  
-  // Content
-  const content = document.createElement('div');
-  content.innerHTML = \`
-    <div style="
-      background: white;
-      border-radius: 16px;
-      padding: 40px;
-      box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5);
-    ">
-      \${config.logoUrl ? \`
-        <div style="text-align: center; margin-bottom: 32px;">
-          <img src="\${config.logoUrl}" style="height: 50px;" />
-        </div>
-      \` : ''}
-      <input 
-        id="aiQuestion" 
-        type="text"
-        placeholder="Ask anything about \${config.companyName}..."
-        style="
-          width: 100%;
-          padding: 18px;
-          border: 2px solid #e2e8f0;
-          border-radius: 10px;
-          font-size: 16px;
-          outline: none;
-          transition: border 0.3s;
-        "
-        onfocus="this.style.borderColor='\${config.brandColor}'"
-        onblur="this.style.borderColor='#e2e8f0'"
-      />
-      <button 
-        id="askBtn"
-        style="
-          margin-top: 16px;
-          width: 100%;
-          padding: 16px;
-          background: \${config.brandColor};
-          color: white;
-          border: none;
-          border-radius: 10px;
-          font-size: 16px;
-          font-weight: 600;
-          cursor: pointer;
-          transition: all 0.3s;
-        "
-        onmouseenter="this.style.transform='scale(1.02)'"
-        onmouseleave="this.style.transform='scale(1)'"
-      >
-        Ask AI
-      </button>
-      <div id="aiResponse" style="
-        margin-top: 20px;
-        padding: 20px;
-        background: #f8fafc;
-        border-radius: 10px;
-        display: none;
-        border: 1px solid #e2e8f0;
-      "></div>
-    </div>
-  \`;
-  
-  container.appendChild(content);
-  modal.appendChild(closeBtn);
-  modal.appendChild(container);
-  
-  btn.onclick = () => modal.style.display = 'block';
-  
-  document.body.appendChild(btn);
-  document.body.appendChild(modal);
-  
-  // Handle question submission
-  setTimeout(() => {
-    document.getElementById('askBtn').onclick = async () => {
-      const question = document.getElementById('aiQuestion').value;
-      const responseDiv = document.getElementById('aiResponse');
-      if (!question) return;
-      responseDiv.style.display = 'block';
-      responseDiv.innerHTML = '<p style="color: #666;">Processing your question...</p>';
-      // Add your API call here
-      setTimeout(() => {
-        responseDiv.innerHTML = '<p style="color: #333; line-height: 1.6;"><strong>Answer:</strong> Connect this to your Answer Engine API to get real answers.</p>';
-      }, 1000);
-    };
-  }, 100);
-})();
-</script>`}
-                    </pre>
-                    <Button
-                      size="sm"
-                      onClick={() => {
-                        const code = `<script>\n(function() {\n  const config = {\n    websiteUrl: "${websiteUrl}",\n    logoUrl: "${logoUrl || ''}",\n    brandColor: "${brandColor}",\n    companyName: "${companyName}"\n  };\n  \n  const btn = document.createElement('button');\n  btn.innerHTML = '💬 Ask AI';\n  btn.style.cssText = \`position: fixed !important; top: 20px !important; left: 50% !important; transform: translateX(-50%) !important; padding: 12px 28px !important; background: \${config.brandColor} !important; color: white !important; border: none !important; border-radius: 25px !important; cursor: pointer !important; font-size: 15px !important; font-weight: 700 !important; box-shadow: 0 6px 20px rgba(0,0,0,0.25) !important; z-index: 999999 !important; transition: all 0.3s !important; display: block !important; visibility: visible !important; opacity: 1 !important;\`;\n  btn.onmouseenter = () => btn.style.transform = 'translateX(-50%) scale(1.05)';\n  btn.onmouseleave = () => btn.style.transform = 'translateX(-50%) scale(1)';\n  \n  const modal = document.createElement('div');\n  modal.style.cssText = \`display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #0f172a; z-index: 10001; overflow: auto;\`;\n  \n  const closeBtn = document.createElement('button');\n  closeBtn.innerHTML = '×';\n  closeBtn.style.cssText = \`position: fixed; top: 20px; right: 20px; background: rgba(255,255,255,0.1); border: none; font-size: 32px; cursor: pointer; color: white; width: 40px; height: 40px; border-radius: 50%; z-index: 10002; transition: all 0.3s;\`;\n  closeBtn.onmouseenter = () => closeBtn.style.background = 'rgba(255,255,255,0.2)';\n  closeBtn.onmouseleave = () => closeBtn.style.background = 'rgba(255,255,255,0.1)';\n  closeBtn.onclick = () => modal.style.display = 'none';\n  \n  const container = document.createElement('div');\n  container.style.cssText = \`max-width: 700px; margin: 0 auto; padding: 80px 20px;\`;\n  \n  const content = document.createElement('div');\n  content.innerHTML = \`<div style="background: white; border-radius: 16px; padding: 40px; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5);">\${config.logoUrl ? \`<div style="text-align: center; margin-bottom: 32px;"><img src="\${config.logoUrl}" style="height: 50px;" /></div>\` : ''}<input id="aiQuestion" type="text" placeholder="Ask anything about \${config.companyName}..." style="width: 100%; padding: 18px; border: 2px solid #e2e8f0; border-radius: 10px; font-size: 16px; outline: none; transition: border 0.3s;" onfocus="this.style.borderColor='\${config.brandColor}'" onblur="this.style.borderColor='#e2e8f0'" /><button id="askBtn" style="margin-top: 16px; width: 100%; padding: 16px; background: \${config.brandColor}; color: white; border: none; border-radius: 10px; font-size: 16px; font-weight: 600; cursor: pointer; transition: all 0.3s;" onmouseenter="this.style.transform='scale(1.02)'" onmouseleave="this.style.transform='scale(1)'">Ask AI</button><div id="aiResponse" style="margin-top: 20px; padding: 20px; background: #f8fafc; border-radius: 10px; display: none; border: 1px solid #e2e8f0;"></div></div>\`;\n  \n  container.appendChild(content);\n  modal.appendChild(closeBtn);\n  modal.appendChild(container);\n  \n  btn.onclick = () => modal.style.display = 'block';\n  \n  document.body.appendChild(btn);\n  document.body.appendChild(modal);\n  \n  setTimeout(() => {\n    document.getElementById('askBtn').onclick = async () => {\n      const question = document.getElementById('aiQuestion').value;\n      const responseDiv = document.getElementById('aiResponse');\n      if (!question) return;\n      responseDiv.style.display = 'block';\n      responseDiv.innerHTML = '<p style="color: #666;">Processing your question...</p>';\n      setTimeout(() => {\n        responseDiv.innerHTML = '<p style="color: #333; line-height: 1.6;"><strong>Answer:</strong> Connect this to your Answer Engine API to get real answers.</p>';\n      }, 1000);\n    };\n  }, 100);\n})();\n</script>`;
-                        navigator.clipboard.writeText(code);
-                        alert('Code copied to clipboard!');
-                      }}
-                      className="absolute top-2 right-2 bg-teal-600 hover:bg-teal-700"
-                    >
-                      Copy Code
-                    </Button>
-                  </div>
-                </div>
               </>
             )}
           </CardContent>
@@ -879,50 +646,7 @@ Consider buyer intent when determining funnel stage.`,
           </Tabs>
         )}
 
-        {/* Website Preview */}
-        {isCrawled && activeTab === "chat" && (
-          <div className={`w-full overflow-hidden ${showAnswerEngine ? 'fixed inset-0 z-30' : 'relative h-[800px] rounded-2xl border border-slate-700'}`}>
-            {/* Website iframe or screenshot */}
-            {screenshotUrl ? (
-              <img
-                src={screenshotUrl}
-                alt="Website Screenshot"
-                className="w-full h-full object-cover object-top"
-              />
-            ) : (
-              <iframe
-                src={websiteUrl}
-                className="w-full h-full"
-                title="Website Preview"
-              />
-            )}
 
-            {/* Floating Ask AI Button */}
-            {!showAnswerEngine && (
-              <motion.div
-                drag
-                dragMomentum={false}
-                dragElastic={0.1}
-                initial={{ x: 0, y: 0 }}
-                onDragStart={() => setIsDragging(true)}
-                onDragEnd={() => setTimeout(() => setIsDragging(false), 50)}
-                className="absolute top-4 right-4 cursor-move z-10"
-              >
-                <Button
-                  onClick={() => {
-                    if (!isDragging) setShowAnswerEngine(true);
-                  }}
-                  className="shadow-lg pointer-events-auto"
-                  size="sm"
-                  style={{ backgroundColor: brandColor, color: '#ffffff' }}
-                >
-                  <MessageSquare className="w-4 h-4 mr-2" />
-                  Ask AI
-                </Button>
-              </motion.div>
-            )}
-          </div>
-        )}
 
         {/* Fullscreen Answer Engine Popup */}
         <AnimatePresence>
