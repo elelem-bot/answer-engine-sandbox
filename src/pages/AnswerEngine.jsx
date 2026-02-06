@@ -68,9 +68,10 @@ export default function AnswerEngine() {
   const [showAnswerEngine, setShowAnswerEngine] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
   const [screenshotUrl, setScreenshotUrl] = useState(null);
-  const [buttonText, setButtonText] = useState("Book Demo");
+  const [buttonText, setButtonText] = useState("Ask AI");
   const [buttonSize, setButtonSize] = useState("sm");
   const [buttonShape, setButtonShape] = useState("rounded");
+  const [ctaButtonText, setCtaButtonText] = useState("Book Demo");
 
   React.useEffect(() => {
     const handleThemeChange = () => {
@@ -677,17 +678,17 @@ Consider buyer intent when determining funnel stage.`,
                 {/* Button Customization */}
                 <div className="grid md:grid-cols-3 gap-4 pt-4">
                   <div className="space-y-2">
-                    <label className={`text-sm font-medium ${isDark ? 'text-slate-300' : 'text-gray-700'}`}>CTA Button Text</label>
+                    <label className={`text-sm font-medium ${isDark ? 'text-slate-300' : 'text-gray-700'}`}>Button Text</label>
                     <Input
                       type="text"
                       value={buttonText}
                       onChange={(e) => setButtonText(e.target.value)}
-                      placeholder="Book Demo"
+                      placeholder="Ask AI"
                       className={isDark ? 'bg-slate-900 border-slate-700 text-white' : 'bg-white border-gray-300 text-gray-900'}
                     />
                   </div>
                   <div className="space-y-2">
-                    <label className={`text-sm font-medium ${isDark ? 'text-slate-300' : 'text-gray-700'}`}>CTA Button Size</label>
+                    <label className={`text-sm font-medium ${isDark ? 'text-slate-300' : 'text-gray-700'}`}>Button Size</label>
                     <select
                       value={buttonSize}
                       onChange={(e) => setButtonSize(e.target.value)}
@@ -698,7 +699,7 @@ Consider buyer intent when determining funnel stage.`,
                     </select>
                   </div>
                   <div className="space-y-2">
-                    <label className={`text-sm font-medium ${isDark ? 'text-slate-300' : 'text-gray-700'}`}>CTA Button Shape</label>
+                    <label className={`text-sm font-medium ${isDark ? 'text-slate-300' : 'text-gray-700'}`}>Button Shape</label>
                     <select
                       value={buttonShape}
                       onChange={(e) => setButtonShape(e.target.value)}
@@ -708,6 +709,16 @@ Consider buyer intent when determining funnel stage.`,
                       <option value="rounded">Rounded</option>
                       <option value="pill">Pill</option>
                     </select>
+                  </div>
+                  <div className="space-y-2">
+                    <label className={`text-sm font-medium ${isDark ? 'text-slate-300' : 'text-gray-700'}`}>CTA Button Text</label>
+                    <Input
+                      type="text"
+                      value={ctaButtonText}
+                      onChange={(e) => setCtaButtonText(e.target.value)}
+                      placeholder="Book Demo"
+                      className={isDark ? 'bg-slate-900 border-slate-700 text-white' : 'bg-white border-gray-300 text-gray-900'}
+                    />
                   </div>
                 </div>
                 </div>
@@ -769,14 +780,15 @@ Consider buyer intent when determining funnel stage.`,
                     if (!isDragging) setShowAnswerEngine(true);
                   }}
                   className="shadow-lg pointer-events-auto"
-                  size="sm"
+                  size={buttonSize}
                   style={{ 
                     backgroundColor: brandColor, 
-                    color: '#ffffff'
+                    color: '#ffffff',
+                    borderRadius: buttonShape === 'square' ? '0' : buttonShape === 'pill' ? '9999px' : '0.5rem'
                   }}
                 >
                   <MessageSquare className="w-4 h-4 mr-2" />
-                  Ask AI
+                  {buttonText}
                 </Button>
               </motion.div>
             )}
@@ -997,16 +1009,15 @@ Consider buyer intent when determining funnel stage.`,
                                 <div className="p-3 rounded-lg bg-slate-50 border border-slate-200 flex flex-col items-center justify-center gap-1.5">
                                   <span className="text-xs text-slate-700 font-medium text-center leading-snug line-clamp-2">{bookingCta}</span>
                                   <Button
-                                    size={buttonSize}
+                                    size="sm"
                                     onClick={() => setShowBookingPanel(true)}
                                     className="whitespace-nowrap"
                                     style={{ 
                                       backgroundColor: brandColor, 
-                                      color: '#ffffff',
-                                      borderRadius: buttonShape === 'square' ? '0' : buttonShape === 'pill' ? '9999px' : '0.5rem'
+                                      color: '#ffffff'
                                     }}
                                   >
-                                    {buttonText}
+                                    {ctaButtonText}
                                   </Button>
                                 </div>
                               </div>
