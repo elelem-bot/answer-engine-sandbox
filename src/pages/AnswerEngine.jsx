@@ -68,6 +68,9 @@ export default function AnswerEngine() {
   const [showAnswerEngine, setShowAnswerEngine] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
   const [screenshotUrl, setScreenshotUrl] = useState(null);
+  const [buttonText, setButtonText] = useState("Ask AI");
+  const [buttonSize, setButtonSize] = useState("md");
+  const [buttonShape, setButtonShape] = useState("rounded");
 
   React.useEffect(() => {
     const handleThemeChange = () => {
@@ -628,7 +631,8 @@ Consider buyer intent when determining funnel stage.`,
                 </div>
 
                 {/* Brand Customization */}
-                <div className="border-t border-slate-700 pt-4 grid md:grid-cols-3 gap-4">
+                <div className="border-t border-slate-700 pt-4 space-y-4">
+                <div className="grid md:grid-cols-3 gap-4">
                   <div className="space-y-2">
                     <label className={`text-sm font-medium ${isDark ? 'text-slate-300' : 'text-gray-700'}`}>Upload Logo</label>
                     <Input
@@ -667,6 +671,44 @@ Consider buyer intent when determining funnel stage.`,
                     {screenshotUrl && (
                       <p className="text-xs text-teal-400">Screenshot uploaded ✓</p>
                     )}
+                  </div>
+                </div>
+
+                {/* Button Customization */}
+                <div className="grid md:grid-cols-3 gap-4 pt-4">
+                  <div className="space-y-2">
+                    <label className={`text-sm font-medium ${isDark ? 'text-slate-300' : 'text-gray-700'}`}>Button Text</label>
+                    <Input
+                      type="text"
+                      value={buttonText}
+                      onChange={(e) => setButtonText(e.target.value)}
+                      placeholder="Ask AI"
+                      className={isDark ? 'bg-slate-900 border-slate-700 text-white' : 'bg-white border-gray-300 text-gray-900'}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <label className={`text-sm font-medium ${isDark ? 'text-slate-300' : 'text-gray-700'}`}>Button Size</label>
+                    <select
+                      value={buttonSize}
+                      onChange={(e) => setButtonSize(e.target.value)}
+                      className={`w-full h-10 px-3 rounded-md border ${isDark ? 'bg-slate-900 border-slate-700 text-white' : 'bg-white border-gray-300 text-gray-900'}`}
+                    >
+                      <option value="sm">Small</option>
+                      <option value="md">Medium</option>
+                      <option value="lg">Large</option>
+                    </select>
+                  </div>
+                  <div className="space-y-2">
+                    <label className={`text-sm font-medium ${isDark ? 'text-slate-300' : 'text-gray-700'}`}>Button Shape</label>
+                    <select
+                      value={buttonShape}
+                      onChange={(e) => setButtonShape(e.target.value)}
+                      className={`w-full h-10 px-3 rounded-md border ${isDark ? 'bg-slate-900 border-slate-700 text-white' : 'bg-white border-gray-300 text-gray-900'}`}
+                    >
+                      <option value="square">Square</option>
+                      <option value="rounded">Rounded</option>
+                      <option value="pill">Pill</option>
+                    </select>
                   </div>
                 </div>
               </>
@@ -727,11 +769,15 @@ Consider buyer intent when determining funnel stage.`,
                     if (!isDragging) setShowAnswerEngine(true);
                   }}
                   className="shadow-lg pointer-events-auto"
-                  size="sm"
-                  style={{ backgroundColor: brandColor, color: '#ffffff' }}
+                  size={buttonSize}
+                  style={{ 
+                    backgroundColor: brandColor, 
+                    color: '#ffffff',
+                    borderRadius: buttonShape === 'square' ? '0.375rem' : buttonShape === 'pill' ? '9999px' : '0.5rem'
+                  }}
                 >
                   <MessageSquare className="w-4 h-4 mr-2" />
-                  Ask AI
+                  {buttonText}
                 </Button>
               </motion.div>
             )}
