@@ -711,6 +711,7 @@ Consider buyer intent when determining funnel stage.`,
                     </select>
                   </div>
                 </div>
+                </div>
               </>
             )}
           </CardContent>
