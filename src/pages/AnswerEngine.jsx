@@ -999,7 +999,7 @@ Consider buyer intent when determining funnel stage.`,
                                   <Button
                                     size={buttonSize}
                                     onClick={() => setShowBookingPanel(true)}
-                                    className="whitespace-nowrap text-xs px-3 py-1 h-auto"
+                                    className="whitespace-nowrap"
                                     style={{ 
                                       backgroundColor: brandColor, 
                                       color: '#ffffff',
