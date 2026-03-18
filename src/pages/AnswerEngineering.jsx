@@ -357,7 +357,10 @@ Be realistic with scores - good content typically scores 60-85.`,
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-2xl font-bold mb-2 text-gray-900">Optimize Content</h1>
+          <h1 className="text-2xl font-bold mb-2 text-gray-900">
+            Optimize Content
+            <GuidanceDot tip="This tool helps you optimise existing pages or create new ones to improve your AI search visibility. Start by selecting a funnel stage and a prompt." position="right" />
+          </h1>
           <p className="text-gray-600">Select a prompt and optimize your pages for AI search visibility</p>
         </div>
 
