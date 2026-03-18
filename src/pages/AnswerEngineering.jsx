@@ -320,25 +320,19 @@ Focus on:
         {/* Header */}
         <div className="mb-8">
           <h1 className={"text-2xl font-bold mb-2 text-gray-900"}>Optimize Content</h1>
-          <p className={text-gray-600}>Select a prompt and optimize your pages for AI search visibility</p>
+          <p className="text-gray-600">Select a prompt and optimize your pages for AI search visibility</p>
         </div>
 
         {/* Funnel Stage Filter */}
         <div className="flex items-center gap-3 mb-6">
-          <span className={`text-sm ${text-gray-600}`}>Funnel Stage:</span>
+          <span className="text-sm text-gray-600">Funnel Stage:</span>
           <div className="flex gap-2">
             {["top", "middle", "bottom"].map((stage) => (
               <Button
                 key={stage}
                 onClick={() => setFunnelStage(stage)}
                 size="sm"
-                className={`${
-                  funnelStage === stage
-                    ? "bg-teal-500 hover:bg-teal-600 text-white"
-                    : isDark
-                      ? "bg-slate-800 text-slate-300 hover:bg-slate-700"
-                      : "bg-white text-gray-700 hover:bg-gray-100 border border-gray-300"
-                }`}
+                className={funnelStage === stage ? "bg-teal-500 hover:bg-teal-600 text-white" : "bg-white text-gray-700 hover:bg-gray-100 border border-gray-300"}
               >
                 {stage.charAt(0).toUpperCase() + stage.slice(1)}
               </Button>
@@ -348,7 +342,7 @@ Focus on:
 
         {/* Search */}
         <div className="relative mb-6">
-          <Search className={`absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 ${isDark ? 'text-slate-500' : 'text-gray-400'}`} />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
           <Input
             placeholder="Search prompts..."
             value={searchTerm}
@@ -367,10 +361,10 @@ Focus on:
                 <div className="overflow-x-auto">
                   <table className="w-full">
                     <thead>
-                      <tr className={`border-b ${border-gray-200}`}>
-                        <th className={`text-left text-sm font-medium p-4 ${text-gray-600}`}>Prompt</th>
-                        <th className={`text-center text-sm font-medium p-4 ${text-gray-600}`}>Search Signal</th>
-                        <th className={`text-center text-sm font-medium p-4 ${text-gray-600}`}>elelem Score</th>
+                      <tr className="border-b border-gray-200">
+                        <th className="text-left text-sm font-medium p-4 text-gray-600">Prompt</th>
+                        <th className="text-center text-sm font-medium p-4 text-gray-600">Search Signal</th>
+                        <th className="text-center text-sm font-medium p-4 text-gray-600">elelem Score</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -378,18 +372,12 @@ Focus on:
                         <tr
                           key={i}
                           onClick={() => handleSelectPrompt(prompt)}
-                          className={`border-b last:border-0 cursor-pointer transition-colors ${
-                            border-gray-200
-                          } ${
-                            selectedPrompt?.id === prompt.id
-                              ? "bg-teal-500/10"
-                              : isDark ? "hover:bg-slate-800/50" : "hover:bg-gray-50"
-                          }`}
+                          className={`border-b last:border-0 cursor-pointer transition-colors border-gray-200 ${selectedPrompt?.id === prompt.id ? "bg-teal-500/10" : "hover:bg-gray-50"}`}
                         >
                           <td className="p-4">
                             <div className="space-y-2">
                               <div className="flex items-start gap-2">
-                                <div className={`font-medium flex-1 ${text-gray-900}`}>{prompt.prompt}</div>
+                                <div className="font-medium flex-1 text-gray-900">{prompt.prompt}</div>
                                 {prompt.source_tag === 'REAL' && (
                                   <Badge className="bg-blue-500/20 text-blue-400 border-blue-500/30 text-xs">
                                     REAL
@@ -411,7 +399,7 @@ Focus on:
                           <td className="p-4 text-center">
                             <div className="flex items-center justify-center gap-1">
                               <TrendingUp className="w-4 h-4 text-teal-500" />
-                              <span className={`font-medium ${text-gray-900}`}>{prompt.search_signal_score || Math.floor(Math.random() * 50) + 50}</span>
+                              <span className="font-medium text-gray-900">{prompt.search_signal_score || Math.floor(Math.random() * 50) + 50}</span>
                             </div>
                           </td>
                           <td className="p-4 text-center">
@@ -430,7 +418,7 @@ Focus on:
           {!optimizationResult && !newPageResult && <div>
             <Card className="bg-white border-gray-200">
               <CardHeader>
-                <CardTitle className={`flex items-center gap-2 ${text-gray-900}`}>
+                <CardTitle className="flex items-center gap-2 text-gray-900">
                   <FileText className="w-5 h-5" />
                   Best Matching Pages
                 </CardTitle>
@@ -438,26 +426,18 @@ Focus on:
               <CardContent className="space-y-4">
                 {selectedPrompt ? (
                   <>
-                    <p className={`text-sm mb-4 ${text-gray-600}`}>{selectedPrompt.prompt}</p>
+                    <p className="text-sm mb-4 text-gray-600">{selectedPrompt.prompt}</p>
                     <div className="space-y-3">
                       {getMatchingPages(selectedPrompt).map((page, i) => (
                         <div 
                           key={i} 
-                          className={`p-3 rounded-lg cursor-pointer transition-colors border ${
-                            isDark 
-                              ? selectedPage?.url === page.url
-                                ? "bg-slate-900 border-teal-500/50"
-                                : "bg-slate-900/50 border-transparent hover:border-teal-500/30 hover:bg-slate-900"
-                              : selectedPage?.url === page.url
-                                ? "bg-gray-100 border-teal-500/50"
-                                : "bg-gray-50 border-transparent hover:border-teal-500/30 hover:bg-gray-100"
-                          }`}
+                          className={`p-3 rounded-lg cursor-pointer transition-colors border ${selectedPage?.url === page.url ? "bg-gray-100 border-teal-500/50" : "bg-gray-50 border-transparent hover:border-teal-500/30 hover:bg-gray-100"}`}
                           onClick={() => setSelectedPage(page)}
                         >
-                          <div className={`font-medium text-sm mb-1 ${text-gray-900}`}>{page.title}</div>
-                          <div className={`text-xs mb-2 truncate ${text-gray-500}`}>{page.url}</div>
+                          <div className="font-medium text-sm mb-1 text-gray-900">{page.title}</div>
+                          <div className="text-xs mb-2 truncate text-gray-500">{page.url}</div>
                           <div className="flex items-center justify-between">
-                            <span className={`text-xs ${text-gray-600}`}>Match</span>
+                            <span className="text-xs text-gray-600">Match</span>
                             <Badge className="bg-teal-500/20 text-teal-400 border-teal-500/30">
                               {page.relevance_score}%
                             </Badge>
@@ -510,8 +490,8 @@ Focus on:
                   </>
                 ) : (
                   <div className="text-center py-8">
-                    <FileText className={`w-12 h-12 mx-auto mb-3 ${isDark ? 'text-slate-600' : 'text-gray-400'}`} />
-                    <p className={`text-sm ${text-gray-500}`}>Select a prompt to see best matching pages</p>
+                    <FileText className="w-12 h-12 mx-auto mb-3 text-gray-400" />
+                    <p className="text-sm text-gray-500">Select a prompt to see best matching pages</p>
                   </div>
                 )}
               </CardContent>
@@ -548,14 +528,14 @@ Focus on:
               {/* Changes Summary */}
               <Card className="bg-white border-gray-200">
                 <CardHeader>
-                  <CardTitle className={`flex items-center gap-2 ${text-gray-900}`}>
+                  <CardTitle className="flex items-center gap-2 text-gray-900">
                     <CheckCircle className="w-5 h-5 text-teal-500" />
                     Optimization Complete
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <p className={isDark ? 'text-slate-400 mb-4' : 'text-gray-600 mb-4'}>
-                    Optimized <span className={`font-medium ${text-gray-900}`}>{selectedPage?.title}</span> to better answer: 
+                  <p className="text-gray-600 mb-4">
+                    Optimized <span className="font-medium text-gray-900">{selectedPage?.title}</span> to better answer: 
                     <span className="text-teal-600 italic"> "{selectedPrompt?.prompt}"</span>
                   </p>
                   <div className="space-y-3">
@@ -590,7 +570,7 @@ Focus on:
               <div className="grid lg:grid-cols-2 gap-6">
                 <Card className="bg-white border-gray-200">
                   <CardHeader>
-                    <CardTitle className={`text-sm ${text-gray-900}`}>Original Content</CardTitle>
+                    <CardTitle className="text-sm text-gray-900">Original Content</CardTitle>
                   </CardHeader>
                   <CardContent>
                     <div className="prose prose-sm max-w-none">
@@ -601,9 +581,9 @@ Focus on:
                   </CardContent>
                 </Card>
 
-                <Card className={isDark ? 'bg-slate-800/50 border-teal-500/30' : 'bg-white border-teal-500/30'}>
+                <Card className="bg-white border-teal-500/30">
                   <CardHeader>
-                    <CardTitle className={`text-sm flex items-center gap-2 ${text-gray-900}`}>
+                    <CardTitle className="text-sm flex items-center gap-2 text-gray-900">
                       <Zap className="w-4 h-4 text-teal-500" />
                       Optimized Content
                     </CardTitle>
@@ -650,13 +630,13 @@ Focus on:
               {/* Content Structure Summary */}
               <Card className="bg-white border-gray-200">
                 <CardHeader>
-                  <CardTitle className={`flex items-center gap-2 ${text-gray-900}`}>
+                  <CardTitle className="flex items-center gap-2 text-gray-900">
                     <CheckCircle className="w-5 h-5 text-purple-500" />
                     New Page Created
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <p className={isDark ? 'text-slate-400 mb-4' : 'text-gray-600 mb-4'}>
+                  <p className="text-gray-600 mb-4">
                     Created new content to answer: 
                     <span className="text-purple-600 italic"> "{selectedPrompt?.prompt}"</span>
                   </p>
@@ -669,9 +649,9 @@ Focus on:
                           </Badge>
                         </div>
                         <div className="space-y-2 text-sm">
-                          <div className={`p-2 rounded ${bg-white}`}>
-                            <div className={`text-xs mb-1 ${text-gray-500}`}>Preview:</div>
-                            <div className={isDark ? 'text-slate-300' : 'text-gray-700'}>{section.content_preview}...</div>
+                          <div className="p-2 rounded bg-white">
+                            <div className="text-xs mb-1 text-gray-500">Preview:</div>
+                            <div className="text-gray-700">{section.content_preview}...</div>
                           </div>
                           <div className="text-slate-400 text-xs mt-2 flex items-start gap-2">
                             <Target className="w-3 h-3 text-purple-400 mt-0.5 flex-shrink-0" />
@@ -685,10 +665,10 @@ Focus on:
               </Card>
 
               {/* Full Content Display */}
-              <Card className={isDark ? 'bg-slate-800/50 border-purple-500/30' : 'bg-white border-purple-500/30'}>
+              <Card className="bg-white border-purple-500/30">
                 <CardHeader>
                   <div className="flex items-center justify-between">
-                    <CardTitle className={`text-sm flex items-center gap-2 ${text-gray-900}`}>
+                    <CardTitle className="text-sm flex items-center gap-2 text-gray-900">
                       <FileText className="w-4 h-4 text-purple-500" />
                       Complete Page Content
                     </CardTitle>
