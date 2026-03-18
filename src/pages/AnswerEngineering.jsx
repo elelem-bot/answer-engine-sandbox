@@ -313,7 +313,43 @@ Be realistic with scores - good content typically scores 60-85.`,
     );
   }
 
-  const matchingPages = selectedPrompt ? getMatchingPages(selectedPrompt) : [];
+  const rawMatchingPages = selectedPrompt ? getMatchingPages(selectedPrompt) : [];
+
+  const sortedPrompts = useMemo(() => {
+    if (!promptSort.col) return filteredPrompts;
+    return [...filteredPrompts].sort((a, b) => {
+      let av, bv;
+      const i = filteredPrompts.indexOf(a), j = filteredPrompts.indexOf(b);
+      if (promptSort.col === "search_signal") {
+        av = a.search_signal_score || 0; bv = b.search_signal_score || 0;
+      } else if (promptSort.col === "cluster_size") {
+        av = ((i * 7 + 12) % 20) + 8; bv = ((j * 7 + 12) % 20) + 8;
+      } else if (promptSort.col === "share") {
+        av = ((i * 13 + 18) % 35) + 10; bv = ((j * 13 + 18) % 35) + 10;
+      }
+      return promptSort.dir === "asc" ? av - bv : bv - av;
+    });
+  }, [filteredPrompts, promptSort]);
+
+  const sortedPages = useMemo(() => {
+    if (!pageSort.col) return rawMatchingPages;
+    return [...rawMatchingPages].sort((a, b) => {
+      let av, bv;
+      const i = rawMatchingPages.indexOf(a), j = rawMatchingPages.indexOf(b);
+      if (pageSort.col === "similarity") {
+        av = ((i * 13 + 70) % 20) + 75; bv = ((j * 13 + 70) % 20) + 75;
+      } else if (pageSort.col === "citations") {
+        av = ((i * 11 + 5) % 20) + 3; bv = ((j * 11 + 5) % 20) + 3;
+      } else if (pageSort.col === "seo") {
+        av = getSeoScore(i); bv = getSeoScore(j);
+      } else if (pageSort.col === "retrieval") {
+        av = a.relevance_score || 0; bv = b.relevance_score || 0;
+      }
+      return pageSort.dir === "asc" ? av - bv : bv - av;
+    });
+  }, [rawMatchingPages, pageSort]);
+
+  const matchingPages = sortedPages;
   const showWorkspace = !!contentBrief || isGeneratingBrief;
 
   return (
