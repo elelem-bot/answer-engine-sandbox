@@ -630,7 +630,7 @@ Consider buyer intent when determining funnel stage.`,
                 <div className="border-t border-slate-700 pt-4 space-y-4">
                 <div className="grid md:grid-cols-3 gap-4">
                   <div className="space-y-2">
-                    <label className={`text-sm font-medium ${isDark ? 'text-slate-300' : 'text-gray-700'}`}>Upload Logo</label>
+                    <label className="text-sm font-medium text-gray-700">Upload Logo</label>
                     <Input
                       type="file"
                       accept="image/*"
@@ -639,7 +639,7 @@ Consider buyer intent when determining funnel stage.`,
                     />
                   </div>
                   <div className="space-y-2">
-                    <label className={`text-sm font-medium ${isDark ? 'text-slate-300' : 'text-gray-700'}`}>Brand Color</label>
+                    <label className="text-sm font-medium text-gray-700">Brand Color</label>
                     <div className="flex gap-2">
                       <Input
                         type="color"
@@ -657,7 +657,7 @@ Consider buyer intent when determining funnel stage.`,
                     </div>
                   </div>
                   <div className="space-y-2">
-                    <label className={`text-sm font-medium ${isDark ? 'text-slate-300' : 'text-gray-700'}`}>Upload Screenshot</label>
+                    <label className="text-sm font-medium text-gray-700">Upload Screenshot</label>
                     <Input
                       type="file"
                       accept="image/*"
@@ -673,7 +673,7 @@ Consider buyer intent when determining funnel stage.`,
                 {/* Button Customization */}
                 <div className="grid md:grid-cols-3 gap-4 pt-4">
                   <div className="space-y-2">
-                    <label className={`text-sm font-medium ${isDark ? 'text-slate-300' : 'text-gray-700'}`}>Button Text</label>
+                    <label className="text-sm font-medium text-gray-700">Button Text</label>
                     <Input
                       type="text"
                       value={buttonText}
@@ -683,7 +683,7 @@ Consider buyer intent when determining funnel stage.`,
                     />
                   </div>
                   <div className="space-y-2">
-                    <label className={`text-sm font-medium ${isDark ? 'text-slate-300' : 'text-gray-700'}`}>Button Size</label>
+                    <label className="text-sm font-medium text-gray-700">Button Size</label>
                     <select
                       value={buttonSize}
                       onChange={(e) => setButtonSize(e.target.value)}
@@ -694,7 +694,7 @@ Consider buyer intent when determining funnel stage.`,
                     </select>
                   </div>
                   <div className="space-y-2">
-                    <label className={`text-sm font-medium ${isDark ? 'text-slate-300' : 'text-gray-700'}`}>Button Shape</label>
+                    <label className="text-sm font-medium text-gray-700">Button Shape</label>
                     <select
                       value={buttonShape}
                       onChange={(e) => setButtonShape(e.target.value)}
@@ -706,7 +706,7 @@ Consider buyer intent when determining funnel stage.`,
                     </select>
                   </div>
                   <div className="space-y-2">
-                    <label className={`text-sm font-medium ${isDark ? 'text-slate-300' : 'text-gray-700'}`}>CTA Button Text</label>
+                    <label className="text-sm font-medium text-gray-700">CTA Button Text</label>
                     <Input
                       type="text"
                       value={ctaButtonText}
