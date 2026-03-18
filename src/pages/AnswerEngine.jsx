@@ -1018,7 +1018,7 @@ Consider buyer intent when determining funnel stage.`,
                                     rel="noopener noreferrer"
                                     className="rounded-lg border border-slate-200 hover:border-slate-300 hover:shadow-sm transition-all group overflow-hidden flex flex-row"
                                   >
-                                    <div className="w-16 h-16 flex-shrink-0 overflow-hidden bg-slate-100">
+                                    <div className="w-20 self-stretch flex-shrink-0 overflow-hidden bg-slate-100">
                                       <img
                                         src={page.image_url || "https://media.base44.com/images/public/69ba7d4eda2cee069990407c/ef8b1937e_hubledigital_logo.jpeg"}
                                         alt={page.title}
