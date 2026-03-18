@@ -1,1 +1,23 @@
 @import url('https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;700&display=swap');
+
+:root {
+  --brand-primary: #2DC6FE;
+  --brand-mint: #81FBEF;
+  --brand-dark: #082D35;
+  --brand-white: #FFFFFF;
+}
+
+*, *::before, *::after {
+  font-family: 'Google Sans', 'Product Sans', ui-sans-serif, system-ui, sans-serif !important;
+}
+
+/* Brand gradient utility */
+.bg-brand-gradient {
+  background: linear-gradient(to right, #2DC6FE, #81FBEF);
+}
+
+/* Override teal/cyan primary buttons app-wide */
+.bg-gradient-to-r.from-teal-500.to-cyan-500,
+.bg-gradient-to-r.from-teal-500\/20 {
+  background: linear-gradient(to right, #2DC6FE, #81FBEF) !important;
+}
