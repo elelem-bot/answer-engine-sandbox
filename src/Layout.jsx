@@ -28,13 +28,7 @@ const platformPages = ["AnswerEngine", "Prompts", "AnswerEngineering", "AnswerVi
     const [mobileOpen, setMobileOpen] = React.useState(false);
     const [answerEngineExpanded, setAnswerEngineExpanded] = React.useState(false);
     const [answerVisibilityExpanded, setAnswerVisibilityExpanded] = React.useState(false);
-    const [theme, setTheme] = React.useState(() => {
-      return localStorage.getItem('elelem-theme') || 'dark';
-    });
-
-    React.useEffect(() => {
-      localStorage.setItem('elelem-theme', theme);
-    }, [theme]);
+    const theme = 'light';
 
     const showPlatformNav = platformPages.includes(currentPageName);
 

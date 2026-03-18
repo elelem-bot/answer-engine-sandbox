@@ -40,21 +40,7 @@ export default function AnswerEngineering() {
   const [isCreatingNew, setIsCreatingNew] = useState(false);
   const [newPageResult, setNewPageResult] = useState(null);
   const [copied, setCopied] = useState(false);
-  const [theme, setTheme] = useState(() => {
-    return localStorage.getItem('elelem-theme') || 'dark';
-  });
 
-  useEffect(() => {
-    const handleThemeChange = () => {
-      setTheme(localStorage.getItem('elelem-theme') || 'dark');
-    };
-    window.addEventListener('storage', handleThemeChange);
-    const interval = setInterval(handleThemeChange, 100);
-    return () => {
-      window.removeEventListener('storage', handleThemeChange);
-      clearInterval(interval);
-    };
-  }, []);
 
   useEffect(() => {
     loadData();

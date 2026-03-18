@@ -10,21 +10,7 @@ export default function Tracking() {
   const [isLoading, setIsLoading] = useState(true);
   const [trackedPrompts, setTrackedPrompts] = useState([]);
   const [company, setCompany] = useState(null);
-  const [theme, setTheme] = useState(() => {
-    return localStorage.getItem('elelem-theme') || 'dark';
-  });
 
-  useEffect(() => {
-    const handleThemeChange = () => {
-      setTheme(localStorage.getItem('elelem-theme') || 'dark');
-    };
-    window.addEventListener('storage', handleThemeChange);
-    const interval = setInterval(handleThemeChange, 100);
-    return () => {
-      window.removeEventListener('storage', handleThemeChange);
-      clearInterval(interval);
-    };
-  }, []);
 
   useEffect(() => {
     loadTrackedPrompts();
