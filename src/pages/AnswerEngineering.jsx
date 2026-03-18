@@ -477,11 +477,26 @@ Be realistic with scores - good content typically scores 60-85.`,
                       <table className="w-full">
                         <thead>
                           <tr className="border-b border-gray-200">
-                            <th className="text-left text-sm font-medium p-4 text-gray-600">Pages</th>
-                            <th className="text-center text-sm font-medium p-4 text-gray-600">Topical Similarity</th>
-                            <th className="text-center text-sm font-medium p-4 text-gray-600">Citations</th>
-                            <th className="text-center text-sm font-medium p-4 text-gray-600">SEO Score</th>
-                            <th className="text-center text-sm font-medium p-4 text-gray-600">Retrieval Score</th>
+                            <th className="text-left text-sm font-medium p-4 text-gray-600">
+                              Pages
+                              <GuidanceDot tip="Your existing website pages ranked by relevance to the selected prompt." position="bottom" />
+                            </th>
+                            <th className="text-center text-sm font-medium p-4 text-gray-600 cursor-pointer select-none hover:text-gray-900" onClick={() => togglePageSort("similarity")}>
+                              Topical Similarity <SortIcon col="similarity" sort={pageSort} />
+                              <GuidanceDot tip="How closely this page's existing content matches the selected prompt topic. Sort descending to find your best candidates." position="bottom" />
+                            </th>
+                            <th className="text-center text-sm font-medium p-4 text-gray-600 cursor-pointer select-none hover:text-gray-900" onClick={() => togglePageSort("citations")}>
+                              Citations <SortIcon col="citations" sort={pageSort} />
+                              <GuidanceDot tip="How many times AI engines have cited this page recently. Higher citations = more AI authority." position="bottom" />
+                            </th>
+                            <th className="text-center text-sm font-medium p-4 text-gray-600 cursor-pointer select-none hover:text-gray-900" onClick={() => togglePageSort("seo")}>
+                              SEO Score <SortIcon col="seo" sort={pageSort} />
+                              <GuidanceDot tip="Traditional search engine optimisation score (0–100). Sort ascending to find pages with the most room to improve." position="bottom" />
+                            </th>
+                            <th className="text-center text-sm font-medium p-4 text-gray-600 cursor-pointer select-none hover:text-gray-900" onClick={() => togglePageSort("retrieval")}>
+                              Retrieval Score <SortIcon col="retrieval" sort={pageSort} />
+                              <GuidanceDot tip="How likely an AI engine is to retrieve this page for the selected prompt. This is your primary AI visibility metric." position="bottom" />
+                            </th>
                           </tr>
                         </thead>
                         <tbody>
