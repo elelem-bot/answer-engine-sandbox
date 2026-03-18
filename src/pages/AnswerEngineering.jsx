@@ -1,31 +1,23 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import { createPageUrl } from "@/utils";
 import { base44 } from "@/api/base44Client";
-import { motion, AnimatePresence } from "framer-motion";
 import { 
   Search, 
-  ChevronRight, 
   Loader2,
-  ArrowLeft,
   FileText,
   TrendingUp,
-  CheckCircle,
-  Target,
   Zap,
   Copy,
-  Check
+  Check,
+  RotateCcw,
+  AlignLeft
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
-import { Progress } from "@/components/ui/progress";
-
-const COLORS = ['#14b8a6', '#22d3ee', '#84cc16', '#10b981', '#06b6d4'];
+import { Textarea } from "@/components/ui/textarea";
 
 export default function AnswerEngineering() {
-  const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(true);
   const [prompts, setPrompts] = useState([]);
   const [filteredPrompts, setFilteredPrompts] = useState([]);
@@ -35,31 +27,28 @@ export default function AnswerEngineering() {
   const [pages, setPages] = useState([]);
   const [funnelStage, setFunnelStage] = useState("top");
   const [selectedPage, setSelectedPage] = useState(null);
-  const [isOptimizing, setIsOptimizing] = useState(false);
-  const [optimizationResult, setOptimizationResult] = useState(null);
-  const [isCreatingNew, setIsCreatingNew] = useState(false);
-  const [newPageResult, setNewPageResult] = useState(null);
+
+  // Brief + editor state
+  const [contentBrief, setContentBrief] = useState(null);
+  const [isGeneratingBrief, setIsGeneratingBrief] = useState(false);
+  const [draftContent, setDraftContent] = useState("");
+  const [editorContent, setEditorContent] = useState("");
+  const [isGeneratingDraft, setIsGeneratingDraft] = useState(false);
+  const [isRescoring, setIsRescoring] = useState(false);
+  const [rescoreResult, setRescoreResult] = useState(null);
   const [copied, setCopied] = useState(false);
 
-
-  useEffect(() => {
-    loadData();
-  }, []);
-
-  useEffect(() => {
-    filterPrompts();
-  }, [prompts, searchTerm, funnelStage]);
+  useEffect(() => { loadData(); }, []);
+  useEffect(() => { filterPrompts(); }, [prompts, searchTerm, funnelStage]);
 
   const filterPrompts = () => {
     let filtered = prompts.filter(p => p.funnel_stage === funnelStage);
-    
     if (searchTerm) {
-      filtered = filtered.filter(p => 
+      filtered = filtered.filter(p =>
         p.prompt.toLowerCase().includes(searchTerm.toLowerCase()) ||
         (p.keywords || []).some(k => k.toLowerCase().includes(searchTerm.toLowerCase()))
       );
     }
-    
     setFilteredPrompts(filtered);
   };
 
@@ -68,23 +57,12 @@ export default function AnswerEngineering() {
       const companies = await base44.entities.Company.list();
       if (companies.length > 0) {
         setCompany(companies[0]);
-        
-        // Fetch prompts
-        const promptsData = await base44.entities.PromptAnalysis.filter({ 
+        const promptsData = await base44.entities.PromptAnalysis.filter({
           company_id: companies[0].id,
           view_type: 'prospect'
         });
-        
-        // Discover existing pages using LLM
         const pagesResponse = await base44.integrations.Core.InvokeLLM({
-          prompt: `Visit the website ${companies[0].website_url} and identify all key pages that could be optimized for AI search visibility.
-
-Return a JSON array of pages with:
-- url: full page URL
-- title: page title
-- type: "homepage", "product", "blog", "about", "pricing", "resources", etc.
-
-Focus on pages that would be most relevant for answering customer questions and appearing in AI search results.`,
+          prompt: `Visit the website ${companies[0].website_url} and identify all key pages that could be optimized for AI search visibility. Return a JSON array of pages with url, title, and type fields.`,
           add_context_from_internet: true,
           response_json_schema: {
             type: "object",
@@ -103,7 +81,6 @@ Focus on pages that would be most relevant for answering customer questions and 
             }
           }
         });
-        
         setPages(pagesResponse.pages || []);
         setPrompts(promptsData);
       }
@@ -114,13 +91,9 @@ Focus on pages that would be most relevant for answering customer questions and 
     }
   };
 
-  const handleSelectPrompt = (prompt) => {
-    setSelectedPrompt(selectedPrompt?.id === prompt.id ? null : prompt);
-  };
-
   const getMatchingPages = (prompt) => {
     if (!prompt.best_pages || prompt.best_pages.length === 0) {
-      return pages.slice(0, 5).map(page => ({
+      return pages.slice(0, 5).map((page, i) => ({
         ...page,
         relevance_score: Math.floor(Math.random() * 15) + 85
       }));
@@ -128,179 +101,172 @@ Focus on pages that would be most relevant for answering customer questions and 
     return prompt.best_pages;
   };
 
-  const cleanContentForDisplay = (content) => {
-    return content
-      // Remove all markdown headers
-      .replace(/^#{1,6}\s+/gm, '')
-      // Remove markdown bold/italic
-      .replace(/\*\*/g, '')
-      .replace(/\*/g, '')
-      .replace(/__/g, '')
-      .replace(/_/g, '')
-      // Remove all URLs and source citations
-      .replace(/https?:\/\/[^\s\)]+/gi, '')
-      .replace(/\[Source:.*?\]/gi, '')
-      .replace(/Source:.*?(?=\n|$)/gim, '')
-      .replace(/\(Source:.*?\)/gi, '')
-      .replace(/\[([^\]]+)\]\([^\)]+\)/g, '$1') // Convert markdown links to plain text
-      .replace(/\(\[[\w\.\-]+\]\(\)\)/g, '') // Remove ([domain.com]()) patterns
-      // Remove "Next steps", "Related articles", etc. sections
-      .replace(/(?:Next Steps?|Related Articles?|Further Reading|Learn More|Additional Resources|See Also|Recommended Reading|More Information):?[\s\S]*?(?=\n\n|$)/gi, '')
-      // Remove citation brackets like [1], [2], [1,2,3]
-      .replace(/\[[\d\s,]+\]/g, '')
-      // Remove any remaining source/citation markers
-      .replace(/\(?\d+\)?/g, '') // Remove citation numbers like (1) or 1
-      // Clean up extra whitespace
-      .replace(/\n{3,}/g, '\n\n')
-      .replace(/[ \t]+/g, ' ')
-      .trim();
+  const handleSelectPrompt = (prompt) => {
+    const next = selectedPrompt?.id === prompt.id ? null : prompt;
+    setSelectedPrompt(next);
+    setSelectedPage(null);
+    setContentBrief(null);
+    setDraftContent("");
+    setEditorContent("");
+    setRescoreResult(null);
   };
 
-  const handleCopyContent = async () => {
-    if (!newPageResult) return;
-    
-    try {
-      const cleanedContent = cleanContentForDisplay(newPageResult.content);
-      await navigator.clipboard.writeText(cleanedContent);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    } catch (error) {
-      console.error("Failed to copy:", error);
-    }
+  const handleSelectPage = (page) => {
+    setSelectedPage(selectedPage?.url === page.url ? null : page);
+    setContentBrief(null);
+    setDraftContent("");
+    setEditorContent("");
+    setRescoreResult(null);
   };
 
-  const handleCreateNew = async () => {
+  const handleAction = async () => {
     if (!selectedPrompt) return;
-    setIsCreatingNew(true);
-    
+
+    setIsGeneratingBrief(true);
+    setContentBrief(null);
+    setDraftContent("");
+    setEditorContent("");
+    setRescoreResult(null);
+
     try {
-      const newContent = await base44.integrations.Core.InvokeLLM({
-        prompt: `Create a blog article that answers this question: "${selectedPrompt.prompt}"
+      const briefPrompt = selectedPage
+        ? `You are a content strategist. Create a detailed content brief for optimizing this page for AI search visibility.
 
-Company: ${company.name}
-Product: ${company.product_name}
+Page: "${selectedPage.title}" (${selectedPage.url})
+Target prompt: "${selectedPrompt.prompt}"
+Company: ${company?.name}
+Product: ${company?.product_name}
 
-Write a complete, ready-to-publish blog article (800-1200 words) that:
-- Directly answers the question
-- Uses natural, conversational language
-- Includes specific examples and details
-- Is well-structured with clear sections
-- Optimized for AI search engines
+Return a content brief with:
+- objective: one sentence goal
+- key_messages: 3-4 bullet points the page must communicate
+- recommended_sections: list of sections to include/improve
+- tone_and_style: guidance on tone
+- ai_visibility_tips: 3 specific tips to improve AI retrieval for this prompt`
+        : `You are a content strategist. Create a detailed content brief for a brand new page to answer this prompt.
 
-Also return a structure array listing the main sections you created.`,
-        add_context_from_internet: true,
+Target prompt: "${selectedPrompt.prompt}"
+Company: ${company?.name}
+Product: ${company?.product_name}
+
+Return a content brief with:
+- objective: one sentence goal
+- key_messages: 3-4 bullet points the page must communicate
+- recommended_sections: list of sections to include
+- tone_and_style: guidance on tone
+- ai_visibility_tips: 3 specific tips to improve AI retrieval for this prompt`;
+
+      const brief = await base44.integrations.Core.InvokeLLM({
+        prompt: briefPrompt,
         response_json_schema: {
           type: "object",
           properties: {
-            content: { type: "string" },
-            structure: {
-              type: "array",
-              items: {
-                type: "object",
-                properties: {
-                  section_name: { type: "string" },
-                  content_preview: { type: "string" },
-                  reasoning: { type: "string" }
-                }
-              }
-            }
+            objective: { type: "string" },
+            key_messages: { type: "array", items: { type: "string" } },
+            recommended_sections: { type: "array", items: { type: "string" } },
+            tone_and_style: { type: "string" },
+            ai_visibility_tips: { type: "array", items: { type: "string" } }
           }
         }
       });
 
-      setNewPageResult({
-        content: newContent.content,
-        structure: newContent.structure || []
-      });
+      setContentBrief(brief);
     } catch (error) {
-      console.error("Error creating new page:", error);
-      alert(`Failed to create new page: ${error.message}`);
+      console.error("Error generating brief:", error);
     } finally {
-      setIsCreatingNew(false);
+      setIsGeneratingBrief(false);
     }
   };
 
-  const handleOptimize = async () => {
-    if (!selectedPage || !selectedPrompt) return;
-    setIsOptimizing(true);
-    
+  const handleCreateDraft = async () => {
+    if (!selectedPrompt || !contentBrief) return;
+    setIsGeneratingDraft(true);
+    setRescoreResult(null);
+
     try {
-      // Step 1: Fetch original page content
-      const originalContent = await base44.integrations.Core.InvokeLLM({
-        prompt: `Extract the main content from this webpage: ${selectedPage.url}
-        
-Return the page content including headings, body text, and key sections.`,
-        add_context_from_internet: true,
+      const draftPrompt = selectedPage
+        ? `Write an optimized version of the page "${selectedPage.title}" for the prompt: "${selectedPrompt.prompt}".
+
+Content brief objective: ${contentBrief.objective}
+Key messages: ${contentBrief.key_messages?.join(', ')}
+Sections to include: ${contentBrief.recommended_sections?.join(', ')}
+Tone: ${contentBrief.tone_and_style}
+AI visibility tips: ${contentBrief.ai_visibility_tips?.join('; ')}
+
+Company: ${company?.name}, Product: ${company?.product_name}
+
+Write a complete, polished page (600-900 words) ready for publishing. Use plain text, no markdown symbols.`
+        : `Write a brand new page to answer: "${selectedPrompt.prompt}".
+
+Content brief objective: ${contentBrief.objective}
+Key messages: ${contentBrief.key_messages?.join(', ')}
+Sections to include: ${contentBrief.recommended_sections?.join(', ')}
+Tone: ${contentBrief.tone_and_style}
+AI visibility tips: ${contentBrief.ai_visibility_tips?.join('; ')}
+
+Company: ${company?.name}, Product: ${company?.product_name}
+
+Write a complete, polished article (600-900 words). Use plain text, no markdown symbols.`;
+
+      const result = await base44.integrations.Core.InvokeLLM({
+        prompt: draftPrompt,
         response_json_schema: {
           type: "object",
-          properties: {
-            content: { type: "string" }
-          }
+          properties: { content: { type: "string" } }
         }
       });
 
-      // Step 2: Generate optimized content
-      const optimization = await base44.integrations.Core.InvokeLLM({
-        prompt: `You are an expert at optimizing content for AI search engines.
-
-ORIGINAL PAGE CONTENT:
-${originalContent.content}
-
-TARGET PROMPT:
-"${selectedPrompt.prompt}"
-
-COMPANY CONTEXT:
-- Company: ${company.name}
-- Product: ${company.product_name}
-
-TASK:
-Rewrite the content to better answer the target prompt while maintaining the page's structure and purpose.
-
-Return:
-1. optimized_content: The improved version
-2. changes: Array of specific changes made, each with:
-   - section: What part was changed (e.g., "Introduction", "H1 Heading", "Product Description")
-   - before: Original text snippet
-   - after: New text snippet
-   - reason: Why this change improves AI search visibility
-
-Focus on:
-- Directly addressing the prompt's question/intent
-- Using clear, semantic language
-- Adding specific details and examples
-- Improving structure and formatting
-- Natural keyword integration`,
-        response_json_schema: {
-          type: "object",
-          properties: {
-            optimized_content: { type: "string" },
-            changes: {
-              type: "array",
-              items: {
-                type: "object",
-                properties: {
-                  section: { type: "string" },
-                  before: { type: "string" },
-                  after: { type: "string" },
-                  reason: { type: "string" }
-                }
-              }
-            }
-          }
-        }
-      });
-
-      setOptimizationResult({
-        original: originalContent.content,
-        optimized: optimization.optimized_content,
-        changes: optimization.changes
-      });
+      setDraftContent(result.content);
+      setEditorContent(result.content);
     } catch (error) {
-      console.error("Error optimizing:", error);
-      alert("Failed to optimize page. Please try again.");
+      console.error("Error generating draft:", error);
     } finally {
-      setIsOptimizing(false);
+      setIsGeneratingDraft(false);
     }
+  };
+
+  const handleRescore = async () => {
+    if (!editorContent || !selectedPrompt) return;
+    setIsRescoring(true);
+    setRescoreResult(null);
+
+    try {
+      const result = await base44.integrations.Core.InvokeLLM({
+        prompt: `You are an AI visibility expert. Score this content for how well it would be retrieved by an AI engine when answering: "${selectedPrompt.prompt}"
+
+Content to score:
+${editorContent}
+
+Score on a scale of 0-100 based on:
+- Direct relevance to the prompt
+- Semantic clarity
+- Structured information
+- Specificity and depth
+- Natural language flow
+
+Return a score and 2-3 specific suggestions for further improvement.`,
+        response_json_schema: {
+          type: "object",
+          properties: {
+            retrieval_score: { type: "number" },
+            summary: { type: "string" },
+            suggestions: { type: "array", items: { type: "string" } }
+          }
+        }
+      });
+
+      setRescoreResult(result);
+    } catch (error) {
+      console.error("Error rescoring:", error);
+    } finally {
+      setIsRescoring(false);
+    }
+  };
+
+  const handleCopy = async () => {
+    await navigator.clipboard.writeText(editorContent);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
   };
 
   if (isLoading) {
@@ -314,12 +280,15 @@ Focus on:
     );
   }
 
+  const matchingPages = selectedPrompt ? getMatchingPages(selectedPrompt) : [];
+  const showWorkspace = !!contentBrief || isGeneratingBrief;
+
   return (
     <div className="min-h-screen p-6 lg:p-8 bg-gray-50">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="mb-8">
-          <h1 className={"text-2xl font-bold mb-2 text-gray-900"}>Optimize Content</h1>
+          <h1 className="text-2xl font-bold mb-2 text-gray-900">Optimize Content</h1>
           <p className="text-gray-600">Select a prompt and optimize your pages for AI search visibility</p>
         </div>
 
@@ -351,358 +320,319 @@ Focus on:
           />
         </div>
 
-        <div className={`grid gap-6 ${optimizationResult || newPageResult ? 'lg:grid-cols-1' : 'lg:grid-cols-2'}`}>
-          {/* Left Column - Prompts */}
-          {!optimizationResult && !newPageResult && <div>
-            <h2 className="text-base font-semibold text-gray-900 mb-3">Prompts</h2>
-
-            {/* Prompts Table */}
-            <Card className="bg-white border-gray-200">
-              <CardContent className="p-0">
-                <div className="overflow-x-auto">
-                  <table className="w-full">
-                    <thead>
-                      <tr className="border-b border-gray-200">
-                        <th className="text-left text-sm font-medium p-4 text-gray-600">Prompt</th>
-                        <th className="text-center text-sm font-medium p-4 text-gray-600">Search Signal</th>
-                        <th className="text-center text-sm font-medium p-4 text-gray-600">Cluster Size</th>
-                        <th className="text-center text-sm font-medium p-4 text-gray-600">Share of Citations</th>
-                        <th className="text-center text-sm font-medium p-4 text-gray-600">elelem Score</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {filteredPrompts.map((prompt, i) => (
-                        <tr
-                          key={i}
-                          onClick={() => handleSelectPrompt(prompt)}
-                          className={`border-b last:border-0 cursor-pointer transition-colors border-gray-200 ${selectedPrompt?.id === prompt.id ? "bg-teal-500/10" : "hover:bg-gray-50"}`}
-                        >
-                          <td className="p-4">
-                            <div className="space-y-2">
-                              <div className="flex items-start gap-2">
-                                <div className="font-medium flex-1 text-gray-900">{prompt.prompt}</div>
-                                {prompt.source_tag === 'REAL' && (
-                                  <Badge className="bg-blue-500/20 text-blue-400 border-blue-500/30 text-xs">
-                                    REAL
-                                  </Badge>
-                                )}
-                              </div>
-                              <div className="flex gap-2 flex-wrap">
-                                {(prompt.keywords || []).slice(0, 3).map((keyword, j) => (
-                                  <Badge
-                                    key={j}
-                                    className="bg-teal-500/20 text-teal-400 border-teal-500/30 text-xs"
-                                  >
-                                    {keyword}
-                                  </Badge>
-                                ))}
-                              </div>
-                            </div>
-                          </td>
-                          <td className="p-4 text-center">
-                            <div className="flex items-center justify-center gap-1">
-                              <TrendingUp className="w-4 h-4 text-teal-500" />
-                              <span className="font-medium text-gray-900">{prompt.search_signal_score || Math.floor(Math.random() * 50) + 50}</span>
-                            </div>
-                          </td>
-                          <td className="p-4 text-center">
-                            <span className="font-semibold text-blue-600">{((i * 7 + 12) % 20) + 8}</span>
-                          </td>
-                          <td className="p-4 text-center">
-                            <span className="font-semibold text-purple-600">{((i * 13 + 18) % 35) + 10}%</span>
-                          </td>
-                          <td className="p-4 text-center">
-                            <span className="text-teal-600 font-semibold">{prompt.elelem_score || Math.floor(Math.random() * 30) + 60}/100</span>
-                          </td>
+        {/* Main 3-col or 2-col layout */}
+        {!showWorkspace ? (
+          // Selection phase: Prompts + Pages side by side
+          <div className="grid lg:grid-cols-2 gap-6">
+            {/* Left: Prompts */}
+            <div>
+              <h2 className="text-base font-semibold text-gray-900 mb-3">Prompts</h2>
+              <Card className="bg-white border-gray-200">
+                <CardContent className="p-0">
+                  <div className="overflow-x-auto">
+                    <table className="w-full">
+                      <thead>
+                        <tr className="border-b border-gray-200">
+                          <th className="text-left text-sm font-medium p-4 text-gray-600">Prompt</th>
+                          <th className="text-center text-sm font-medium p-4 text-gray-600">Search Signal</th>
+                          <th className="text-center text-sm font-medium p-4 text-gray-600">Cluster Size</th>
+                          <th className="text-center text-sm font-medium p-4 text-gray-600">Share of Citations</th>
+                          <th className="text-center text-sm font-medium p-4 text-gray-600">elelem Score</th>
                         </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              </CardContent>
-            </Card>
-          </div>}
-
-          {/* Right Column - Best Matching Pages */}
-          {!optimizationResult && !newPageResult && <div>
-            <h2 className="text-base font-semibold text-gray-900 mb-3">Best Matching Pages</h2>
-            <Card className="bg-white border-gray-200">
-              <CardContent className="p-0">
-                {selectedPrompt ? (
-                  <>
-                    <div className="overflow-x-auto">
-                      <table className="w-full">
-                        <thead>
-                          <tr className="border-b border-gray-200">
-                            <th className="text-left text-sm font-medium p-4 text-gray-600">Pages</th>
-                            <th className="text-center text-sm font-medium p-4 text-gray-600">Citations</th>
-                            <th className="text-center text-sm font-medium p-4 text-gray-600">Retrieval Score</th>
+                      </thead>
+                      <tbody>
+                        {filteredPrompts.map((prompt, i) => (
+                          <tr
+                            key={i}
+                            onClick={() => handleSelectPrompt(prompt)}
+                            className={`border-b last:border-0 cursor-pointer transition-colors border-gray-200 ${selectedPrompt?.id === prompt.id ? "bg-teal-500/10" : "hover:bg-gray-50"}`}
+                          >
+                            <td className="p-4">
+                              <div className="space-y-2">
+                                <div className="flex items-start gap-2">
+                                  <div className="font-medium flex-1 text-gray-900">{prompt.prompt}</div>
+                                  {prompt.source_tag === 'REAL' && (
+                                    <Badge className="bg-blue-500/20 text-blue-400 border-blue-500/30 text-xs">REAL</Badge>
+                                  )}
+                                </div>
+                                <div className="flex gap-2 flex-wrap">
+                                  {(prompt.keywords || []).slice(0, 3).map((keyword, j) => (
+                                    <Badge key={j} className="bg-teal-500/20 text-teal-400 border-teal-500/30 text-xs">{keyword}</Badge>
+                                  ))}
+                                </div>
+                              </div>
+                            </td>
+                            <td className="p-4 text-center">
+                              <div className="flex items-center justify-center gap-1">
+                                <TrendingUp className="w-4 h-4 text-teal-500" />
+                                <span className="font-medium text-gray-900">{prompt.search_signal_score || Math.floor(Math.random() * 50) + 50}</span>
+                              </div>
+                            </td>
+                            <td className="p-4 text-center">
+                              <span className="font-semibold text-blue-600">{((i * 7 + 12) % 20) + 8}</span>
+                            </td>
+                            <td className="p-4 text-center">
+                              <span className="font-semibold text-purple-600">{((i * 13 + 18) % 35) + 10}%</span>
+                            </td>
+                            <td className="p-4 text-center">
+                              <span className="text-teal-600 font-semibold">{prompt.elelem_score || Math.floor(Math.random() * 30) + 60}/100</span>
+                            </td>
                           </tr>
-                        </thead>
-                        <tbody>
-                          {getMatchingPages(selectedPrompt).map((page, i) => (
-                            <tr
-                              key={i}
-                              onClick={() => setSelectedPage(page)}
-                              className={`border-b last:border-0 cursor-pointer transition-colors border-gray-200 ${selectedPage?.url === page.url ? "bg-teal-500/10" : "hover:bg-gray-50"}`}
-                            >
-                              <td className="p-4">
-                                <div className="font-medium text-sm text-gray-900 mb-0.5">{page.title}</div>
-                                <div className="text-xs text-gray-500 truncate max-w-[200px]">{page.url}</div>
-                              </td>
-                              <td className="p-4 text-center">
-                                <span className="font-semibold text-blue-600">{((i * 11 + 5) % 20) + 3}</span>
-                              </td>
-                              <td className="p-4 text-center">
-                                <span className="text-teal-600 font-semibold">{page.relevance_score}/100</span>
-                              </td>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+
+            {/* Right: Best Matching Pages */}
+            <div>
+              <h2 className="text-base font-semibold text-gray-900 mb-3">Best Matching Pages</h2>
+              <Card className="bg-white border-gray-200">
+                <CardContent className="p-0">
+                  {selectedPrompt ? (
+                    <>
+                      <div className="overflow-x-auto">
+                        <table className="w-full">
+                          <thead>
+                            <tr className="border-b border-gray-200">
+                              <th className="text-left text-sm font-medium p-4 text-gray-600">Pages</th>
+                              <th className="text-center text-sm font-medium p-4 text-gray-600">Topical Similarity</th>
+                              <th className="text-center text-sm font-medium p-4 text-gray-600">Citations</th>
+                              <th className="text-center text-sm font-medium p-4 text-gray-600">Retrieval Score</th>
                             </tr>
-                          ))}
-                        </tbody>
-                      </table>
-                    </div>
-                    <div className="p-4 space-y-2">
-                      {selectedPage && (
+                          </thead>
+                          <tbody>
+                            {matchingPages.map((page, i) => (
+                              <tr
+                                key={i}
+                                onClick={() => handleSelectPage(page)}
+                                className={`border-b last:border-0 cursor-pointer transition-colors border-gray-200 ${selectedPage?.url === page.url ? "bg-teal-500/10" : "hover:bg-gray-50"}`}
+                              >
+                                <td className="p-4">
+                                  <div className="font-medium text-sm text-gray-900 mb-0.5">{page.title}</div>
+                                  <div className="text-xs text-gray-500 truncate max-w-[180px]">{page.url}</div>
+                                </td>
+                                <td className="p-4 text-center">
+                                  <span className="font-semibold text-purple-600">{((i * 13 + 70) % 20) + 75}%</span>
+                                </td>
+                                <td className="p-4 text-center">
+                                  <span className="font-semibold text-blue-600">{((i * 11 + 5) % 20) + 3}</span>
+                                </td>
+                                <td className="p-4 text-center">
+                                  <span className="text-teal-600 font-semibold">{page.relevance_score}/100</span>
+                                </td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      </div>
+                      <div className="p-4">
                         <Button
                           className="w-full bg-gradient-to-r from-teal-500 to-cyan-500 hover:from-teal-600 hover:to-cyan-600"
-                          onClick={handleOptimize}
-                          disabled={isOptimizing}
+                          onClick={handleAction}
+                          disabled={isGeneratingBrief}
                         >
-                          {isOptimizing ? (
-                            <><Loader2 className="w-4 h-4 mr-2 animate-spin" />Optimizing...</>
+                          {isGeneratingBrief ? (
+                            <><Loader2 className="w-4 h-4 mr-2 animate-spin" />Generating Brief...</>
+                          ) : selectedPage ? (
+                            <><Zap className="w-4 h-4 mr-2" />Optimize This Page</>
                           ) : (
-                            <><Zap className="w-4 h-4 mr-2" />Optimize Page</>
+                            <><FileText className="w-4 h-4 mr-2" />Create New Page</>
                           )}
                         </Button>
-                      )}
+                      </div>
+                    </>
+                  ) : (
+                    <div className="text-center py-12">
+                      <FileText className="w-12 h-12 mx-auto mb-3 text-gray-400" />
+                      <p className="text-sm text-gray-500">Select a prompt to see best matching pages</p>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            </div>
+          </div>
+        ) : (
+          // Workspace phase: Brief (left) + Editor (right)
+          <div className="grid lg:grid-cols-2 gap-6">
+            {/* Left: Content Brief */}
+            <div>
+              <div className="flex items-center justify-between mb-3">
+                <h2 className="text-base font-semibold text-gray-900">Content Brief</h2>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="text-gray-500 hover:text-gray-900"
+                  onClick={() => {
+                    setContentBrief(null);
+                    setDraftContent("");
+                    setEditorContent("");
+                    setRescoreResult(null);
+                    setSelectedPage(null);
+                  }}
+                >
+                  ← Back
+                </Button>
+              </div>
+
+              {isGeneratingBrief ? (
+                <Card className="bg-white border-gray-200">
+                  <CardContent className="py-16 text-center">
+                    <Loader2 className="w-10 h-10 text-teal-500 animate-spin mx-auto mb-4" />
+                    <p className="text-gray-600">Generating content brief...</p>
+                  </CardContent>
+                </Card>
+              ) : contentBrief && (
+                <Card className="bg-white border-gray-200">
+                  <CardContent className="p-6 space-y-5">
+                    <div>
+                      <div className="flex items-center gap-2 mb-2">
+                        <Badge className="bg-teal-500/20 text-teal-600 border-teal-500/30">Target Prompt</Badge>
+                      </div>
+                      <p className="text-sm text-gray-700 italic">"{selectedPrompt?.prompt}"</p>
+                    </div>
+
+                    {selectedPage && (
+                      <div>
+                        <div className="flex items-center gap-2 mb-2">
+                          <Badge className="bg-blue-500/20 text-blue-600 border-blue-500/30">Page</Badge>
+                        </div>
+                        <p className="text-sm text-gray-700">{selectedPage.title}</p>
+                        <p className="text-xs text-gray-400 truncate">{selectedPage.url}</p>
+                      </div>
+                    )}
+
+                    <div>
+                      <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">Objective</p>
+                      <p className="text-sm text-gray-700">{contentBrief.objective}</p>
+                    </div>
+
+                    <div>
+                      <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">Key Messages</p>
+                      <ul className="space-y-1">
+                        {(contentBrief.key_messages || []).map((msg, i) => (
+                          <li key={i} className="text-sm text-gray-700 flex gap-2">
+                            <span className="text-teal-500 mt-0.5">•</span>{msg}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+
+                    <div>
+                      <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">Recommended Sections</p>
+                      <div className="flex flex-wrap gap-2">
+                        {(contentBrief.recommended_sections || []).map((s, i) => (
+                          <Badge key={i} variant="outline" className="text-gray-700 border-gray-300 text-xs">{s}</Badge>
+                        ))}
+                      </div>
+                    </div>
+
+                    <div>
+                      <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">Tone & Style</p>
+                      <p className="text-sm text-gray-700">{contentBrief.tone_and_style}</p>
+                    </div>
+
+                    <div>
+                      <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">AI Visibility Tips</p>
+                      <ul className="space-y-1">
+                        {(contentBrief.ai_visibility_tips || []).map((tip, i) => (
+                          <li key={i} className="text-sm text-gray-700 flex gap-2">
+                            <Zap className="w-3.5 h-3.5 text-teal-500 mt-0.5 flex-shrink-0" />{tip}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
+            </div>
+
+            {/* Right: Content Editor */}
+            <div>
+              <div className="flex items-center justify-between mb-3">
+                <h2 className="text-base font-semibold text-gray-900">Content Editor</h2>
+                {editorContent && (
+                  <Button variant="ghost" size="sm" className="text-gray-500 hover:text-gray-900" onClick={handleCopy}>
+                    {copied ? <><Check className="w-4 h-4 mr-1" />Copied!</> : <><Copy className="w-4 h-4 mr-1" />Copy</>}
+                  </Button>
+                )}
+              </div>
+
+              <Card className="bg-white border-gray-200">
+                <CardContent className="p-4 space-y-4">
+                  {!draftContent && !isGeneratingDraft && (
+                    <div className="text-center py-10">
+                      <AlignLeft className="w-10 h-10 mx-auto mb-3 text-gray-300" />
+                      <p className="text-sm text-gray-500 mb-4">Your draft will appear here</p>
                       <Button
-                        className="w-full"
-                        style={{ background: 'linear-gradient(to right, #bbeb02, #a0d000)', color: '#000' }}
-                        onClick={handleCreateNew}
-                        disabled={isCreatingNew}
+                        className="bg-gradient-to-r from-teal-500 to-cyan-500 hover:from-teal-600 hover:to-cyan-600"
+                        onClick={handleCreateDraft}
+                        disabled={!contentBrief}
                       >
-                        {isCreatingNew ? (
-                          <><Loader2 className="w-4 h-4 mr-2 animate-spin" />Creating...</>
-                        ) : (
-                          <><FileText className="w-4 h-4 mr-2" />Create New Page</>
-                        )}
+                        <FileText className="w-4 h-4 mr-2" />
+                        Create 1st Draft
                       </Button>
                     </div>
-                  </>
-                ) : (
-                  <div className="text-center py-12">
-                    <FileText className="w-12 h-12 mx-auto mb-3 text-gray-400" />
-                    <p className="text-sm text-gray-500">Select a prompt to see best matching pages</p>
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-          </div>}
+                  )}
 
-          {/* Optimization Results */}
-          {optimizationResult && (
-          <div className="space-y-6">
-          <div className="flex items-center justify-between">
-            <Button
-              variant="ghost"
-              onClick={() => setOptimizationResult(null)}
-              className="text-gray-600 hover:text-gray-900"
-            >
-              <ArrowLeft className="w-4 h-4 mr-2" />
-              Back to Prompts
-            </Button>
-            <Button
-              className="bg-gradient-to-r from-teal-500 to-cyan-500 hover:from-teal-600 hover:to-cyan-600"
-              onClick={async () => {
-                await base44.entities.PromptAnalysis.update(selectedPrompt.id, {
-                  is_tracked: true,
-                  tracked_date: new Date().toISOString().split('T')[0]
-                });
-                alert('Prompt tracking started! View in Tracking page.');
-              }}
-            >
-              <Target className="w-4 h-4 mr-2" />
-              Track This Prompt
-            </Button>
-          </div>
-
-              {/* Changes Summary */}
-              <Card className="bg-white border-gray-200">
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2 text-gray-900">
-                    <CheckCircle className="w-5 h-5 text-teal-500" />
-                    Optimization Complete
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-gray-600 mb-4">
-                    Optimized <span className="font-medium text-gray-900">{selectedPage?.title}</span> to better answer: 
-                    <span className="text-teal-600 italic"> "{selectedPrompt?.prompt}"</span>
-                  </p>
-                  <div className="space-y-3">
-                    {optimizationResult.changes.map((change, i) => (
-                      <div key={i} className="p-4 rounded-lg border bg-gray-50 border-gray-200">
-                        <div className="flex items-start gap-3 mb-3">
-                          <Badge className="bg-teal-500/20 text-teal-400 border-teal-500/30">
-                            {change.section}
-                          </Badge>
-                        </div>
-                        <div className="space-y-2 text-sm">
-                          <div className="p-2 bg-red-500/10 border border-red-500/30 rounded">
-                            <div className="text-red-400 text-xs mb-1">Before:</div>
-                            <div className="text-slate-300">{change.before}</div>
-                          </div>
-                          <div className="p-2 bg-green-500/10 border border-green-500/30 rounded">
-                            <div className="text-green-400 text-xs mb-1">After:</div>
-                            <div className="text-slate-300">{change.after}</div>
-                          </div>
-                          <div className="text-slate-400 text-xs mt-2 flex items-start gap-2">
-                            <Target className="w-3 h-3 text-teal-400 mt-0.5 flex-shrink-0" />
-                            <span>{change.reason}</span>
-                          </div>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
-
-              {/* Side by Side Comparison */}
-              <div className="grid lg:grid-cols-2 gap-6">
-                <Card className="bg-white border-gray-200">
-                  <CardHeader>
-                    <CardTitle className="text-sm text-gray-900">Original Content</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="prose prose-sm max-w-none">
-                      <pre className="whitespace-pre-wrap text-xs p-4 rounded-lg max-h-[600px] overflow-y-auto text-gray-700 bg-gray-50">
-                        {optimizationResult.original}
-                      </pre>
+                  {isGeneratingDraft && (
+                    <div className="text-center py-10">
+                      <Loader2 className="w-10 h-10 text-teal-500 animate-spin mx-auto mb-4" />
+                      <p className="text-gray-600">Writing your 1st draft...</p>
                     </div>
-                  </CardContent>
-                </Card>
+                  )}
 
-                <Card className="bg-white border-teal-500/30">
-                  <CardHeader>
-                    <CardTitle className="text-sm flex items-center gap-2 text-gray-900">
-                      <Zap className="w-4 h-4 text-teal-500" />
-                      Optimized Content
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="prose prose-sm max-w-none">
-                      <pre className="whitespace-pre-wrap text-xs p-4 rounded-lg max-h-[600px] overflow-y-auto text-gray-700 bg-gray-50">
-                        {optimizationResult.optimized}
-                      </pre>
-                    </div>
-                  </CardContent>
-                </Card>
-              </div>
-            </div>
-          )}
+                  {draftContent && !isGeneratingDraft && (
+                    <>
+                      <Textarea
+                        value={editorContent}
+                        onChange={(e) => {
+                          setEditorContent(e.target.value);
+                          setRescoreResult(null);
+                        }}
+                        className="min-h-[400px] text-sm text-gray-800 border-gray-200 bg-gray-50 resize-none leading-relaxed"
+                      />
 
-          {/* New Page Results */}
-          {newPageResult && (
-          <div className="space-y-6">
-          <div className="flex items-center justify-between">
-            <Button
-              variant="ghost"
-              onClick={() => setNewPageResult(null)}
-              className="text-gray-600 hover:text-gray-900"
-            >
-              <ArrowLeft className="w-4 h-4 mr-2" />
-              Back to Prompts
-            </Button>
-            <Button
-              className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600"
-              onClick={async () => {
-                await base44.entities.PromptAnalysis.update(selectedPrompt.id, {
-                  is_tracked: true,
-                  tracked_date: new Date().toISOString().split('T')[0]
-                });
-                alert('Prompt tracking started! View in Tracking page.');
-              }}
-            >
-              <Target className="w-4 h-4 mr-2" />
-              Track This Prompt
-            </Button>
-          </div>
-
-              {/* Content Structure Summary */}
-              <Card className="bg-white border-gray-200">
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2 text-gray-900">
-                    <CheckCircle className="w-5 h-5 text-purple-500" />
-                    New Page Created
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-gray-600 mb-4">
-                    Created new content to answer: 
-                    <span className="text-purple-600 italic"> "{selectedPrompt?.prompt}"</span>
-                  </p>
-                  <div className="space-y-3">
-                    {newPageResult.structure.map((section, i) => (
-                      <div key={i} className="p-4 rounded-lg border bg-gray-50 border-gray-200">
-                        <div className="flex items-start gap-3 mb-3">
-                          <Badge className="bg-purple-500/20 text-purple-400 border-purple-500/30">
-                            {section.section_name}
-                          </Badge>
-                        </div>
-                        <div className="space-y-2 text-sm">
-                          <div className="p-2 rounded bg-white">
-                            <div className="text-xs mb-1 text-gray-500">Preview:</div>
-                            <div className="text-gray-700">{section.content_preview}...</div>
+                      {rescoreResult && (
+                        <div className="rounded-lg border border-teal-200 bg-teal-50 p-4 space-y-2">
+                          <div className="flex items-center justify-between">
+                            <span className="text-sm font-semibold text-teal-700">Updated Retrieval Score</span>
+                            <span className="text-2xl font-bold text-teal-600">{rescoreResult.retrieval_score}/100</span>
                           </div>
-                          <div className="text-slate-400 text-xs mt-2 flex items-start gap-2">
-                            <Target className="w-3 h-3 text-purple-400 mt-0.5 flex-shrink-0" />
-                            <span>{section.reasoning}</span>
-                          </div>
+                          <p className="text-xs text-gray-600">{rescoreResult.summary}</p>
+                          {(rescoreResult.suggestions || []).length > 0 && (
+                            <ul className="space-y-1 pt-1">
+                              {rescoreResult.suggestions.map((s, i) => (
+                                <li key={i} className="text-xs text-gray-600 flex gap-2">
+                                  <span className="text-teal-500">→</span>{s}
+                                </li>
+                              ))}
+                            </ul>
+                          )}
                         </div>
-                      </div>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
-
-              {/* Full Content Display */}
-              <Card className="bg-white border-purple-500/30">
-                <CardHeader>
-                  <div className="flex items-center justify-between">
-                    <CardTitle className="text-sm flex items-center gap-2 text-gray-900">
-                      <FileText className="w-4 h-4 text-purple-500" />
-                      Complete Page Content
-                    </CardTitle>
-                    <Button
-                      size="sm"
-                      onClick={handleCopyContent}
-                      className="bg-purple-500 hover:bg-purple-600 text-white"
-                    >
-                      {copied ? (
-                        <>
-                          <Check className="w-4 h-4 mr-2" />
-                          Copied!
-                        </>
-                      ) : (
-                        <>
-                          <Copy className="w-4 h-4 mr-2" />
-                          Copy Text
-                        </>
                       )}
-                    </Button>
-                  </div>
-                </CardHeader>
-                <CardContent>
-                  <div className="prose prose-sm max-w-none">
-                    <pre className="whitespace-pre-wrap text-xs p-4 rounded-lg max-h-[600px] overflow-y-auto text-gray-700 bg-gray-50">
-                      {cleanContentForDisplay(newPageResult.content)}
-                    </pre>
-                  </div>
+
+                      <Button
+                        className="w-full"
+                        variant="outline"
+                        onClick={handleRescore}
+                        disabled={isRescoring}
+                      >
+                        {isRescoring ? (
+                          <><Loader2 className="w-4 h-4 mr-2 animate-spin" />Rescoring...</>
+                        ) : (
+                          <><RotateCcw className="w-4 h-4 mr-2" />Rescore Draft</>
+                        )}
+                      </Button>
+                    </>
+                  )}
                 </CardContent>
               </Card>
             </div>
-          )}
-        </div>
+          </div>
+        )}
       </div>
     </div>
   );
