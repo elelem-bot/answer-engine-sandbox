@@ -265,8 +265,8 @@ Be accurate - only list brands you actually mentioned in your response.`,
         <div className="flex flex-col gap-6 mb-8">
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
             <div>
-              <h1 className={`text-2xl font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>Answer Visibility Dashboard</h1>
-              <p className={isDark ? 'text-slate-400' : 'text-gray-600'}>Track performance across AI search engines and optimize your content strategy</p>
+              <h1 className={`text-2xl font-bold ${text-gray-900}`}>Answer Visibility Dashboard</h1>
+              <p className={text-gray-600}>Track performance across AI search engines and optimize your content strategy</p>
             </div>
             <div className="flex items-center gap-3">
               <div className="flex gap-2">
@@ -298,7 +298,7 @@ Be accurate - only list brands you actually mentioned in your response.`,
                 </Button>
               </div>
               <Select defaultValue="7d">
-                <SelectTrigger className={`w-40 ${isDark ? 'bg-slate-800 border-slate-700 text-white' : 'bg-white border-gray-300 text-gray-900'}`}>
+                <SelectTrigger className={`w-40 ${bg-white border-gray-300 text-gray-900}`}>
                   <SelectValue placeholder="Time period" />
                 </SelectTrigger>
                 <SelectContent>
@@ -310,7 +310,7 @@ Be accurate - only list brands you actually mentioned in your response.`,
               </Select>
               <Button 
                 variant="outline" 
-                className={isDark ? 'border-slate-700 text-slate-300' : 'border-gray-300 text-gray-700'}
+                className={border-gray-300 text-gray-700}
                 onClick={() => company && analyzePrompts(allPrompts, company)}
                 disabled={isAnalyzing}
               >
@@ -320,7 +320,7 @@ Be accurate - only list brands you actually mentioned in your response.`,
               <Button 
                 variant="outline" 
                 size="icon"
-                className={isDark ? 'border-slate-700 text-slate-300' : 'border-gray-300 text-gray-700'}
+                className={border-gray-300 text-gray-700}
                 onClick={() => navigate(createPageUrl("Setup"))}
               >
                 <Settings className="w-4 h-4" />
@@ -332,16 +332,16 @@ Be accurate - only list brands you actually mentioned in your response.`,
           {activeTab === "overview" && (
           <div className="flex flex-col gap-4">
             <div className="flex items-center gap-3">
-              <span className={`text-sm ${isDark ? 'text-slate-400' : 'text-gray-600'}`}>Unbranded</span>
+              <span className={`text-sm ${text-gray-600}`}>Unbranded</span>
               <Switch
                 checked={promptType === "branded"}
                 onCheckedChange={(checked) => setPromptType(checked ? "branded" : "unbranded")}
               />
-              <span className={`text-sm ${isDark ? 'text-slate-400' : 'text-gray-600'}`}>Branded</span>
+              <span className={`text-sm ${text-gray-600}`}>Branded</span>
             </div>
 
             <div className="flex flex-col sm:flex-row sm:items-center gap-3">
-              <span className={`text-sm ${isDark ? 'text-slate-400' : 'text-gray-600'}`}>Funnel Stage:</span>
+              <span className={`text-sm ${text-gray-600}`}>Funnel Stage:</span>
               <div className="flex gap-2 flex-wrap">
                 {["top", "middle", "bottom"].map((stage) => (
                   <Button
@@ -404,7 +404,7 @@ Be accurate - only list brands you actually mentioned in your response.`,
 
         {/* Citation Insights */}
         <div className="mb-8">
-          <h2 className={`text-lg font-semibold mb-4 ${isDark ? 'text-white' : 'text-gray-900'}`}>Citation Insights</h2>
+          <h2 className={`text-lg font-semibold mb-4 ${text-gray-900}`}>Citation Insights</h2>
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <CitationChart 
               data={visibilityData.citationsBySource} 
@@ -420,7 +420,7 @@ Be accurate - only list brands you actually mentioned in your response.`,
 
         {/* Mention Insights */}
         <div className="mb-8">
-          <h2 className={`text-lg font-semibold mb-4 ${isDark ? 'text-white' : 'text-gray-900'}`}>Mention Insights</h2>
+          <h2 className={`text-lg font-semibold mb-4 ${text-gray-900}`}>Mention Insights</h2>
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <CitationChart 
               data={visibilityData.brandMentionsBreakdown} 
@@ -439,7 +439,7 @@ Be accurate - only list brands you actually mentioned in your response.`,
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
             <Card className={bg-white border-gray-200}>
               <CardHeader>
-                <CardTitle className={`text-lg ${isDark ? 'text-white' : 'text-gray-900'}`}>Citation Trend Over Time</CardTitle>
+                <CardTitle className={`text-lg ${text-gray-900}`}>Citation Trend Over Time</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="h-64">
@@ -471,7 +471,7 @@ Be accurate - only list brands you actually mentioned in your response.`,
 
             <Card className={bg-white border-gray-200}>
               <CardHeader>
-                <CardTitle className={`text-lg ${isDark ? 'text-white' : 'text-gray-900'}`}>Mention Trend Over Time</CardTitle>
+                <CardTitle className={`text-lg ${text-gray-900}`}>Mention Trend Over Time</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="h-64">
@@ -506,15 +506,15 @@ Be accurate - only list brands you actually mentioned in your response.`,
         {/* AI Responses with Citations */}
         <Card className={bg-white border-gray-200} mb-8>
           <CardHeader>
-            <CardTitle className={`text-lg ${isDark ? 'text-white' : 'text-gray-900'}`}>AI Responses for {funnelStage.charAt(0).toUpperCase() + funnelStage.slice(1)} of Funnel Prompts</CardTitle>
+            <CardTitle className={`text-lg ${text-gray-900}`}>AI Responses for {funnelStage.charAt(0).toUpperCase() + funnelStage.slice(1)} of Funnel Prompts</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
               {prompts.filter(p => p.gemini_response).map((prompt, i) => (
-                <div key={i} className={`border rounded-lg p-4 ${isDark ? 'border-slate-700/50 bg-slate-900/50' : 'border-gray-200 bg-gray-50'}`}>
+                <div key={i} className={`border rounded-lg p-4 ${border-gray-200 bg-gray-50}`}>
                   <div className="flex items-start justify-between gap-4 mb-3">
                     <div className="flex-1">
-                      <p className={`font-semibold mb-1 ${isDark ? 'text-white' : 'text-gray-900'}`}>{prompt.prompt}</p>
+                      <p className={`font-semibold mb-1 ${text-gray-900}`}>{prompt.prompt}</p>
                       <div className="flex gap-2 flex-wrap">
                         {prompt.cited_brands?.slice(0, 3).map((cb, j) => (
                           <Badge 
@@ -534,7 +534,7 @@ Be accurate - only list brands you actually mentioned in your response.`,
                       variant="outline"
                       size="sm"
                       onClick={() => setSelectedPrompt(selectedPrompt?.id === prompt.id ? null : prompt)}
-                      className={isDark ? 'border-slate-700 text-slate-300' : 'border-gray-300 text-gray-700'}
+                      className={border-gray-300 text-gray-700}
                     >
                       {selectedPrompt?.id === prompt.id ? "Hide" : "View"} Response
                     </Button>
@@ -581,7 +581,7 @@ Be accurate - only list brands you actually mentioned in your response.`,
               ))}
 
               {prompts.filter(p => p.gemini_response).length === 0 && (
-                <p className={`text-center py-8 ${isDark ? 'text-slate-400' : 'text-gray-600'}`}>No responses available for this funnel stage yet.</p>
+                <p className={`text-center py-8 ${text-gray-600}`}>No responses available for this funnel stage yet.</p>
               )}
             </div>
           </CardContent>
@@ -590,7 +590,7 @@ Be accurate - only list brands you actually mentioned in your response.`,
         {/* Top Topics */}
         <Card className={bg-white border-gray-200}>
           <CardHeader>
-            <CardTitle className={`text-lg ${isDark ? 'text-white' : 'text-gray-900'}`}>Top Topics in Responses</CardTitle>
+            <CardTitle className={`text-lg ${text-gray-900}`}>Top Topics in Responses</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="flex flex-wrap gap-2">
@@ -615,11 +615,11 @@ Be accurate - only list brands you actually mentioned in your response.`,
             <Card className={bg-white border-gray-200}>
               <CardContent className="py-12">
                 <div className="text-center">
-                  <TrendingUp className={`w-16 h-16 mx-auto mb-4 ${isDark ? 'text-slate-600' : 'text-gray-400'}`} />
-                  <h3 className={`text-lg font-semibold mb-2 ${isDark ? 'text-white' : 'text-gray-900'}`}>
+                  <TrendingUp className={`w-16 h-16 mx-auto mb-4 ${text-gray-400}`} />
+                  <h3 className={`text-lg font-semibold mb-2 ${text-gray-900}`}>
                     No Tracked Prompts Yet
                   </h3>
-                  <p className={isDark ? 'text-slate-400' : 'text-gray-600'}>
+                  <p className={text-gray-600}>
                     Start tracking prompts from the Prompts page to monitor their performance over time.
                   </p>
                 </div>
@@ -651,13 +651,13 @@ Be accurate - only list brands you actually mentioned in your response.`,
                               </Badge>
                             )}
                           </div>
-                          <CardTitle className={`text-lg ${isDark ? 'text-white' : 'text-gray-900'}`}>
+                          <CardTitle className={`text-lg ${text-gray-900}`}>
                             {prompt.prompt}
                           </CardTitle>
                           <div className="flex items-center gap-4 mt-3 text-sm">
                             <div className="flex items-center gap-1">
-                              <MessageSquare className={`w-4 h-4 ${isDark ? 'text-slate-500' : 'text-gray-500'}`} />
-                              <span className={isDark ? 'text-slate-400' : 'text-gray-600'}>
+                              <MessageSquare className={`w-4 h-4 ${text-gray-500}`} />
+                              <span className={text-gray-600}>
                                 Started: {prompt.tracked_date ? new Date(prompt.tracked_date).toLocaleDateString() : 'N/A'}
                               </span>
                             </div>
@@ -665,10 +665,10 @@ Be accurate - only list brands you actually mentioned in your response.`,
                         </div>
                         <div className="flex flex-col items-end gap-2">
                           <div className="text-right">
-                            <div className={`text-2xl font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>
+                            <div className={`text-2xl font-bold ${text-gray-900}`}>
                               {prompt.brand_mentions_count || 0}
                             </div>
-                            <div className={`text-xs ${isDark ? 'text-slate-500' : 'text-gray-500'}`}>
+                            <div className={`text-xs ${text-gray-500}`}>
                               Brand Mentions
                             </div>
                           </div>
@@ -690,7 +690,7 @@ Be accurate - only list brands you actually mentioned in your response.`,
                               <Tooltip
                                 contentStyle={{
                                   backgroundColor: isDark ? '#1e293b' : '#ffffff',
-                                  border: `1px solid ${isDark ? '#334155' : '#e5e7eb'}`,
+                                  border: `1px solid ${'#e5e7eb'}`,
                                   borderRadius: '8px',
                                   color: isDark ? '#fff' : '#000'
                                 }}
@@ -716,8 +716,8 @@ Be accurate - only list brands you actually mentioned in your response.`,
                         </div>
                       ) : (
                         <div className={`text-center py-8 border rounded-lg ${isDark ? 'border-slate-700 bg-slate-900/50' : 'border-gray-200 bg-gray-50'}`}>
-                          <LineChartIcon className={`w-12 h-12 mx-auto mb-3 ${isDark ? 'text-slate-600' : 'text-gray-400'}`} />
-                          <p className={`text-sm ${isDark ? 'text-slate-500' : 'text-gray-500'}`}>
+                          <LineChartIcon className={`w-12 h-12 mx-auto mb-3 ${text-gray-400}`} />
+                          <p className={`text-sm ${text-gray-500}`}>
                             Trend data will appear here as we track this prompt over time
                           </p>
                         </div>
@@ -726,7 +726,7 @@ Be accurate - only list brands you actually mentioned in your response.`,
                       {/* Keywords */}
                       {prompt.keywords && prompt.keywords.length > 0 && (
                         <div className={`mt-4 pt-4 border-t ${isDark ? 'border-slate-700/50' : 'border-gray-200'}`}>
-                          <div className={`text-xs font-semibold mb-2 ${isDark ? 'text-slate-400' : 'text-gray-600'}`}>
+                          <div className={`text-xs font-semibold mb-2 ${text-gray-600}`}>
                             Target Keywords:
                           </div>
                           <div className="flex flex-wrap gap-2">
