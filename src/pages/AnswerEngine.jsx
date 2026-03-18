@@ -478,8 +478,6 @@ Consider buyer intent when determining funnel stage.`,
     }
   };
 
-  const isDark = theme === 'dark';
-
   const timeSlots = [
     "09:00 AM", "10:00 AM", "11:00 AM", "12:00 PM",
     "01:00 PM", "02:00 PM", "03:00 PM", "04:00 PM"
@@ -513,18 +511,18 @@ Consider buyer intent when determining funnel stage.`,
   };
 
   return (
-    <div className={`min-h-screen p-6 lg:p-8 ${isDark ? 'bg-slate-950' : 'bg-gray-50'}`}>
+    <div className="min-h-screen p-6 lg:p-8 bg-gray-50">
       <div className="max-w-5xl mx-auto">
         {/* Header */}
         <div className="mb-8 flex items-start justify-between">
           <div>
-            <h1 className={`text-2xl font-bold mb-2 ${isDark ? 'text-white' : 'text-gray-900'}`}>Answer Engine</h1>
-            <p className={isDark ? 'text-slate-400' : 'text-gray-600'}>Turn any website into an intelligent Q&A system</p>
+            <h1 className="text-2xl font-bold mb-2 text-gray-900">Answer Engine</h1>
+            <p className="text-gray-600">Turn any website into an intelligent Q&A system</p>
           </div>
           <Button
             onClick={() => navigate(createPageUrl("Analytics"))}
             variant="outline"
-            className={isDark ? 'border-slate-700 text-slate-300 hover:bg-slate-800' : 'border-gray-300 text-gray-700 hover:bg-gray-100'}
+            className="border-gray-300 text-gray-700 hover:bg-gray-100"
           >
             <BarChart3 className="w-4 h-4 mr-2" />
             Analytics
@@ -532,14 +530,14 @@ Consider buyer intent when determining funnel stage.`,
         </div>
 
         {/* Website Input */}
-        <Card className={isDark ? 'bg-slate-800/50 border-slate-700/50' : 'bg-white border-gray-200'} mb-6>
+        <Card className="bg-white border-gray-200" mb-6>
           {isCrawled && (
             <div className="px-6 pt-4 flex justify-end">
               <Button
                 variant="ghost"
                 size="sm"
                 onClick={() => setIsInputCollapsed(!isInputCollapsed)}
-                className={isDark ? 'text-slate-400 hover:text-white' : 'text-gray-600 hover:text-gray-900'}
+                className="text-gray-600 hover:text-gray-900"
               >
                 {isInputCollapsed ? (
                   <>
@@ -572,7 +570,7 @@ Consider buyer intent when determining funnel stage.`,
                   value={websiteUrl}
                   onChange={(e) => setWebsiteUrl(e.target.value)}
                   disabled={isCrawling}
-                  className={`pl-10 ${isDark ? 'bg-slate-900 border-slate-700 text-white placeholder:text-slate-500' : 'bg-white border-gray-300 text-gray-900 placeholder:text-gray-400'}`}
+                  className="pl-10 bg-white border-gray-300 text-gray-900 placeholder:text-gray-400"
                 />
               </div>
               <Button
@@ -622,7 +620,7 @@ Consider buyer intent when determining funnel stage.`,
                       setLogoUrl("");
                       setBrandColor("#14b8a6");
                     }}
-                    className={isDark ? 'text-slate-400 hover:text-white' : 'text-gray-600 hover:text-gray-900'}
+                    className="text-gray-600 hover:text-gray-900"
                   >
                     Change Website
                   </Button>
@@ -637,7 +635,7 @@ Consider buyer intent when determining funnel stage.`,
                       type="file"
                       accept="image/*"
                       onChange={handleLogoUpload}
-                      className={`h-auto py-2 file:mr-4 file:px-4 file:py-2 file:rounded file:border-0 file:bg-teal-500 file:text-white file:cursor-pointer ${isDark ? 'bg-slate-900 border-slate-700 text-white' : 'bg-white border-gray-300 text-gray-900'}`}
+                      className="h-auto py-2 file:mr-4 file:px-4 file:py-2 file:rounded file:border-0 file:bg-teal-500 file:text-white file:cursor-pointer bg-white border-gray-300 text-gray-900"
                     />
                   </div>
                   <div className="space-y-2">
@@ -647,14 +645,14 @@ Consider buyer intent when determining funnel stage.`,
                         type="color"
                         value={brandColor}
                         onChange={(e) => setBrandColor(e.target.value)}
-                        className={`w-20 h-10 cursor-pointer ${isDark ? 'bg-slate-900 border-slate-700' : 'bg-white border-gray-300'}`}
+                        className="w-20 h-10 cursor-pointer bg-white border-gray-300"
                       />
                       <Input
                         type="text"
                         value={brandColor}
                         onChange={(e) => setBrandColor(e.target.value)}
                         placeholder="#14b8a6"
-                        className={`flex-1 ${isDark ? 'bg-slate-900 border-slate-700 text-white' : 'bg-white border-gray-300 text-gray-900'}`}
+                        className="flex-1 bg-white border-gray-300 text-gray-900"
                       />
                     </div>
                   </div>
@@ -664,7 +662,7 @@ Consider buyer intent when determining funnel stage.`,
                       type="file"
                       accept="image/*"
                       onChange={handleScreenshotUpload}
-                      className={`h-auto py-2 file:mr-4 file:px-4 file:py-2 file:rounded file:border-0 file:bg-teal-500 file:text-white file:cursor-pointer ${isDark ? 'bg-slate-900 border-slate-700 text-white' : 'bg-white border-gray-300 text-gray-900'}`}
+                      className="h-auto py-2 file:mr-4 file:px-4 file:py-2 file:rounded file:border-0 file:bg-teal-500 file:text-white file:cursor-pointer bg-white border-gray-300 text-gray-900"
                     />
                     {screenshotUrl && (
                       <p className="text-xs text-teal-400">Screenshot uploaded ✓</p>
@@ -681,7 +679,7 @@ Consider buyer intent when determining funnel stage.`,
                       value={buttonText}
                       onChange={(e) => setButtonText(e.target.value)}
                       placeholder="Ask AI"
-                      className={isDark ? 'bg-slate-900 border-slate-700 text-white' : 'bg-white border-gray-300 text-gray-900'}
+                      className="bg-white border-gray-300 text-gray-900"
                     />
                   </div>
                   <div className="space-y-2">
@@ -689,7 +687,7 @@ Consider buyer intent when determining funnel stage.`,
                     <select
                       value={buttonSize}
                       onChange={(e) => setButtonSize(e.target.value)}
-                      className={`w-full h-10 px-3 rounded-md border ${isDark ? 'bg-slate-900 border-slate-700 text-white' : 'bg-white border-gray-300 text-gray-900'}`}
+                      className="w-full h-10 px-3 rounded-md border bg-white border-gray-300 text-gray-900"
                     >
                       <option value="sm">Small</option>
                       <option value="md">Medium</option>
@@ -700,7 +698,7 @@ Consider buyer intent when determining funnel stage.`,
                     <select
                       value={buttonShape}
                       onChange={(e) => setButtonShape(e.target.value)}
-                      className={`w-full h-10 px-3 rounded-md border ${isDark ? 'bg-slate-900 border-slate-700 text-white' : 'bg-white border-gray-300 text-gray-900'}`}
+                      className="w-full h-10 px-3 rounded-md border bg-white border-gray-300 text-gray-900"
                     >
                       <option value="square">Square</option>
                       <option value="rounded">Rounded</option>
@@ -714,7 +712,7 @@ Consider buyer intent when determining funnel stage.`,
                       value={ctaButtonText}
                       onChange={(e) => setCtaButtonText(e.target.value)}
                       placeholder="Book Demo"
-                      className={isDark ? 'bg-slate-900 border-slate-700 text-white' : 'bg-white border-gray-300 text-gray-900'}
+                      className="bg-white border-gray-300 text-gray-900"
                     />
                   </div>
                 </div>
@@ -730,12 +728,12 @@ Consider buyer intent when determining funnel stage.`,
         {/* Tabs for Chat and Questions */}
         {isCrawled && (
           <Tabs value={activeTab} onValueChange={setActiveTab} className="mb-6">
-            <TabsList className={isDark ? 'bg-slate-800/50 border border-slate-700/50' : 'bg-white border border-gray-200'}>
-              <TabsTrigger value="chat" className={isDark ? 'data-[state=active]:bg-slate-700' : 'data-[state=active]:bg-gray-100'}>
+            <TabsList className="bg-white border border-gray-200">
+              <TabsTrigger value="chat" className="data-[state=active]:bg-gray-100">
                 <MessageSquare className="w-4 h-4 mr-2" />
                 Chat
               </TabsTrigger>
-              <TabsTrigger value="questions" className={isDark ? 'data-[state=active]:bg-slate-700' : 'data-[state=active]:bg-gray-100'}>
+              <TabsTrigger value="questions" className="data-[state=active]:bg-gray-100">
                 <List className="w-4 h-4 mr-2" />
                 Questions ({askedQuestions.length})
               </TabsTrigger>
@@ -1175,18 +1173,18 @@ Consider buyer intent when determining funnel stage.`,
 
         {/* Questions List */}
         {isCrawled && activeTab === "questions" && (
-          <Card className={isDark ? 'bg-slate-800/50 border-slate-700/50' : 'bg-white border-gray-200'}>
+          <Card className="bg-white border-gray-200">
             <CardHeader>
-              <CardTitle className={isDark ? 'text-white' : 'text-gray-900'}>Asked Questions</CardTitle>
+              <CardTitle className="text-gray-900">Asked Questions</CardTitle>
             </CardHeader>
             <CardContent>
               {isLoadingQuestions ? (
                 <div className="text-center py-8">
                   <Loader2 className="w-8 h-8 text-teal-500 animate-spin mx-auto mb-2" />
-                  <p className={isDark ? 'text-slate-400' : 'text-gray-600'}>Loading questions...</p>
+                  <p className="text-gray-600">Loading questions...</p>
                 </div>
               ) : askedQuestions.length === 0 ? (
-                <p className={`text-center py-8 ${isDark ? 'text-slate-400' : 'text-gray-600'}`}>No questions asked yet</p>
+                <p className="text-center py-8 text-gray-600">No questions asked yet</p>
               ) : (
                 <div className="space-y-3">
                   {askedQuestions.map((q, i) => (
@@ -1195,11 +1193,11 @@ Consider buyer intent when determining funnel stage.`,
                       initial={{ opacity: 0, y: 10 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ delay: i * 0.05 }}
-                      className={`border rounded-lg p-4 ${isDark ? 'border-slate-700/50 bg-slate-900/50' : 'border-gray-200 bg-gray-50'}`}
+                      className="border rounded-lg p-4 border-gray-200 bg-gray-50"
                     >
                       <div className="flex items-start justify-between gap-4 mb-3">
                         <div className="flex-1">
-                          <p className={`font-medium mb-2 ${isDark ? 'text-white' : 'text-gray-900'}`}>{q.question}</p>
+                          <p className="font-medium mb-2 text-gray-900">{q.question}</p>
                           <div className="flex gap-2 flex-wrap">
                             <Badge 
                               variant="outline"
@@ -1269,7 +1267,7 @@ Consider buyer intent when determining funnel stage.`,
                           </Button>
                         )}
                       </div>
-                      <div className={`text-sm pl-4 border-l-2 ${isDark ? 'text-slate-400 border-slate-700' : 'text-gray-600 border-gray-300'}`}>
+                      <div className="text-sm pl-4 border-l-2 text-gray-600 border-gray-300">
                         {q.answer}
                       </div>
                     </motion.div>
