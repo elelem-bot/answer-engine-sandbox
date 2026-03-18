@@ -67,6 +67,7 @@ export default function AnswerEngine() {
   const [bookingCta, setBookingCta] = useState("Talk to our team");
   const [showAnswerEngine, setShowAnswerEngine] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
+  const [streamingText, setStreamingText] = useState("");
   const [screenshotUrl, setScreenshotUrl] = useState(null);
   const [buttonText, setButtonText] = useState("Ask AI");
   const [buttonSize, setButtonSize] = useState("sm");
