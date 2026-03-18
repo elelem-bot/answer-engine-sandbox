@@ -389,9 +389,7 @@ Be realistic with scores - good content typically scores 60-85.`,
                           <td className="p-4 text-center">
                             <span className="font-semibold text-purple-600">{((i * 13 + 18) % 35) + 10}%</span>
                           </td>
-                          <td className="p-4 text-center">
-                            <span className="text-teal-600 font-semibold">{prompt.elelem_score || Math.floor(Math.random() * 30) + 60}/100</span>
-                          </td>
+
                         </tr>
                       ))}
                     </tbody>
