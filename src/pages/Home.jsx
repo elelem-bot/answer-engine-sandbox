@@ -1,300 +1,333 @@
-import React from "react";
-import { Link } from "react-router-dom";
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { createPageUrl } from "@/utils";
-import { motion } from "framer-motion";
-import { 
-  ArrowRight, 
-  Search, 
-  BarChart3, 
-  FileText, 
-  TrendingUp,
-  CheckCircle,
-  Sparkles,
-  Zap,
-  Eye,
-  Target
-} from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
+import { ChevronDown, ChevronUp } from "lucide-react";
+
+const BRAND = {
+  blue: "#2DC6FE",
+  mint: "#81FBEF",
+  dark: "#082D35",
+};
+
+const faqs = [
+  {
+    q: "What exactly is elelem?",
+    a: "elelem turns your website into a ChatGPT-style Answer Engine. Your visitors can ask real questions in their own words and get instant, accurate answers based on your content and data.",
+  },
+  {
+    q: "How is this different from a normal chatbot?",
+    a: "Most chatbots follow scripts or push people to a form. With elelem, buyers ask real questions and get helpful, specific answers that move them toward a decision. You see which questions matter and which ones lead to revenue, not just 'engagement.'",
+  },
+  {
+    q: "What results can I expect?",
+    a: "On sites like yours, we see more demo bookings, higher conversion on key pages, and better use of existing content. In early tests, Answer Engine users convert up to 5x more than non users on the same pages.",
+  },
+  {
+    q: "How does it work with my current website and tools?",
+    a: "You add elelem to your site like you would add any script or widget. It runs on top of your current CMS and analytics stack, and you can connect it to the tools you already use for reporting and revenue tracking.",
+  },
+  {
+    q: "Will it make things up or hurt my brand?",
+    a: "No. elelem is set up to avoid hallucinations and stick to your approved sources. You control the content it uses, how it speaks, and what it should never say, so answers stay on brand and safe.",
+  },
+  {
+    q: "How do we get started?",
+    a: "Book a demo, pick a few high-intent pages, and we'll help you set up your first Answer Engine experience. You start seeing real buyer questions within days, and you can track impact on pipeline from there.",
+  },
+];
+
+const brands = [
+  {
+    name: "Alibaba",
+    desc: "Alibaba introduced an 'AI Mode' feature that integrates Answer Engine capabilities directly into the user journey, enabling instant questions and answers.",
+    img: "https://d2txn9w4uujjus.cloudfront.net/images/019b4019-8642-7b7a-b8ed-ef839bfc4eec/1c79efee79b7d32367ecee665a72304a81684dea--960w.jpg",
+  },
+  {
+    name: "Huble",
+    desc: "Huble (HubSpot Global Partner of the Year) launched 'Ask AI' – a new feature which allows buyers to ask questions and gain instant answers. Powered by elelem.",
+    img: "https://d2txn9w4uujjus.cloudfront.net/images/019b4019-8642-7b7a-b8ed-ef839bfc4eec/622d94eb38c649b6931f8bb6c5841eaa6d7aa1e5--960w.jpg",
+  },
+  {
+    name: "Amazon",
+    desc: "Rufus is an AI shopping answer engine on the Amazon app and website that helps customers research products through natural conversation and instant answers.",
+    img: "https://d2txn9w4uujjus.cloudfront.net/images/019b4019-8642-7b7a-b8ed-ef839bfc4eec/55701767b01c493b3df892a9e753ce0fcb1de9bd--960w.jpg",
+  },
+  {
+    name: "Hoxton AI",
+    desc: "Hoxton AI's \"Ask AI\" mode enables buyers to ask questions and receive instant replies, increasing conversion rates and identifying gaps to improve closing effectiveness. Powered by elelem.",
+    img: "https://d2txn9w4uujjus.cloudfront.net/images/019b4019-8642-7b7a-b8ed-ef839bfc4eec/8d68df5216a52a982fde610a6347555dca27fa19--960w.jpg",
+  },
+  {
+    name: "Netflix",
+    desc: "Netflix is pioneering a natural language search to help viewers find relevant content on demand, increasing engagement, discoverability and customer satisfaction.",
+    img: "https://d2txn9w4uujjus.cloudfront.net/images/019b4019-8642-7b7a-b8ed-ef839bfc4eec/8f8eda927263be93cf7fb3c966f88d857e89bb50--960w.png",
+  },
+  {
+    name: "Rated People",
+    desc: "Rated People has launched an Answer Engine that instantly assists customers while helping them better understand their needs, gaps, and opportunities. Powered by elelem.",
+    img: "https://d2txn9w4uujjus.cloudfront.net/images/019b4019-8642-7b7a-b8ed-ef839bfc4eec/8e574be444734876a96302e24bb16764097566f9--960w.png",
+  },
+];
+
+const features = [
+  {
+    title: "Branded AI Answer Engine (On-Site)",
+    desc: "Buyers gain instant answers to their pre-sale questions and are 6x more likely to convert or buy",
+    img: "https://d2txn9w4uujjus.cloudfront.net/images/019b4019-8642-7b7a-b8ed-ef839bfc4eec/a6b4cb687ea36981f87eebcd74f6a33e28629c6d--960w.png",
+  },
+  {
+    title: "Content/Buyer Gap Detection",
+    desc: "Identifies gaps in buyers' content needs and auto-generates the content needed to fill and further increase conversion",
+    img: "https://d2txn9w4uujjus.cloudfront.net/images/019b4019-8642-7b7a-b8ed-ef839bfc4eec/15b659962d629456dcacbababffc73aa66accd25--960w.png",
+  },
+  {
+    title: "Real Buyer Question Capture",
+    desc: "Captures first-party demand intelligence by revealing REAL pipeline-shaping questions (prompts) that drive GEO, pipeline and revenue.",
+    img: "https://d2txn9w4uujjus.cloudfront.net/images/019b4019-8642-7b7a-b8ed-ef839bfc4eec/b5bc6785a205a847895d6f75431415421a341fcf--960w.png",
+  },
+  {
+    title: "Demand Intelligence Analytics",
+    desc: "Proves ROI by connecting AI engagement directly to revenue impact. Creates a closed-loop optimisation system from buyer question to revenue outcome.",
+    img: null,
+  },
+];
+
+function FAQ({ q, a }) {
+  const [open, setOpen] = useState(false);
+  return (
+    <div
+      className="border-b border-gray-200 py-5 cursor-pointer"
+      onClick={() => setOpen(!open)}
+    >
+      <div className="flex items-center justify-between gap-4">
+        <span className="font-semibold text-gray-900 text-base">{q}</span>
+        {open ? (
+          <ChevronUp className="w-5 h-5 flex-shrink-0 text-gray-400" />
+        ) : (
+          <ChevronDown className="w-5 h-5 flex-shrink-0 text-gray-400" />
+        )}
+      </div>
+      {open && <p className="mt-3 text-gray-600 text-sm leading-relaxed">{a}</p>}
+    </div>
+  );
+}
 
 export default function Home() {
-  const features = [
-    {
-      icon: Eye,
-      title: "Visibility HQ",
-      description: "Track your brand's visibility across AI-generated responses and compare against competitors in real-time."
-    },
-    {
-      icon: FileText,
-      title: "Optimize Content",
-      description: "Transform existing content to be selected, trusted, and acted upon by AI search engines."
-    },
-    {
-      icon: Sparkles,
-      title: "New Content Creation",
-      description: "Generate AI-optimized content from scratch based on buyer-centric prompts and search intent."
-    },
-    {
-      icon: TrendingUp,
-      title: "Performance Tracking",
-      description: "Monitor citation rates, brand mentions, and visibility trends across all your optimized content."
-    }
-  ];
-
-  const pillars = [
-    { name: "Content Quality & Trust", weight: "35%", color: "bg-teal-500" },
-    { name: "Structure & Formatting", weight: "25%", color: "bg-cyan-500" },
-    { name: "Semantic Clarity", weight: "15%", color: "bg-lime-500" },
-    { name: "Structured Data", weight: "15%", color: "bg-emerald-500" },
-    { name: "Freshness & Technical", weight: "10%", color: "bg-green-500" }
-  ];
+  const navigate = useNavigate();
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950">
-      {/* Navigation */}
-      <nav className="fixed top-0 w-full z-50 bg-slate-950/80 backdrop-blur-xl border-b border-slate-800/50">
-        <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
-          <div className="flex items-center">
-            <img 
-              src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/6943f2bf67610e14801b112b/de87d19e0_elelem2025logoPrimary.png"
-              alt="elelem"
-              className="h-8 brightness-0 invert"
-            />
-          </div>
-          <div className="hidden md:flex items-center gap-8">
-            <a href="#features" className="text-slate-400 hover:text-white transition-colors text-sm">Features</a>
-            <a href="#pillars" className="text-slate-400 hover:text-white transition-colors text-sm">Our Approach</a>
-            <a href="#pricing" className="text-slate-400 hover:text-white transition-colors text-sm">Pricing</a>
-          </div>
-          <div className="flex items-center gap-4">
-            <Link to={createPageUrl("Setup")}>
-              <Button className="bg-gradient-to-r from-teal-500 to-cyan-500 hover:from-teal-600 hover:to-cyan-600 text-white border-0 shadow-lg shadow-teal-500/25">
-                Start Free Trial
-                <ArrowRight className="ml-2 w-4 h-4" />
-              </Button>
-            </Link>
+    <div className="bg-white min-h-screen" style={{ fontFamily: "'Google Sans', sans-serif" }}>
+
+      {/* ── Nav ── */}
+      <header className="sticky top-0 z-50 bg-white border-b border-gray-100">
+        <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
+          <img
+            src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/6943f2bf67610e14801b112b/de87d19e0_elelem2025logoPrimary.png"
+            alt="elelem"
+            className="h-7"
+          />
+          <div className="flex items-center gap-3">
+            <button
+              onClick={() => navigate(createPageUrl("Setup"))}
+              className="px-5 py-2 rounded-full border-2 text-sm font-semibold transition-colors"
+              style={{ borderColor: BRAND.dark, color: BRAND.dark }}
+            >
+              Login
+            </button>
+            <button
+              onClick={() => navigate(createPageUrl("Setup"))}
+              className="px-5 py-2 rounded-full text-sm font-semibold transition-opacity hover:opacity-90"
+              style={{ background: `linear-gradient(to right, ${BRAND.blue}, ${BRAND.mint})`, color: BRAND.dark }}
+            >
+              See Demo
+            </button>
           </div>
         </div>
-      </nav>
+      </header>
 
-      {/* Hero Section */}
-      <section className="pt-32 pb-20 px-6">
-        <div className="max-w-6xl mx-auto text-center">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
+      {/* ── Hero ── */}
+      <section className="max-w-6xl mx-auto px-6 pt-20 pb-16 text-center">
+        <div
+          className="inline-block text-xs font-semibold px-4 py-1.5 rounded-full mb-6"
+          style={{ background: `linear-gradient(to right, ${BRAND.blue}22, ${BRAND.mint}33)`, color: BRAND.dark }}
+        >
+          1st Party Answer Engine that converts AI‑driven buyers for Demand Gen, Growth &amp; Performance Teams
+        </div>
+        <h1 className="text-4xl md:text-6xl font-bold leading-tight mb-6 max-w-3xl mx-auto" style={{ color: BRAND.dark }}>
+          Turn <span style={{ color: BRAND.blue }}>REAL</span> customer questions<br />
+          into more signups, demos, and revenue
+        </h1>
+        <p className="text-lg text-gray-600 max-w-2xl mx-auto mb-10 leading-relaxed">
+          <strong>elelem turns your website into a ChatGPT-style Answer Engine.</strong> Visitors get instant, accurate answers on your key pages, so they stop bouncing, understand your product faster, and convert at up to 6x the rate.
+        </p>
+        <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+          <button
+            onClick={() => navigate(createPageUrl("Setup"))}
+            className="px-8 py-3.5 rounded-full text-base font-bold transition-opacity hover:opacity-90 shadow-lg"
+            style={{ background: `linear-gradient(to right, ${BRAND.blue}, ${BRAND.mint})`, color: BRAND.dark }}
           >
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-8">
-              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-teal-500/10 border border-teal-500/20">
-                <Sparkles className="w-4 h-4 text-teal-400" />
-                <span className="text-teal-400 text-sm font-medium">Generative Engine Optimization Platform</span>
-              </div>
-              <div className="flex items-center gap-3">
-                <img 
-                  src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/6943f2bf67610e14801b112b/234a5fc95_BlueModernBestTeamLinkedInPost.jpg"
-                  alt="Most Influential Companies of 2026"
-                  className="h-16 w-16 rounded-lg shadow-lg"
-                />
-                <img 
-                  src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/6943f2bf67610e14801b112b/970a9d617_ELELEMhasbeennamedastheMostInnovativeGenAlOptimizationPlatformattheAlGlobalExcellenceAwards.png"
-                  alt="AI Global Excellence Awards"
-                  className="h-16 w-auto"
-                />
-              </div>
-            </div>
-            
-            <h1 className="text-5xl md:text-7xl font-bold text-white leading-tight mb-6">
-              Intelligently Engineering
-              <br />
-              <span className="bg-gradient-to-r from-teal-400 via-cyan-400 to-emerald-400 bg-clip-text text-transparent">
-                Content to be Visible
-              </span>
-              <br />
-              in the Age of AI
-            </h1>
-            
-            <p className="text-xl text-slate-400 max-w-3xl mx-auto mb-10 leading-relaxed">
-              elelem helps content-rich brands ensure their brand is visible where AI Search now provides answers rather than links. We go beyond standard GEO by applying 10+ years of content intelligence to understand <em className="text-slate-300">why</em> content is or is not surfaced and then engineer it to be selected, trusted and acted on in high consideration moments.
-            </p>
-            
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link to={createPageUrl("Setup")}>
-                <Button size="lg" className="bg-gradient-to-r from-teal-500 to-cyan-500 hover:from-teal-600 hover:to-cyan-600 text-white text-lg px-8 py-6 shadow-xl shadow-teal-500/30">
-                  Start Your Free Trial
-                  <ArrowRight className="ml-2 w-5 h-5" />
-                </Button>
-              </Link>
-              <Button size="lg" variant="outline" className="border-slate-700 text-slate-300 hover:bg-slate-800 text-lg px-8 py-6">
-                Watch Demo
-              </Button>
-            </div>
-
-            {/* Trusted By Section */}
-            <div className="mt-16 text-center">
-              <p className="text-slate-500 text-sm uppercase tracking-wider mb-6">
-                Trusted by the world's leading content creators and their agencies
-              </p>
-              <div className="flex items-center justify-center">
-                <img 
-                  src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/6943f2bf67610e14801b112b/515d10b09_image.png"
-                  alt="Trusted by leading brands"
-                  className="max-w-full h-auto brightness-0 invert opacity-50 hover:opacity-70 transition-opacity"
-                />
-              </div>
-            </div>
-            </motion.div>
-
-          {/* Stats */}
-          <motion.div 
-            initial={{ opacity: 0, y: 40 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.3 }}
-            className="grid grid-cols-2 md:grid-cols-4 gap-8 mt-20 pt-10 border-t border-slate-800"
+            See it in Action
+          </button>
+          <button
+            onClick={() => navigate(createPageUrl("Setup"))}
+            className="px-8 py-3.5 rounded-full text-base font-bold transition-colors"
+            style={{ background: BRAND.dark, color: "#fff" }}
           >
-            {[
-              { value: "89%", label: "Average Visibility Increase" },
-              { value: "3.2x", label: "More Citations" },
-              { value: "47%", label: "Brand Mention Growth" },
-              { value: "24h", label: "To First Insights" }
-            ].map((stat, i) => (
-              <div key={i} className="text-center">
-                <div className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-teal-400 to-cyan-400 bg-clip-text text-transparent">
-                  {stat.value}
+            Contact Us
+          </button>
+        </div>
+
+        {/* Hero image */}
+        <div className="mt-14 rounded-2xl overflow-hidden shadow-2xl max-w-3xl mx-auto">
+          <img
+            src="https://d2txn9w4uujjus.cloudfront.net/images/019b4019-8642-7b7a-b8ed-ef839bfc4eec/f6a5b8ecb28e1aa57d0a98b8a221fda76969ac9c--960w.jpg"
+            alt="elelem Answer Engine in action"
+            className="w-full object-cover"
+          />
+        </div>
+      </section>
+
+      {/* ── Brand Examples ── */}
+      <section className="py-20 bg-gray-50">
+        <div className="max-w-6xl mx-auto px-6">
+          <h2 className="text-3xl md:text-4xl font-bold text-center mb-3" style={{ color: BRAND.dark }}>
+            Join the World's Leading Brands like Netflix, Amazon, Sony,<br className="hidden md:block" /> Alibaba and more
+          </h2>
+          <p className="text-center text-gray-500 mb-3 font-medium">in providing a ChatGPT-style Answer Engine</p>
+          <p className="text-center font-bold mb-12" style={{ color: BRAND.blue }}>See REAL examples below</p>
+
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {brands.map((b) => (
+              <div key={b.name} className="bg-white rounded-2xl overflow-hidden shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
+                <img src={b.img} alt={b.name} className="w-full h-44 object-cover" />
+                <div className="p-5">
+                  <h3 className="font-bold text-lg mb-2" style={{ color: BRAND.dark }}>{b.name}</h3>
+                  <p className="text-sm text-gray-600 leading-relaxed">{b.desc}</p>
                 </div>
-                <div className="text-slate-500 text-sm mt-2">{stat.label}</div>
               </div>
             ))}
-          </motion.div>
+          </div>
         </div>
       </section>
 
-      {/* Features Section */}
-      <section id="features" className="py-20 px-6 bg-slate-900/50">
-        <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
-              Complete AI Visibility Platform
+      {/* ── Trust logos ── */}
+      <section className="py-16 border-y border-gray-100">
+        <div className="max-w-6xl mx-auto px-6 text-center">
+          <p className="text-sm text-gray-500 font-medium mb-8 uppercase tracking-widest">Trusted by leading demand generation, growth, and marketing teams</p>
+          <img
+            src="https://d2txn9w4uujjus.cloudfront.net/images/019b4019-8642-7b7a-b8ed-ef839bfc4eec/3a70a51ce4739e0408e194600daf7d4d66f83df0--960w.png"
+            alt="Trusted brands"
+            className="mx-auto max-w-3xl w-full opacity-80"
+          />
+        </div>
+      </section>
+
+      {/* ── Demand Intelligence ── */}
+      <section className="py-20">
+        <div className="max-w-6xl mx-auto px-6">
+          <div className="text-center mb-14">
+            <h2 className="text-3xl md:text-4xl font-bold mb-4" style={{ color: BRAND.dark }}>
+              Demand Intelligence — Your Competitive Advantage
             </h2>
-            <p className="text-slate-400 text-lg max-w-2xl mx-auto">
-              Everything you need to dominate AI search results and ensure your brand is the one being recommended.
+            <p className="text-gray-600 max-w-2xl mx-auto text-lg">
+              Capture real buyer prompts, answer instantly with context, and use every conversation to grow revenue instead of losing it to external AI.
             </p>
           </div>
-          
-          <div className="grid md:grid-cols-2 gap-6">
-            {features.map((feature, i) => (
-              <motion.div
-                key={i}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: i * 0.1 }}
-                viewport={{ once: true }}
-              >
-                <Card className="bg-slate-800/50 border-slate-700/50 hover:border-teal-500/50 transition-all duration-300 h-full">
-                  <CardContent className="p-8">
-                    <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-teal-500/20 to-cyan-500/20 flex items-center justify-center mb-6">
-                      <feature.icon className="w-6 h-6 text-teal-400" />
-                    </div>
-                    <h3 className="text-xl font-semibold text-white mb-3">{feature.title}</h3>
-                    <p className="text-slate-400 leading-relaxed">{feature.description}</p>
-                  </CardContent>
-                </Card>
-              </motion.div>
+
+          <div className="grid md:grid-cols-2 gap-8">
+            {features.map((f) => (
+              <div key={f.title} className="rounded-2xl border border-gray-100 overflow-hidden shadow-sm hover:shadow-md transition-shadow bg-white">
+                {f.img && (
+                  <img src={f.img} alt={f.title} className="w-full h-52 object-cover" />
+                )}
+                <div className="p-6">
+                  <h3 className="font-bold text-lg mb-2" style={{ color: BRAND.dark }}>{f.title}</h3>
+                  <p className="text-sm text-gray-600 leading-relaxed">{f.desc}</p>
+                </div>
+              </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* 5 Pillars Section */}
-      <section id="pillars" className="py-20 px-6">
-        <div className="max-w-6xl mx-auto">
+      {/* ── Measurement Framework ── */}
+      <section className="py-20 bg-gray-50">
+        <div className="max-w-6xl mx-auto px-6">
           <div className="grid md:grid-cols-2 gap-16 items-center">
             <div>
-              <h2 className="text-3xl md:text-4xl font-bold text-white mb-6">
-                The 5 Pillars of
-                <span className="block bg-gradient-to-r from-teal-400 to-cyan-400 bg-clip-text text-transparent">
-                  AI Search Visibility
-                </span>
+              <h2 className="text-3xl md:text-4xl font-bold mb-6" style={{ color: BRAND.dark }}>
+                Build a New Measurement Framework for the AI Era
               </h2>
-              <p className="text-slate-400 text-lg mb-8 leading-relaxed">
-                Our proprietary framework evaluates and optimizes your content across five critical dimensions that AI models use to determine which content to cite and recommend.
+              <p className="text-gray-600 leading-relaxed text-lg">
+                Clicks are declining, but influence is not. elelem helps you track AI-assisted engagement, measure the conversion lift from Answer Engine users, and connect buyer questions directly to revenue outcomes. Instead of reporting on traffic and hoping for conversions, you can finally see the real path: demand to answer to decision to revenue.
               </p>
-              <Link to={createPageUrl("Setup")}>
-                <Button className="bg-gradient-to-r from-teal-500 to-cyan-500 hover:from-teal-600 hover:to-cyan-600">
-                  Analyze Your Content
-                  <ArrowRight className="ml-2 w-4 h-4" />
-                </Button>
-              </Link>
             </div>
-            
-            <div className="space-y-4">
-              {pillars.map((pillar, i) => (
-                <motion.div
-                  key={i}
-                  initial={{ opacity: 0, x: 20 }}
-                  whileInView={{ opacity: 1, x: 0 }}
-                  transition={{ duration: 0.4, delay: i * 0.1 }}
-                  viewport={{ once: true }}
-                  className="flex items-center gap-4 p-4 rounded-xl bg-slate-800/50 border border-slate-700/50"
-                >
-                  <div className={`w-14 h-14 rounded-xl ${pillar.color} flex items-center justify-center text-white font-bold text-lg`}>
-                    {pillar.weight}
-                  </div>
-                  <div className="flex-1">
-                    <div className="text-white font-medium">{pillar.name}</div>
-                    <div className="h-2 bg-slate-700 rounded-full mt-2 overflow-hidden">
-                      <div 
-                        className={`h-full ${pillar.color} rounded-full`} 
-                        style={{ width: pillar.weight }}
-                      />
-                    </div>
-                  </div>
-                </motion.div>
-              ))}
+            <div className="rounded-2xl overflow-hidden shadow-lg">
+              <img
+                src="https://d2txn9w4uujjus.cloudfront.net/images/019b4019-8642-7b7a-b8ed-ef839bfc4eec/f25840f27fa3c3daa980a48ef42b60cf54d857b5--960w.jpg"
+                alt="Measurement framework"
+                className="w-full object-cover"
+              />
             </div>
           </div>
         </div>
       </section>
 
-      {/* CTA Section */}
-      <section className="py-20 px-6">
-        <div className="max-w-4xl mx-auto">
-          <Card className="bg-gradient-to-br from-teal-500/10 to-cyan-500/10 border-teal-500/20 overflow-hidden relative">
-            <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,_rgba(20,184,166,0.1),_transparent_50%)]" />
-            <CardContent className="p-12 text-center relative">
-              <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
-                Ready to Dominate AI Search?
-              </h2>
-              <p className="text-slate-400 text-lg mb-8 max-w-xl mx-auto">
-                Start your free trial today and discover how visible your brand really is in AI-generated responses.
-              </p>
-              <Link to={createPageUrl("Setup")}>
-                <Button size="lg" className="bg-gradient-to-r from-teal-500 to-cyan-500 hover:from-teal-600 hover:to-cyan-600 text-white text-lg px-10 py-6 shadow-xl shadow-teal-500/30">
-                  Start Free Trial
-                  <ArrowRight className="ml-2 w-5 h-5" />
-                </Button>
-              </Link>
-              <p className="text-slate-500 text-sm mt-4">No credit card required • 14-day free trial</p>
-            </CardContent>
-          </Card>
+      {/* ── FAQ ── */}
+      <section className="py-20">
+        <div className="max-w-3xl mx-auto px-6">
+          <h2 className="text-3xl font-bold text-center mb-12" style={{ color: BRAND.dark }}>
+            Frequently Asked Questions
+          </h2>
+          <div>
+            {faqs.map((f) => <FAQ key={f.q} q={f.q} a={f.a} />)}
+          </div>
         </div>
       </section>
 
-      {/* Footer */}
-      <footer className="py-12 px-6 border-t border-slate-800">
-        <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6">
-          <div className="flex items-center">
-            <img 
-              src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/6943f2bf67610e14801b112b/de87d19e0_elelem2025logoPrimary.png"
-              alt="elelem"
-              className="h-8 brightness-0 invert"
-            />
-          </div>
-          <div className="text-slate-500 text-sm">
-            © 2024 elelem. All rights reserved.
-          </div>
+      {/* ── SEO/Pipeline callout ── */}
+      <section className="py-16 bg-gray-50">
+        <div className="max-w-4xl mx-auto px-6 text-center">
+          <h2 className="text-2xl md:text-3xl font-bold mb-4" style={{ color: BRAND.dark }}>
+            If You Rely On SEO, Paid Search or Content for Pipeline
+          </h2>
+          <p className="text-gray-600 max-w-xl mx-auto text-lg leading-relaxed">
+            You must understand what buyers want before they convert. AI has transformed how demand is generated. Brands that adapt will convert more existing demand, while those that don't will notice it in their pipeline.
+          </p>
+        </div>
+      </section>
+
+      {/* ── CTA Footer ── */}
+      <section className="py-24" style={{ background: BRAND.dark }}>
+        <div className="max-w-3xl mx-auto px-6 text-center">
+          <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
+            Stop Losing High-Intent Buyers to AI.
+          </h2>
+          <p className="text-lg mb-2" style={{ color: BRAND.mint }}>Capture the questions shaping your pipeline.</p>
+          <p className="text-lg mb-2" style={{ color: BRAND.mint }}>Turn your website into an AI Answer Engine.</p>
+          <p className="text-lg mb-10" style={{ color: BRAND.mint }}>Make AI visibility measurable.</p>
+          <button
+            onClick={() => navigate(createPageUrl("Setup"))}
+            className="px-10 py-4 rounded-full text-base font-bold transition-opacity hover:opacity-90 shadow-xl"
+            style={{ background: `linear-gradient(to right, ${BRAND.blue}, ${BRAND.mint})`, color: BRAND.dark }}
+          >
+            See it in Action
+          </button>
+        </div>
+      </section>
+
+      {/* ── Footer ── */}
+      <footer className="py-8 border-t border-gray-100">
+        <div className="max-w-6xl mx-auto px-6 flex flex-col sm:flex-row items-center justify-between gap-4">
+          <img
+            src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/6943f2bf67610e14801b112b/de87d19e0_elelem2025logoPrimary.png"
+            alt="elelem"
+            className="h-6"
+          />
+          <p className="text-sm text-gray-400">© {new Date().getFullYear()} elelem. All rights reserved.</p>
         </div>
       </footer>
+
     </div>
   );
 }
