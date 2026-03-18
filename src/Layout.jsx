@@ -101,7 +101,7 @@ export default function Layout({ children, currentPageName }) {
   ];
 
   if (!showPlatformNav) {
-    return <>{children}</>;
+    return <GuidanceProvider>{children}</GuidanceProvider>;
   }
 
   const NavLink = ({ item, mobile = false }) => {
