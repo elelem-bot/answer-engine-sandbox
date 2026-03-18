@@ -604,20 +604,57 @@ Be realistic with scores - good content typically scores 60-85.`,
                       />
 
                       {rescoreResult && (
-                        <div className="rounded-lg border border-teal-200 bg-teal-50 p-4 space-y-2">
-                          <div className="flex items-center justify-between">
-                            <span className="text-sm font-semibold text-teal-700">Updated Retrieval Score</span>
-                            <span className="text-2xl font-bold text-teal-600">{rescoreResult.retrieval_score}/100</span>
+                        <div className="space-y-4">
+                          {/* Overall Score */}
+                          <div className="rounded-lg border border-gray-200 bg-white p-5">
+                            <p className="text-sm font-semibold text-gray-700 mb-3">Overall Retrievability Score</p>
+                            <div className="flex items-start gap-4">
+                              <span className="text-5xl font-bold text-teal-600 leading-none">{rescoreResult.retrieval_score}</span>
+                              <div className="flex-1 pt-1">
+                                <div className="w-full bg-gray-100 rounded-full h-3 mb-2">
+                                  <div
+                                    className="h-3 rounded-full bg-gradient-to-r from-teal-600 to-teal-500 transition-all duration-700"
+                                    style={{ width: `${rescoreResult.retrieval_score}%` }}
+                                  />
+                                </div>
+                                <p className="text-xs text-gray-500">
+                                  Original: 0 &nbsp;|&nbsp; Current: {rescoreResult.retrieval_score} &nbsp;|&nbsp;
+                                  <span className="text-teal-600 font-semibold">Change: +{rescoreResult.retrieval_score}</span>
+                                </p>
+                                <p className="text-xs text-gray-400 mt-1">
+                                  <span className="inline-block w-2 h-2 rounded-full bg-teal-600 mr-1" />Dark green = improvement&nbsp;&nbsp;
+                                  <span className="inline-block w-2 h-2 rounded-full bg-red-500 mr-1" />red = decrease vs original
+                                </p>
+                              </div>
+                            </div>
+                            {rescoreResult.summary && (
+                              <p className="text-xs text-gray-500 mt-3 border-t border-gray-100 pt-3">{rescoreResult.summary}</p>
+                            )}
                           </div>
-                          <p className="text-xs text-gray-600">{rescoreResult.summary}</p>
-                          {(rescoreResult.suggestions || []).length > 0 && (
-                            <ul className="space-y-1 pt-1">
-                              {rescoreResult.suggestions.map((s, i) => (
-                                <li key={i} className="text-xs text-gray-600 flex gap-2">
-                                  <span className="text-teal-500">→</span>{s}
-                                </li>
-                              ))}
-                            </ul>
+
+                          {/* Per-Prompt Scores */}
+                          {(rescoreResult.per_prompt_scores || []).length > 0 && (
+                            <div className="rounded-lg border border-gray-200 bg-white p-5">
+                              <p className="text-sm font-semibold text-gray-700 mb-1">Per-Prompt Scores</p>
+                              <p className="text-xs text-gray-400 mb-4">Scores for related prompts affected by this content</p>
+                              <div className="space-y-4">
+                                {rescoreResult.per_prompt_scores.map((item, i) => (
+                                  <div key={i} className="border-b border-gray-100 pb-4 last:border-0 last:pb-0">
+                                    <p className="text-sm text-gray-700 mb-2">{item.prompt}</p>
+                                    <div className="w-full bg-gray-100 rounded-full h-2.5 mb-1.5">
+                                      <div
+                                        className="h-2.5 rounded-full bg-teal-600 transition-all duration-700"
+                                        style={{ width: `${item.score}%` }}
+                                      />
+                                    </div>
+                                    <p className="text-xs text-gray-500">
+                                      Original: 0 &nbsp;|&nbsp; Current: {item.score} &nbsp;|&nbsp;
+                                      <span className="text-teal-600 font-semibold">Change: +{item.score}</span>
+                                    </p>
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
                           )}
                         </div>
                       )}
