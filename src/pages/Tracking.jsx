@@ -50,19 +50,19 @@ export default function Tracking() {
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="mb-8">
-          <h1 className={`text-2xl font-bold mb-2 ${isDark ? 'text-white' : 'text-gray-900'}`}>Tracked Prompts</h1>
-          <p className={isDark ? 'text-slate-400' : 'text-gray-600'}>Monitor the performance and ROI of your engineered content</p>
+          <h1 className={`text-2xl font-bold mb-2 ${text-gray-900}`}>Tracked Prompts</h1>
+          <p className={text-gray-600}>Monitor the performance and ROI of your engineered content</p>
         </div>
 
         {trackedPrompts.length === 0 ? (
           <Card className={bg-white border-gray-200}>
             <CardContent className="py-12">
               <div className="text-center">
-                <Target className={`w-16 h-16 mx-auto mb-4 ${isDark ? 'text-slate-600' : 'text-gray-400'}`} />
-                <h3 className={`text-lg font-semibold mb-2 ${isDark ? 'text-white' : 'text-gray-900'}`}>
+                <Target className={`w-16 h-16 mx-auto mb-4 ${text-gray-400}`} />
+                <h3 className={`text-lg font-semibold mb-2 ${text-gray-900}`}>
                   No Tracked Prompts Yet
                 </h3>
-                <p className={isDark ? 'text-slate-400' : 'text-gray-600'}>
+                <p className={text-gray-600}>
                   Start tracking prompts from the Answer Engineering page to monitor their performance over time.
                 </p>
               </div>
@@ -94,13 +94,13 @@ export default function Tracking() {
                             </Badge>
                           )}
                         </div>
-                        <CardTitle className={`text-lg ${isDark ? 'text-white' : 'text-gray-900'}`}>
+                        <CardTitle className={`text-lg ${text-gray-900}`}>
                           {prompt.prompt}
                         </CardTitle>
                         <div className="flex items-center gap-4 mt-3 text-sm">
                           <div className="flex items-center gap-1">
-                            <Calendar className={`w-4 h-4 ${isDark ? 'text-slate-500' : 'text-gray-500'}`} />
-                            <span className={isDark ? 'text-slate-400' : 'text-gray-600'}>
+                            <Calendar className={`w-4 h-4 ${text-gray-500}`} />
+                            <span className={text-gray-600}>
                               Started: {new Date(prompt.tracked_date).toLocaleDateString()}
                             </span>
                           </div>
@@ -108,10 +108,10 @@ export default function Tracking() {
                       </div>
                       <div className="flex flex-col items-end gap-2">
                         <div className="text-right">
-                          <div className={`text-2xl font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>
+                          <div className={`text-2xl font-bold ${text-gray-900}`}>
                             {prompt.brand_mentions_count || 0}
                           </div>
-                          <div className={`text-xs ${isDark ? 'text-slate-500' : 'text-gray-500'}`}>
+                          <div className={`text-xs ${text-gray-500}`}>
                             Brand Mentions
                           </div>
                         </div>
@@ -123,19 +123,19 @@ export default function Tracking() {
                       <div className="h-64">
                         <ResponsiveContainer width="100%" height="100%">
                           <LineChart data={prompt.visibility_trend}>
-                            <CartesianGrid strokeDasharray="3 3" stroke={isDark ? "#334155" : "#e5e7eb"} />
+                            <CartesianGrid strokeDasharray="3 3" stroke={"#e5e7eb"} />
                             <XAxis 
                               dataKey="date" 
-                              stroke={isDark ? "#94a3b8" : "#6b7280"}
+                              stroke={"#6b7280"}
                               tick={{ fontSize: 12 }}
                             />
-                            <YAxis stroke={isDark ? "#94a3b8" : "#6b7280"} />
+                            <YAxis stroke={"#6b7280"} />
                             <Tooltip
                               contentStyle={{
-                                backgroundColor: isDark ? '#1e293b' : '#ffffff',
-                                border: `1px solid ${isDark ? '#334155' : '#e5e7eb'}`,
-                                borderRadius: '8px',
-                                color: isDark ? '#fff' : '#000'
+                                backgroundColor: '#ffffff',
+                                                                   border: '1px solid #e5e7eb',
+                                                                   borderRadius: '8px',
+                                                                   color: '#000'
                               }}
                             />
                             <Line
@@ -158,9 +158,9 @@ export default function Tracking() {
                         </ResponsiveContainer>
                       </div>
                     ) : (
-                      <div className={`text-center py-8 border rounded-lg ${isDark ? 'border-slate-700 bg-slate-900/50' : 'border-gray-200 bg-gray-50'}`}>
-                        <LineChartIcon className={`w-12 h-12 mx-auto mb-3 ${isDark ? 'text-slate-600' : 'text-gray-400'}`} />
-                        <p className={`text-sm ${isDark ? 'text-slate-500' : 'text-gray-500'}`}>
+                      <div className={`text-center py-8 border rounded-lg ${border-gray-200 bg-gray-50}`}>
+                        <LineChartIcon className={`w-12 h-12 mx-auto mb-3 ${text-gray-400}`} />
+                        <p className={`text-sm ${text-gray-500}`}>
                           Trend data will appear here as we track this prompt over time
                         </p>
                       </div>
@@ -169,7 +169,7 @@ export default function Tracking() {
                     {/* Keywords */}
                     {prompt.keywords && prompt.keywords.length > 0 && (
                       <div className="mt-4 pt-4 border-t border-slate-700/50">
-                        <div className={`text-xs font-semibold mb-2 ${isDark ? 'text-slate-400' : 'text-gray-600'}`}>
+                        <div className={`text-xs font-semibold mb-2 ${text-gray-600}`}>
                           Target Keywords:
                         </div>
                         <div className="flex flex-wrap gap-2">
