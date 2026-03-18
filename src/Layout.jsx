@@ -168,7 +168,8 @@ export default function Layout({ children, currentPageName }) {
   );
 
   return (
-    <GuidanceProvider><div className="min-h-screen flex flex-col bg-gray-50">
+    <GuidanceProvider>
+    <div className="min-h-screen flex flex-col bg-gray-50">
       <style>{`
         .nav-active {
           background: linear-gradient(to right, rgba(45,198,254,0.12), rgba(129,251,239,0.12)) !important;
