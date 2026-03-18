@@ -511,10 +511,10 @@ Be accurate - only list brands you actually mentioned in your response.`,
           <CardContent>
             <div className="space-y-4">
               {prompts.filter(p => p.gemini_response).map((prompt, i) => (
-                <div key={i} className={`border rounded-lg p-4 ${border-gray-200 bg-gray-50}`}>
+                <div key={i} className="border rounded-lg p-4 border-gray-200 bg-gray-50">
                   <div className="flex items-start justify-between gap-4 mb-3">
                     <div className="flex-1">
-                      <p className={`font-semibold mb-1 ${text-gray-900}`}>{prompt.prompt}</p>
+                      <p className="font-semibold mb-1 text-gray-900">{prompt.prompt}</p>
                       <div className="flex gap-2 flex-wrap">
                         {prompt.cited_brands?.slice(0, 3).map((cb, j) => (
                           <Badge 

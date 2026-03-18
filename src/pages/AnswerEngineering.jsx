@@ -560,7 +560,7 @@ Focus on:
                   </p>
                   <div className="space-y-3">
                     {optimizationResult.changes.map((change, i) => (
-                      <div key={i} className={`p-4 rounded-lg border ${bg-gray-50 border-gray-200}`}>
+                      <div key={i} className="p-4 rounded-lg border bg-gray-50 border-gray-200">
                         <div className="flex items-start gap-3 mb-3">
                           <Badge className="bg-teal-500/20 text-teal-400 border-teal-500/30">
                             {change.section}
@@ -662,7 +662,7 @@ Focus on:
                   </p>
                   <div className="space-y-3">
                     {newPageResult.structure.map((section, i) => (
-                      <div key={i} className={`p-4 rounded-lg border ${bg-gray-50 border-gray-200}`}>
+                      <div key={i} className="p-4 rounded-lg border bg-gray-50 border-gray-200">
                         <div className="flex items-start gap-3 mb-3">
                           <Badge className="bg-purple-500/20 text-purple-400 border-purple-500/30">
                             {section.section_name}

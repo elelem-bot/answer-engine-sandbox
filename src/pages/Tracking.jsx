@@ -158,9 +158,9 @@ export default function Tracking() {
                         </ResponsiveContainer>
                       </div>
                     ) : (
-                      <div className={`text-center py-8 border rounded-lg ${border-gray-200 bg-gray-50}`}>
-                        <LineChartIcon className={`w-12 h-12 mx-auto mb-3 ${text-gray-400}`} />
-                        <p className={`text-sm ${text-gray-500}`}>
+                      <div className="text-center py-8 border rounded-lg border-gray-200 bg-gray-50">
+                        <LineChartIcon className="w-12 h-12 mx-auto mb-3 text-gray-400" />
+                        <p className="text-sm text-gray-500">
                           Trend data will appear here as we track this prompt over time
                         </p>
                       </div>

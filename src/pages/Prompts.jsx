@@ -209,7 +209,7 @@ export default function Prompts() {
               placeholder="Search prompts..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className={`pl-10 ${bg-white border-gray-300 text-gray-900}`}
+              className="pl-10 bg-white border-gray-300 text-gray-900"
             />
           </div>
           <Select value={funnelStage} onValueChange={setFunnelStage}>
