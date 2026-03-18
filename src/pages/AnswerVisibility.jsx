@@ -706,8 +706,8 @@ Be accurate - only list brands you actually mentioned in your response.`,
                         </div>
                       ) : (
                         <div className={`text-center py-8 border rounded-lg ${isDark ? 'border-slate-700 bg-slate-900/50' : 'border-gray-200 bg-gray-50'}`}>
-                          <LineChartIcon className={`w-12 h-12 mx-auto mb-3 ${text-gray-400}`} />
-                          <p className={`text-sm ${text-gray-500}`}>
+                          <LineChartIcon className="w-12 h-12 mx-auto mb-3 text-gray-400" />
+                          <p className="text-sm text-gray-500">
                             Trend data will appear here as we track this prompt over time
                           </p>
                         </div>
