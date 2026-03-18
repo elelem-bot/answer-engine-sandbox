@@ -556,7 +556,7 @@ Return JSON format:
                 type="submit"
                 size="lg"
                 disabled={isGenerating}
-                className="bg-gradient-to-r from-teal-500 to-cyan-500 hover:from-teal-600 hover:to-cyan-600 text-white px-8"
+                className="btn-primary px-8"
               >
                 {isGenerating ? (
                   <>
