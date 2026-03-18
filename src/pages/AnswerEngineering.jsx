@@ -404,15 +404,26 @@ Be realistic with scores - good content typically scores 60-85.`,
                   <table className="w-full">
                     <thead>
                       <tr className="border-b border-gray-200">
-                        <th className="text-left text-sm font-medium p-4 text-gray-600">Prompt</th>
-                        <th className="text-center text-sm font-medium p-4 text-gray-600">Search Signal</th>
-                        <th className="text-center text-sm font-medium p-4 text-gray-600">Cluster Size</th>
-                        <th className="text-center text-sm font-medium p-4 text-gray-600">Share of Citations</th>
-
+                        <th className="text-left text-sm font-medium p-4 text-gray-600">
+                          Prompt
+                          <GuidanceDot tip="The buyer question or search query. REAL-tagged prompts come from actual customer interactions." position="bottom" />
+                        </th>
+                        <th className="text-center text-sm font-medium p-4 text-gray-600 cursor-pointer select-none hover:text-gray-900" onClick={() => togglePromptSort("search_signal")}>
+                          Search Signal <SortIcon col="search_signal" sort={promptSort} />
+                          <GuidanceDot tip="Indicates how frequently this type of prompt is searched. Higher = more demand. Sort to prioritise high-demand prompts." position="bottom" />
+                        </th>
+                        <th className="text-center text-sm font-medium p-4 text-gray-600 cursor-pointer select-none hover:text-gray-900" onClick={() => togglePromptSort("cluster_size")}>
+                          Cluster Size <SortIcon col="cluster_size" sort={promptSort} />
+                          <GuidanceDot tip="Number of related prompts in this topic cluster. Larger clusters mean more optimisation opportunities." position="bottom" />
+                        </th>
+                        <th className="text-center text-sm font-medium p-4 text-gray-600 cursor-pointer select-none hover:text-gray-900" onClick={() => togglePromptSort("share")}>
+                          Share of Citations <SortIcon col="share" sort={promptSort} />
+                          <GuidanceDot tip="What % of AI citations in this topic currently mention your brand. Sort ascending to find your biggest gaps." position="bottom" />
+                        </th>
                       </tr>
                     </thead>
                     <tbody>
-                      {filteredPrompts.map((prompt, i) => (
+                      {sortedPrompts.map((prompt, i) => (
                         <tr
                           key={i}
                           onClick={() => handleSelectPrompt(prompt)}
