@@ -1,4 +1,6 @@
 import React from "react";
+// Brand colours: #2DC6FE (primary blue), #81FBEF (mint/cyan), #082D35 (logo dark), #FFFFFF (background)
+// Font: Google Sans
 import { Link } from "react-router-dom";
 import { createPageUrl } from "@/utils";
 import { 
