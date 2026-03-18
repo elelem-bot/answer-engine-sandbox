@@ -900,20 +900,32 @@ Consider buyer intent when determining funnel stage.`,
                 )}
                       </AnimatePresence>
 
-                      {isAsking && (
+                      {isAsking && !streamingText && (
                 <motion.div
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   className="flex justify-start"
                 >
-                  <div className="bg-slate-100 rounded-2xl px-5 py-3 shadow-sm">
-                    <div className="flex items-center gap-2">
-                      <Loader2 
-                        className="w-4 h-4 animate-spin"
-                        style={{ color: brandColor }}
-                      />
-                      <span className="text-slate-600">Thinking...</span>
-                    </div>
+                  <div className="flex items-center gap-2 px-2 py-1">
+                    <Loader2 
+                      className="w-4 h-4 animate-spin"
+                      style={{ color: brandColor }}
+                    />
+                    <span className="text-slate-500 text-sm">Thinking...</span>
+                  </div>
+                </motion.div>
+                      )}
+                      {streamingText && (
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  className="flex justify-start w-full"
+                >
+                  <div className="w-full px-2 py-1">
+                    <p className="whitespace-pre-wrap leading-relaxed text-slate-800 text-[15px]">
+                      {streamingText}
+                      <span className="inline-block w-0.5 h-4 bg-slate-400 ml-0.5 animate-pulse" />
+                    </p>
                   </div>
                 </motion.div>
                       )}
