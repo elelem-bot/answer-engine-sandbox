@@ -655,10 +655,10 @@ Be accurate - only list brands you actually mentioned in your response.`,
                         </div>
                         <div className="flex flex-col items-end gap-2">
                           <div className="text-right">
-                            <div className={`text-2xl font-bold ${text-gray-900}`}>
+                            <div className="text-2xl font-bold text-gray-900">
                               {prompt.brand_mentions_count || 0}
                             </div>
-                            <div className={`text-xs ${text-gray-500}`}>
+                            <div className="text-xs text-gray-500">
                               Brand Mentions
                             </div>
                           </div>
