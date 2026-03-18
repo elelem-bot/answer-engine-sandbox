@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { base44 } from "@/api/base44Client";
 import { 
   Search, 
@@ -9,13 +9,16 @@ import {
   Copy,
   Check,
   RotateCcw,
-  AlignLeft
+  AlignLeft,
+  ChevronUp,
+  ChevronDown as ChevronDownIcon
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import GuidanceDot from "@/components/GuidanceDot";
 
 export default function AnswerEngineering() {
   const [isLoading, setIsLoading] = useState(true);
