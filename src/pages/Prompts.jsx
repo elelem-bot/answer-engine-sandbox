@@ -175,10 +175,10 @@ export default function Prompts() {
         {/* Header */}
         <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4 mb-8">
           <div>
-            <h1 className={`text-2xl font-bold mb-2 ${isDark ? 'text-white' : 'text-gray-900'}`}>
+            <h1 className={`text-2xl font-bold mb-2 ${text-gray-900}`}>
               Your Prompts
             </h1>
-            <p className={isDark ? 'text-slate-400' : 'text-gray-600'}>
+            <p className={text-gray-600}>
               Review and manage all generated prompts
             </p>
           </div>
@@ -193,7 +193,7 @@ export default function Prompts() {
             <Button 
               variant="ghost" 
               size="icon"
-              className={isDark ? 'text-white hover:bg-slate-800' : 'text-gray-900 hover:bg-gray-100'}
+              className={text-gray-900 hover:bg-gray-100}
               onClick={() => navigate(createPageUrl("Setup"))}
             >
               <Settings className="w-5 h-5" />
@@ -209,11 +209,11 @@ export default function Prompts() {
               placeholder="Search prompts..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className={`pl-10 ${isDark ? 'bg-slate-800 border-slate-700 text-white' : 'bg-white border-gray-300 text-gray-900'}`}
+              className={`pl-10 ${bg-white border-gray-300 text-gray-900}`}
             />
           </div>
           <Select value={funnelStage} onValueChange={setFunnelStage}>
-            <SelectTrigger className={`w-full sm:w-48 ${isDark ? 'bg-slate-800 border-slate-700 text-white' : 'bg-white border-gray-300 text-gray-900'}`}>
+            <SelectTrigger className={`w-full sm:w-48 ${bg-white border-gray-300 text-gray-900}`}>
               <SelectValue placeholder="Funnel stage" />
             </SelectTrigger>
             <SelectContent>
@@ -224,7 +224,7 @@ export default function Prompts() {
             </SelectContent>
           </Select>
           <Select value={sourceTag} onValueChange={setSourceTag}>
-            <SelectTrigger className={`w-full sm:w-48 ${isDark ? 'bg-slate-800 border-slate-700 text-white' : 'bg-white border-gray-300 text-gray-900'}`}>
+            <SelectTrigger className={`w-full sm:w-48 ${bg-white border-gray-300 text-gray-900}`}>
               <SelectValue placeholder="Source tag" />
             </SelectTrigger>
             <SelectContent>
@@ -238,30 +238,30 @@ export default function Prompts() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
           <Card className={bg-white border-gray-200}>
             <CardContent className="pt-6">
-              <div className={`text-sm mb-1 ${isDark ? 'text-slate-400' : 'text-gray-600'}`}>Total Prompts</div>
-              <div className={`text-3xl font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>{filteredPrompts.length}</div>
+              <div className={`text-sm mb-1 ${text-gray-600}`}>Total Prompts</div>
+              <div className={`text-3xl font-bold ${text-gray-900}`}>{filteredPrompts.length}</div>
             </CardContent>
           </Card>
           <Card className={bg-white border-gray-200}>
             <CardContent className="pt-6">
-              <div className={`text-sm mb-1 ${isDark ? 'text-slate-400' : 'text-gray-600'}`}>Top of Funnel</div>
-              <div className={`text-3xl font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>
+              <div className={`text-sm mb-1 ${text-gray-600}`}>Top of Funnel</div>
+              <div className={`text-3xl font-bold ${text-gray-900}`}>
                 {filteredPrompts.filter(p => p.funnel_stage === "top").length}
               </div>
             </CardContent>
           </Card>
           <Card className={bg-white border-gray-200}>
             <CardContent className="pt-6">
-              <div className={`text-sm mb-1 ${isDark ? 'text-slate-400' : 'text-gray-600'}`}>Middle of Funnel</div>
-              <div className={`text-3xl font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>
+              <div className={`text-sm mb-1 ${text-gray-600}`}>Middle of Funnel</div>
+              <div className={`text-3xl font-bold ${text-gray-900}`}>
                 {filteredPrompts.filter(p => p.funnel_stage === "middle").length}
               </div>
             </CardContent>
           </Card>
           <Card className={bg-white border-gray-200}>
             <CardContent className="pt-6">
-              <div className={`text-sm mb-1 ${isDark ? 'text-slate-400' : 'text-gray-600'}`}>Bottom of Funnel</div>
-              <div className={`text-3xl font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>
+              <div className={`text-sm mb-1 ${text-gray-600}`}>Bottom of Funnel</div>
+              <div className={`text-3xl font-bold ${text-gray-900}`}>
                 {filteredPrompts.filter(p => p.funnel_stage === "bottom").length}
               </div>
             </CardContent>
@@ -271,12 +271,12 @@ export default function Prompts() {
         {/* Prompts List */}
         <Card className={bg-white border-gray-200}>
           <CardHeader>
-            <CardTitle className={isDark ? 'text-white' : 'text-gray-900'}>All Prompts</CardTitle>
+            <CardTitle className={text-gray-900}>All Prompts</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-3">
               {filteredPrompts.length === 0 ? (
-                <p className={`text-center py-8 ${isDark ? 'text-slate-400' : 'text-gray-600'}`}>No prompts found</p>
+                <p className={`text-center py-8 ${text-gray-600}`}>No prompts found</p>
               ) : (
                 filteredPrompts.map((prompt, i) => (
                   <motion.div
@@ -284,11 +284,11 @@ export default function Prompts() {
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: i * 0.05 }}
-                    className={`border rounded-lg p-4 transition-colors ${isDark ? 'border-slate-700/50 bg-slate-900/50 hover:bg-slate-900/80' : 'border-gray-200 bg-gray-50 hover:bg-gray-100'}`}
+                    className={`border rounded-lg p-4 transition-colors ${border-gray-200 bg-gray-50 hover:bg-gray-100}`}
                   >
                     <div className="flex items-start justify-between gap-4">
                       <div className="flex-1">
-                        <p className={`font-medium mb-2 ${isDark ? 'text-white' : 'text-gray-900'}`}>{prompt.prompt}</p>
+                        <p className={`font-medium mb-2 ${text-gray-900}`}>{prompt.prompt}</p>
                         <div className="flex gap-2 flex-wrap">
                           {prompt.is_tracked && (
                             <Badge className="bg-gradient-to-r from-teal-500/20 to-cyan-500/20 text-teal-400 border-teal-500/30">
@@ -362,20 +362,20 @@ export default function Prompts() {
 
         {/* Add Prompt Dialog */}
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-          <DialogContent className={isDark ? 'bg-slate-800 border-slate-700 text-white' : 'bg-white border-gray-200 text-gray-900'}>
+          <DialogContent className={bg-white border-gray-200 text-gray-900}>
             <DialogHeader>
-              <DialogTitle className={isDark ? 'text-white' : 'text-gray-900'}>Add Custom Prompt</DialogTitle>
+              <DialogTitle className={text-gray-900}>Add Custom Prompt</DialogTitle>
             </DialogHeader>
             <div className="space-y-4">
               <div>
-                <p className={`text-sm mb-3 ${isDark ? 'text-slate-400' : 'text-gray-600'}`}>
+                <p className={`text-sm mb-3 ${text-gray-600}`}>
                   Enter a buyer question or prompt. We'll automatically analyze it to determine the funnel stage, keywords, and topics.
                 </p>
                 <Textarea
                   placeholder="e.g., What are the best CRM tools for small businesses?"
                   value={newPromptText}
                   onChange={(e) => setNewPromptText(e.target.value)}
-                  className={`min-h-[120px] ${isDark ? 'bg-slate-900 border-slate-700 text-white' : 'bg-white border-gray-300 text-gray-900'}`}
+                  className={`min-h-[120px] ${bg-white border-gray-300 text-gray-900}`}
                 />
               </div>
             </div>
@@ -386,7 +386,7 @@ export default function Prompts() {
                   setIsDialogOpen(false);
                   setNewPromptText("");
                 }}
-                className={isDark ? 'border-slate-700 text-slate-300' : 'border-gray-300 text-gray-700'}
+                className={border-gray-300 text-gray-700}
               >
                 Cancel
               </Button>
