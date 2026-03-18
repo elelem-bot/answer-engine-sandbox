@@ -580,7 +580,7 @@ Be accurate - only list brands you actually mentioned in your response.`,
         {/* Top Topics */}
         <Card className="bg-white border-gray-200">
           <CardHeader>
-            <CardTitle className={`text-lg ${text-gray-900}`}>Top Topics in Responses</CardTitle>
+            <CardTitle className="text-lg text-gray-900">Top Topics in Responses</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="flex flex-wrap gap-2">
