@@ -11,16 +11,14 @@ import {
   X,
   LogOut,
   Search,
-  Sun,
-  Moon,
+
   BarChart3,
   ChevronDown,
   ChevronRight
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import { Switch } from "@/components/ui/switch";
-import { Label } from "@/components/ui/label";
+
 
 const platformPages = ["AnswerEngine", "Prompts", "AnswerEngineering", "AnswerVisibility", "Analytics", "Tracking", "PromptResearch"];
 
