@@ -12,49 +12,78 @@
   font-family: 'Google Sans', 'Product Sans', ui-sans-serif, system-ui, sans-serif !important;
 }
 
-/* ─── Button System ─────────────────────────────────── */
+/* ─── Button System — ALL buttons are pill-shaped ────── */
 
-/* Primary / CTA button — gradient pill (See Demo style) */
-.btn-primary,
-button.btn-primary,
-a.btn-primary {
+/* Make every shadcn/ui Button pill-shaped by default */
+button[class*="inline-flex"][class*="items-center"],
+a[class*="inline-flex"][class*="items-center"] {
+  border-radius: 9999px !important;
+}
+
+/* Default (primary) — gradient #2DC6FE → #81FBEF, dark text */
+button[class*="bg-primary"],
+a[class*="bg-primary"] {
+  background: linear-gradient(to right, #2DC6FE, #81FBEF) !important;
+  color: #082D35 !important;
+  border: none !important;
+  font-weight: 600 !important;
+}
+
+/* Destructive keeps its own red — just pill it (handled above) */
+
+/* Outline — white bg, dark border */
+button[class*="border-input"],
+a[class*="border-input"] {
+  background: #FFFFFF !important;
+  color: #082D35 !important;
+  border: 1.5px solid #082D35 !important;
+  font-weight: 500 !important;
+}
+button[class*="border-input"]:hover,
+a[class*="border-input"]:hover {
+  background: #f5f5f5 !important;
+}
+
+/* Secondary — solid dark #082D35 */
+button[class*="bg-secondary"],
+a[class*="bg-secondary"] {
+  background: #082D35 !important;
+  color: #FFFFFF !important;
+  border: none !important;
+  font-weight: 600 !important;
+}
+button[class*="bg-secondary"]:hover,
+a[class*="bg-secondary"]:hover {
+  background: #0a3a45 !important;
+}
+
+/* Named helper classes */
+.btn-primary, button.btn-primary, a.btn-primary {
   background: linear-gradient(to right, #2DC6FE, #81FBEF) !important;
   color: #082D35 !important;
   border: none !important;
   border-radius: 9999px !important;
   font-weight: 600 !important;
 }
-.btn-primary:hover {
-  opacity: 0.9 !important;
-}
+.btn-primary:hover { opacity: 0.9 !important; }
 
-/* Secondary button — solid dark pill (Contact Us style) */
-.btn-secondary,
-button.btn-secondary,
-a.btn-secondary {
+.btn-secondary, button.btn-secondary, a.btn-secondary {
   background: #082D35 !important;
   color: #FFFFFF !important;
   border: none !important;
   border-radius: 9999px !important;
   font-weight: 600 !important;
 }
-.btn-secondary:hover {
-  background: #0a3a45 !important;
-}
+.btn-secondary:hover { background: #0a3a45 !important; }
 
-/* Outline button — white bg, dark border (Login style) */
-.btn-outline-brand,
-button.btn-outline-brand,
-a.btn-outline-brand {
+.btn-outline-brand, button.btn-outline-brand, a.btn-outline-brand {
   background: #FFFFFF !important;
   color: #082D35 !important;
-  border: 2px solid #082D35 !important;
+  border: 1.5px solid #082D35 !important;
   border-radius: 9999px !important;
   font-weight: 500 !important;
 }
-.btn-outline-brand:hover {
-  background: #f5f5f5 !important;
-}
+.btn-outline-brand:hover { background: #f5f5f5 !important; }
 
 /* ─── Override teal/cyan Tailwind classes with brand colours ─ */
 
