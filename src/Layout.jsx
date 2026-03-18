@@ -35,6 +35,30 @@ const platformPages = ["AnswerEngine", "Prompts", "AnswerEngineering", "AnswerVi
 // Mock projects — in a real app these would come from the Company entity
 const PROJECTS = ["PlayStation", "Acme Corp", "Demo Project"];
 
+function GuidanceToggle() {
+  const { guidanceMode, setGuidanceMode } = useGuidance();
+  return (
+    <button
+      onClick={() => setGuidanceMode(!guidanceMode)}
+      title={guidanceMode ? "Disable guidance mode" : "Enable guidance mode"}
+      className="flex items-center gap-1.5 h-8 px-3 rounded-full text-xs font-semibold transition-all"
+      style={guidanceMode
+        ? { background: "linear-gradient(to right, #2DC6FE, #81FBEF)", color: "#082D35", border: "none" }
+        : { background: "#f3f4f6", color: "#6b7280", border: "1px solid #e5e7eb" }
+      }
+    >
+      <HelpCircle className="w-3.5 h-3.5" />
+      <span className="hidden sm:inline">Guide</span>
+      {guidanceMode && (
+        <span className="relative flex h-2 w-2">
+          <span className="animate-ping absolute inline-flex h-full w-full rounded-full opacity-75" style={{ backgroundColor: "#082D35" }} />
+          <span className="relative inline-flex rounded-full h-2 w-2" style={{ backgroundColor: "#082D35" }} />
+        </span>
+      )}
+    </button>
+  );
+}
+
 export default function Layout({ children, currentPageName }) {
   const navigate = useNavigate();
   const [mobileOpen, setMobileOpen] = React.useState(false);
