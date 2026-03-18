@@ -88,10 +88,27 @@ a[class*="bg-secondary"]:hover {
 /* ─── Override teal/cyan Tailwind classes with brand colours ─ */
 
 /* Gradient buttons (from-teal-500 to-cyan-500 pattern) */
+[class*="from-teal-"],
+[class*="to-cyan-"],
 [class*="from-teal-"][class*="to-cyan-"] {
   background: linear-gradient(to right, #2DC6FE, #81FBEF) !important;
   color: #082D35 !important;
   border-radius: 9999px !important;
+}
+
+/* Hover overrides — keep brand gradient on hover too */
+[class*="hover:from-teal-"]:hover,
+[class*="hover:to-cyan-"]:hover {
+  background: linear-gradient(to right, #1ab0e8, #6de8dc) !important;
+  color: #082D35 !important;
+}
+
+/* bg-teal-* buttons should also be pill shaped */
+button[class*="bg-teal-"],
+a[class*="bg-teal-"] {
+  border-radius: 9999px !important;
+  background-color: #2DC6FE !important;
+  color: #082D35 !important;
 }
 
 /* Solid teal fills */
