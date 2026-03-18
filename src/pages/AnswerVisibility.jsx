@@ -331,7 +331,7 @@ Be accurate - only list brands you actually mentioned in your response.`,
             </div>
 
             <div className="flex flex-col sm:flex-row sm:items-center gap-3">
-              <span className={`text-sm ${text-gray-600}`}>Funnel Stage:</span>
+              <span className="text-sm text-gray-600">Funnel Stage:</span>
               <div className="flex gap-2 flex-wrap">
                 {["top", "middle", "bottom"].map((stage) => (
                   <Button
