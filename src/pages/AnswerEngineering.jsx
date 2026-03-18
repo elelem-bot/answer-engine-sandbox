@@ -354,6 +354,7 @@ Focus on:
         <div className={`grid gap-6 ${optimizationResult || newPageResult ? 'lg:grid-cols-1' : 'lg:grid-cols-2'}`}>
           {/* Left Column - Prompts */}
           {!optimizationResult && !newPageResult && <div>
+            <h2 className="text-base font-semibold text-gray-900 mb-3">Prompts</h2>
 
             {/* Prompts Table */}
             <Card className="bg-white border-gray-200">
@@ -424,13 +425,8 @@ Focus on:
 
           {/* Right Column - Best Matching Pages */}
           {!optimizationResult && !newPageResult && <div>
+            <h2 className="text-base font-semibold text-gray-900 mb-3">Best Matching Pages</h2>
             <Card className="bg-white border-gray-200">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2 text-gray-900">
-                  <FileText className="w-5 h-5" />
-                  Best Matching Pages
-                </CardTitle>
-              </CardHeader>
               <CardContent className="p-0">
                 {selectedPrompt ? (
                   <>
@@ -438,7 +434,7 @@ Focus on:
                       <table className="w-full">
                         <thead>
                           <tr className="border-b border-gray-200">
-                            <th className="text-left text-sm font-medium p-4 text-gray-600">Page</th>
+                            <th className="text-left text-sm font-medium p-4 text-gray-600">Pages</th>
                             <th className="text-center text-sm font-medium p-4 text-gray-600">Citations</th>
                             <th className="text-center text-sm font-medium p-4 text-gray-600">Retrieval Score</th>
                           </tr>
