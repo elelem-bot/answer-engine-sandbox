@@ -146,7 +146,7 @@ export default function Analytics() {
   }
 
   const StatCard = ({ icon: Icon, title, value, change, trend, subtitle }) => (
-    <Card className={bg-white border-gray-200}>
+    <Card className="bg-white border-gray-200">
       <CardContent className="p-6">
         <div className="flex items-start justify-between">
           <div className="flex-1">
@@ -265,7 +265,7 @@ export default function Analytics() {
 
         {/* Trend Charts */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-          <Card className={bg-white border-gray-200}>
+          <Card className="bg-white border-gray-200">
             <CardHeader>
               <CardTitle className={text-gray-900}>Questions & Conversions Trend</CardTitle>
             </CardHeader>
@@ -291,7 +291,7 @@ export default function Analytics() {
             </CardContent>
           </Card>
 
-          <Card className={bg-white border-gray-200}>
+          <Card className="bg-white border-gray-200">
             <CardHeader>
               <CardTitle className={text-gray-900}>Funnel Stage Distribution</CardTitle>
             </CardHeader>
@@ -419,7 +419,7 @@ export default function Analytics() {
 
         {/* Top Topics and Top Prompts */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-          <Card className={bg-white border-gray-200}>
+          <Card className="bg-white border-gray-200">
             <CardHeader>
               <CardTitle className={text-gray-900}>Top Topics</CardTitle>
             </CardHeader>
@@ -442,7 +442,7 @@ export default function Analytics() {
             </CardContent>
           </Card>
 
-          <Card className={bg-white border-gray-200}>
+          <Card className="bg-white border-gray-200">
             <CardHeader>
               <CardTitle className={text-gray-900}>Recent High-Value Questions</CardTitle>
             </CardHeader>
@@ -488,7 +488,7 @@ export default function Analytics() {
 
         {/* Additional Insights */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <Card className={bg-white border-gray-200}>
+          <Card className="bg-white border-gray-200">
             <CardHeader>
               <CardTitle className={text-gray-900}>Engagement Quality</CardTitle>
             </CardHeader>
@@ -540,7 +540,7 @@ export default function Analytics() {
             </CardContent>
           </Card>
 
-          <Card className={bg-white border-gray-200}>
+          <Card className="bg-white border-gray-200">
             <CardHeader>
               <CardTitle className={text-gray-900}>Key Insights</CardTitle>
             </CardHeader>

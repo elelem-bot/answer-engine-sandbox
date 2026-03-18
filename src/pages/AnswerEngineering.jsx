@@ -353,7 +353,7 @@ Focus on:
             placeholder="Search prompts..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className={`pl-10 ${bg-white border-gray-300 text-gray-900}`}
+            className="pl-10 bg-white border-gray-300 text-gray-900"
           />
         </div>
 
@@ -362,7 +362,7 @@ Focus on:
           {!optimizationResult && !newPageResult && <div>
 
             {/* Prompts Table */}
-            <Card className={bg-white border-gray-200}>
+            <Card className="bg-white border-gray-200">
               <CardContent className="p-0">
                 <div className="overflow-x-auto">
                   <table className="w-full">
@@ -428,7 +428,7 @@ Focus on:
 
           {/* Right Column - Best Matching Pages */}
           {!optimizationResult && !newPageResult && <div>
-            <Card className={bg-white border-gray-200}>
+            <Card className="bg-white border-gray-200">
               <CardHeader>
                 <CardTitle className={`flex items-center gap-2 ${text-gray-900}`}>
                   <FileText className="w-5 h-5" />
@@ -546,7 +546,7 @@ Focus on:
           </div>
 
               {/* Changes Summary */}
-              <Card className={bg-white border-gray-200}>
+              <Card className="bg-white border-gray-200">
                 <CardHeader>
                   <CardTitle className={`flex items-center gap-2 ${text-gray-900}`}>
                     <CheckCircle className="w-5 h-5 text-teal-500" />
@@ -588,7 +588,7 @@ Focus on:
 
               {/* Side by Side Comparison */}
               <div className="grid lg:grid-cols-2 gap-6">
-                <Card className={bg-white border-gray-200}>
+                <Card className="bg-white border-gray-200">
                   <CardHeader>
                     <CardTitle className={`text-sm ${text-gray-900}`}>Original Content</CardTitle>
                   </CardHeader>
@@ -648,7 +648,7 @@ Focus on:
           </div>
 
               {/* Content Structure Summary */}
-              <Card className={bg-white border-gray-200}>
+              <Card className="bg-white border-gray-200">
                 <CardHeader>
                   <CardTitle className={`flex items-center gap-2 ${text-gray-900}`}>
                     <CheckCircle className="w-5 h-5 text-purple-500" />
