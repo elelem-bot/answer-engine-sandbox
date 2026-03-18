@@ -605,11 +605,11 @@ Be accurate - only list brands you actually mentioned in your response.`,
             <Card className="bg-white border-gray-200">
               <CardContent className="py-12">
                 <div className="text-center">
-                  <TrendingUp className={`w-16 h-16 mx-auto mb-4 ${text-gray-400}`} />
-                  <h3 className={`text-lg font-semibold mb-2 ${text-gray-900}`}>
+                  <TrendingUp className="w-16 h-16 mx-auto mb-4 text-gray-400" />
+                  <h3 className="text-lg font-semibold mb-2 text-gray-900">
                     No Tracked Prompts Yet
                   </h3>
-                  <p className={text-gray-600}>
+                  <p className="text-gray-600">
                     Start tracking prompts from the Prompts page to monitor their performance over time.
                   </p>
                 </div>
