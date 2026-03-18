@@ -328,353 +328,313 @@ Be realistic with scores - good content typically scores 60-85.`,
           />
         </div>
 
-        {/* Main 3-col or 2-col layout */}
-        {!showWorkspace ? (
-          // Selection phase: Prompts + Pages side by side
-          <div className="grid lg:grid-cols-2 gap-6">
-            {/* Left: Prompts */}
-            <div>
-              <h2 className="text-base font-semibold text-gray-900 mb-3">Prompts</h2>
-              <Card className="bg-white border-gray-200">
-                <CardContent className="p-0">
-                  <div className="overflow-x-auto">
-                    <table className="w-full">
-                      <thead>
-                        <tr className="border-b border-gray-200">
-                          <th className="text-left text-sm font-medium p-4 text-gray-600">Prompt</th>
-                          <th className="text-center text-sm font-medium p-4 text-gray-600">Search Signal</th>
-                          <th className="text-center text-sm font-medium p-4 text-gray-600">Cluster Size</th>
-                          <th className="text-center text-sm font-medium p-4 text-gray-600">Share of Citations</th>
-                          <th className="text-center text-sm font-medium p-4 text-gray-600">elelem Score</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {filteredPrompts.map((prompt, i) => (
-                          <tr
-                            key={i}
-                            onClick={() => handleSelectPrompt(prompt)}
-                            className={`border-b last:border-0 cursor-pointer transition-colors border-gray-200 ${selectedPrompt?.id === prompt.id ? "bg-teal-500/10" : "hover:bg-gray-50"}`}
-                          >
-                            <td className="p-4">
-                              <div className="space-y-2">
-                                <div className="flex items-start gap-2">
-                                  <div className="font-medium flex-1 text-gray-900">{prompt.prompt}</div>
-                                  {prompt.source_tag === 'REAL' && (
-                                    <Badge className="bg-blue-500/20 text-blue-400 border-blue-500/30 text-xs">REAL</Badge>
-                                  )}
-                                </div>
-                                <div className="flex gap-2 flex-wrap">
-                                  {(prompt.keywords || []).slice(0, 3).map((keyword, j) => (
-                                    <Badge key={j} className="bg-teal-500/20 text-teal-400 border-teal-500/30 text-xs">{keyword}</Badge>
-                                  ))}
-                                </div>
-                              </div>
-                            </td>
-                            <td className="p-4 text-center">
-                              <div className="flex items-center justify-center gap-1">
-                                <TrendingUp className="w-4 h-4 text-teal-500" />
-                                <span className="font-medium text-gray-900">{prompt.search_signal_score || Math.floor(Math.random() * 50) + 50}</span>
-                              </div>
-                            </td>
-                            <td className="p-4 text-center">
-                              <span className="font-semibold text-blue-600">{((i * 7 + 12) % 20) + 8}</span>
-                            </td>
-                            <td className="p-4 text-center">
-                              <span className="font-semibold text-purple-600">{((i * 13 + 18) % 35) + 10}%</span>
-                            </td>
-                            <td className="p-4 text-center">
-                              <span className="text-teal-600 font-semibold">{prompt.elelem_score || Math.floor(Math.random() * 30) + 60}/100</span>
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
-
-            {/* Right: Best Matching Pages */}
-            <div>
-              <h2 className="text-base font-semibold text-gray-900 mb-3">Best Matching Pages</h2>
-              <Card className="bg-white border-gray-200">
-                <CardContent className="p-0">
-                  {selectedPrompt ? (
-                    <>
-                      <div className="overflow-x-auto">
-                        <table className="w-full">
-                          <thead>
-                            <tr className="border-b border-gray-200">
-                              <th className="text-left text-sm font-medium p-4 text-gray-600">Pages</th>
-                              <th className="text-center text-sm font-medium p-4 text-gray-600">Topical Similarity</th>
-                              <th className="text-center text-sm font-medium p-4 text-gray-600">Citations</th>
-                              <th className="text-center text-sm font-medium p-4 text-gray-600">Retrieval Score</th>
-                            </tr>
-                          </thead>
-                          <tbody>
-                            {matchingPages.map((page, i) => (
-                              <tr
-                                key={i}
-                                onClick={() => handleSelectPage(page)}
-                                className={`border-b last:border-0 cursor-pointer transition-colors border-gray-200 ${selectedPage?.url === page.url ? "bg-teal-500/10" : "hover:bg-gray-50"}`}
-                              >
-                                <td className="p-4">
-                                  <div className="font-medium text-sm text-gray-900 mb-0.5">{page.title}</div>
-                                  <div className="text-xs text-gray-500 truncate max-w-[180px]">{page.url}</div>
-                                </td>
-                                <td className="p-4 text-center">
-                                  <span className="font-semibold text-purple-600">{((i * 13 + 70) % 20) + 75}%</span>
-                                </td>
-                                <td className="p-4 text-center">
-                                  <span className="font-semibold text-blue-600">{((i * 11 + 5) % 20) + 3}</span>
-                                </td>
-                                <td className="p-4 text-center">
-                                  <span className="text-teal-600 font-semibold">{page.relevance_score}/100</span>
-                                </td>
-                              </tr>
-                            ))}
-                          </tbody>
-                        </table>
-                      </div>
-                      <div className="p-4">
-                        <Button
-                          className="w-full bg-gradient-to-r from-teal-500 to-cyan-500 hover:from-teal-600 hover:to-cyan-600"
-                          onClick={handleAction}
-                          disabled={isGeneratingBrief}
+        {/* Step 1: Prompts + Pages — always visible */}
+        <div className="grid lg:grid-cols-2 gap-6 mb-6">
+          {/* Left: Prompts */}
+          <div>
+            <h2 className="text-base font-semibold text-gray-900 mb-3">Prompts</h2>
+            <Card className="bg-white border-gray-200">
+              <CardContent className="p-0">
+                <div className="overflow-x-auto">
+                  <table className="w-full">
+                    <thead>
+                      <tr className="border-b border-gray-200">
+                        <th className="text-left text-sm font-medium p-4 text-gray-600">Prompt</th>
+                        <th className="text-center text-sm font-medium p-4 text-gray-600">Search Signal</th>
+                        <th className="text-center text-sm font-medium p-4 text-gray-600">Cluster Size</th>
+                        <th className="text-center text-sm font-medium p-4 text-gray-600">Share of Citations</th>
+                        <th className="text-center text-sm font-medium p-4 text-gray-600">elelem Score</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {filteredPrompts.map((prompt, i) => (
+                        <tr
+                          key={i}
+                          onClick={() => handleSelectPrompt(prompt)}
+                          className={`border-b last:border-0 cursor-pointer transition-colors border-gray-200 ${selectedPrompt?.id === prompt.id ? "bg-teal-500/10" : "hover:bg-gray-50"}`}
                         >
-                          {isGeneratingBrief ? (
-                            <><Loader2 className="w-4 h-4 mr-2 animate-spin" />Generating Brief...</>
-                          ) : selectedPage ? (
-                            <><Zap className="w-4 h-4 mr-2" />Optimize This Page</>
-                          ) : (
-                            <><FileText className="w-4 h-4 mr-2" />Create New Page</>
-                          )}
-                        </Button>
-                      </div>
-                    </>
-                  ) : (
-                    <div className="text-center py-12">
-                      <FileText className="w-12 h-12 mx-auto mb-3 text-gray-400" />
-                      <p className="text-sm text-gray-500">Select a prompt to see best matching pages</p>
-                    </div>
-                  )}
-                </CardContent>
-              </Card>
-            </div>
-          </div>
-        ) : (
-          // Workspace phase: Brief (left) + Editor (right)
-          <div className="grid lg:grid-cols-2 gap-6">
-            {/* Left: Content Brief */}
-            <div>
-              <div className="flex items-center justify-between mb-3">
-                <h2 className="text-base font-semibold text-gray-900">Content Brief</h2>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="text-gray-500 hover:text-gray-900"
-                  onClick={() => {
-                    setContentBrief(null);
-                    setDraftContent("");
-                    setEditorContent("");
-                    setRescoreResult(null);
-                    setSelectedPage(null);
-                  }}
-                >
-                  ← Back
-                </Button>
-              </div>
-
-              {isGeneratingBrief ? (
-                <Card className="bg-white border-gray-200">
-                  <CardContent className="py-16 text-center">
-                    <Loader2 className="w-10 h-10 text-teal-500 animate-spin mx-auto mb-4" />
-                    <p className="text-gray-600">Generating content brief...</p>
-                  </CardContent>
-                </Card>
-              ) : contentBrief && (
-                <Card className="bg-white border-gray-200">
-                  <CardContent className="p-6 space-y-5">
-                    <div>
-                      <div className="flex items-center gap-2 mb-2">
-                        <Badge className="bg-teal-500/20 text-teal-600 border-teal-500/30">Target Prompt</Badge>
-                      </div>
-                      <p className="text-sm text-gray-700 italic">"{selectedPrompt?.prompt}"</p>
-                    </div>
-
-                    {selectedPage && (
-                      <div>
-                        <div className="flex items-center gap-2 mb-2">
-                          <Badge className="bg-blue-500/20 text-blue-600 border-blue-500/30">Page</Badge>
-                        </div>
-                        <p className="text-sm text-gray-700">{selectedPage.title}</p>
-                        <p className="text-xs text-gray-400 truncate">{selectedPage.url}</p>
-                      </div>
-                    )}
-
-                    <div>
-                      <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">Objective</p>
-                      <p className="text-sm text-gray-700">{contentBrief.objective}</p>
-                    </div>
-
-                    <div>
-                      <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">Key Messages</p>
-                      <ul className="space-y-1">
-                        {(contentBrief.key_messages || []).map((msg, i) => (
-                          <li key={i} className="text-sm text-gray-700 flex gap-2">
-                            <span className="text-teal-500 mt-0.5">•</span>{msg}
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-
-                    <div>
-                      <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">Recommended Sections</p>
-                      <div className="flex flex-wrap gap-2">
-                        {(contentBrief.recommended_sections || []).map((s, i) => (
-                          <Badge key={i} variant="outline" className="text-gray-700 border-gray-300 text-xs">{s}</Badge>
-                        ))}
-                      </div>
-                    </div>
-
-                    <div>
-                      <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">Tone & Style</p>
-                      <p className="text-sm text-gray-700">{contentBrief.tone_and_style}</p>
-                    </div>
-
-                    <div>
-                      <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">AI Visibility Tips</p>
-                      <ul className="space-y-1">
-                        {(contentBrief.ai_visibility_tips || []).map((tip, i) => (
-                          <li key={i} className="text-sm text-gray-700 flex gap-2">
-                            <Zap className="w-3.5 h-3.5 text-teal-500 mt-0.5 flex-shrink-0" />{tip}
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                  </CardContent>
-                </Card>
-              )}
-            </div>
-
-            {/* Right: Content Editor */}
-            <div>
-              <div className="flex items-center justify-between mb-3">
-                <h2 className="text-base font-semibold text-gray-900">Content Editor</h2>
-                {editorContent && (
-                  <Button variant="ghost" size="sm" className="text-gray-500 hover:text-gray-900" onClick={handleCopy}>
-                    {copied ? <><Check className="w-4 h-4 mr-1" />Copied!</> : <><Copy className="w-4 h-4 mr-1" />Copy</>}
-                  </Button>
-                )}
-              </div>
-
-              <Card className="bg-white border-gray-200">
-                <CardContent className="p-4 space-y-4">
-                  {!draftContent && !isGeneratingDraft && (
-                    <div className="text-center py-10">
-                      <AlignLeft className="w-10 h-10 mx-auto mb-3 text-gray-300" />
-                      <p className="text-sm text-gray-500 mb-4">Your draft will appear here</p>
-                      <Button
-                        className="bg-gradient-to-r from-teal-500 to-cyan-500 hover:from-teal-600 hover:to-cyan-600"
-                        onClick={handleCreateDraft}
-                        disabled={!contentBrief}
-                      >
-                        <FileText className="w-4 h-4 mr-2" />
-                        Create 1st Draft
-                      </Button>
-                    </div>
-                  )}
-
-                  {isGeneratingDraft && (
-                    <div className="text-center py-10">
-                      <Loader2 className="w-10 h-10 text-teal-500 animate-spin mx-auto mb-4" />
-                      <p className="text-gray-600">Writing your 1st draft...</p>
-                    </div>
-                  )}
-
-                  {draftContent && !isGeneratingDraft && (
-                    <>
-                      <Textarea
-                        value={editorContent}
-                        onChange={(e) => {
-                          setEditorContent(e.target.value);
-                          setRescoreResult(null);
-                        }}
-                        className="min-h-[400px] text-sm text-gray-800 border-gray-200 bg-gray-50 resize-none leading-relaxed"
-                      />
-
-                      {rescoreResult && (
-                        <div className="space-y-4">
-                          {/* Overall Score */}
-                          <div className="rounded-lg border border-gray-200 bg-white p-5">
-                            <p className="text-sm font-semibold text-gray-700 mb-3">Overall Retrievability Score</p>
-                            <div className="flex items-start gap-4">
-                              <span className="text-5xl font-bold text-teal-600 leading-none">{rescoreResult.retrieval_score}</span>
-                              <div className="flex-1 pt-1">
-                                <div className="w-full bg-gray-100 rounded-full h-3 mb-2">
-                                  <div
-                                    className="h-3 rounded-full bg-gradient-to-r from-teal-600 to-teal-500 transition-all duration-700"
-                                    style={{ width: `${rescoreResult.retrieval_score}%` }}
-                                  />
-                                </div>
-                                <p className="text-xs text-gray-500">
-                                  Original: 0 &nbsp;|&nbsp; Current: {rescoreResult.retrieval_score} &nbsp;|&nbsp;
-                                  <span className="text-teal-600 font-semibold">Change: +{rescoreResult.retrieval_score}</span>
-                                </p>
-                                <p className="text-xs text-gray-400 mt-1">
-                                  <span className="inline-block w-2 h-2 rounded-full bg-teal-600 mr-1" />Dark green = improvement&nbsp;&nbsp;
-                                  <span className="inline-block w-2 h-2 rounded-full bg-red-500 mr-1" />red = decrease vs original
-                                </p>
+                          <td className="p-4">
+                            <div className="space-y-2">
+                              <div className="flex items-start gap-2">
+                                <div className="font-medium flex-1 text-gray-900">{prompt.prompt}</div>
+                                {prompt.source_tag === 'REAL' && (
+                                  <Badge className="bg-blue-500/20 text-blue-400 border-blue-500/30 text-xs">REAL</Badge>
+                                )}
                               </div>
-                            </div>
-                            {rescoreResult.summary && (
-                              <p className="text-xs text-gray-500 mt-3 border-t border-gray-100 pt-3">{rescoreResult.summary}</p>
-                            )}
-                          </div>
-
-                          {/* Per-Prompt Scores */}
-                          {(rescoreResult.per_prompt_scores || []).length > 0 && (
-                            <div className="rounded-lg border border-gray-200 bg-white p-5">
-                              <p className="text-sm font-semibold text-gray-700 mb-1">Per-Prompt Scores</p>
-                              <p className="text-xs text-gray-400 mb-4">Scores for related prompts affected by this content</p>
-                              <div className="space-y-4">
-                                {rescoreResult.per_prompt_scores.map((item, i) => (
-                                  <div key={i} className="border-b border-gray-100 pb-4 last:border-0 last:pb-0">
-                                    <p className="text-sm text-gray-700 mb-2">{item.prompt}</p>
-                                    <div className="w-full bg-gray-100 rounded-full h-2.5 mb-1.5">
-                                      <div
-                                        className="h-2.5 rounded-full bg-teal-600 transition-all duration-700"
-                                        style={{ width: `${item.score}%` }}
-                                      />
-                                    </div>
-                                    <p className="text-xs text-gray-500">
-                                      Original: 0 &nbsp;|&nbsp; Current: {item.score} &nbsp;|&nbsp;
-                                      <span className="text-teal-600 font-semibold">Change: +{item.score}</span>
-                                    </p>
-                                  </div>
+                              <div className="flex gap-2 flex-wrap">
+                                {(prompt.keywords || []).slice(0, 3).map((keyword, j) => (
+                                  <Badge key={j} className="bg-teal-500/20 text-teal-400 border-teal-500/30 text-xs">{keyword}</Badge>
                                 ))}
                               </div>
                             </div>
-                          )}
-                        </div>
-                      )}
+                          </td>
+                          <td className="p-4 text-center">
+                            <div className="flex items-center justify-center gap-1">
+                              <TrendingUp className="w-4 h-4 text-teal-500" />
+                              <span className="font-medium text-gray-900">{prompt.search_signal_score || Math.floor(Math.random() * 50) + 50}</span>
+                            </div>
+                          </td>
+                          <td className="p-4 text-center">
+                            <span className="font-semibold text-blue-600">{((i * 7 + 12) % 20) + 8}</span>
+                          </td>
+                          <td className="p-4 text-center">
+                            <span className="font-semibold text-purple-600">{((i * 13 + 18) % 35) + 10}%</span>
+                          </td>
+                          <td className="p-4 text-center">
+                            <span className="text-teal-600 font-semibold">{prompt.elelem_score || Math.floor(Math.random() * 30) + 60}/100</span>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
 
+          {/* Right: Best Matching Pages */}
+          <div>
+            <h2 className="text-base font-semibold text-gray-900 mb-3">Best Matching Pages</h2>
+            <Card className="bg-white border-gray-200">
+              <CardContent className="p-0">
+                {selectedPrompt ? (
+                  <>
+                    <div className="overflow-x-auto">
+                      <table className="w-full">
+                        <thead>
+                          <tr className="border-b border-gray-200">
+                            <th className="text-left text-sm font-medium p-4 text-gray-600">Pages</th>
+                            <th className="text-center text-sm font-medium p-4 text-gray-600">Topical Similarity</th>
+                            <th className="text-center text-sm font-medium p-4 text-gray-600">Citations</th>
+                            <th className="text-center text-sm font-medium p-4 text-gray-600">Retrieval Score</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {matchingPages.map((page, i) => (
+                            <tr
+                              key={i}
+                              onClick={() => handleSelectPage(page)}
+                              className={`border-b last:border-0 cursor-pointer transition-colors border-gray-200 ${selectedPage?.url === page.url ? "bg-teal-500/10" : "hover:bg-gray-50"}`}
+                            >
+                              <td className="p-4">
+                                <div className="font-medium text-sm text-gray-900 mb-0.5">{page.title}</div>
+                                <div className="text-xs text-gray-500 truncate max-w-[180px]">{page.url}</div>
+                              </td>
+                              <td className="p-4 text-center">
+                                <span className="font-semibold text-purple-600">{((i * 13 + 70) % 20) + 75}%</span>
+                              </td>
+                              <td className="p-4 text-center">
+                                <span className="font-semibold text-blue-600">{((i * 11 + 5) % 20) + 3}</span>
+                              </td>
+                              <td className="p-4 text-center">
+                                <span className="text-teal-600 font-semibold">{page.relevance_score}/100</span>
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                    <div className="p-4">
                       <Button
-                        className="w-full"
-                        variant="outline"
-                        onClick={handleRescore}
-                        disabled={isRescoring}
+                        className="w-full bg-gradient-to-r from-teal-500 to-cyan-500 hover:from-teal-600 hover:to-cyan-600"
+                        onClick={handleAction}
+                        disabled={isGeneratingBrief}
                       >
-                        {isRescoring ? (
-                          <><Loader2 className="w-4 h-4 mr-2 animate-spin" />Rescoring...</>
+                        {isGeneratingBrief ? (
+                          <><Loader2 className="w-4 h-4 mr-2 animate-spin" />Generating Brief...</>
+                        ) : selectedPage ? (
+                          <><Zap className="w-4 h-4 mr-2" />Optimize This Page</>
                         ) : (
-                          <><RotateCcw className="w-4 h-4 mr-2" />Rescore Draft</>
+                          <><FileText className="w-4 h-4 mr-2" />Create New Page</>
                         )}
                       </Button>
-                    </>
+                    </div>
+                  </>
+                ) : (
+                  <div className="text-center py-12">
+                    <FileText className="w-12 h-12 mx-auto mb-3 text-gray-400" />
+                    <p className="text-sm text-gray-500">Select a prompt to see best matching pages</p>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+
+        {/* Step 2: Content Brief + Editor — appears below when triggered */}
+        {showWorkspace && (
+          <div className="border-t border-gray-200 pt-6">
+            <div className="flex items-center gap-3 mb-6">
+              <div className="w-6 h-6 rounded-full bg-teal-500 text-white text-xs font-bold flex items-center justify-center">2</div>
+              <h2 className="text-base font-semibold text-gray-900">
+                {selectedPage ? `Optimizing: ${selectedPage.title}` : "Creating New Page"}
+              </h2>
+              <span className="text-sm text-gray-400 italic">"{selectedPrompt?.prompt}"</span>
+            </div>
+
+            <div className="grid lg:grid-cols-2 gap-6">
+              {/* Left: Content Brief */}
+              <div>
+                <h3 className="text-sm font-semibold text-gray-700 mb-3">Content Brief</h3>
+                {isGeneratingBrief ? (
+                  <Card className="bg-white border-gray-200">
+                    <CardContent className="py-16 text-center">
+                      <Loader2 className="w-10 h-10 text-teal-500 animate-spin mx-auto mb-4" />
+                      <p className="text-gray-600">Generating content brief...</p>
+                    </CardContent>
+                  </Card>
+                ) : contentBrief && (
+                  <Card className="bg-white border-gray-200">
+                    <CardContent className="p-6 space-y-5">
+                      <div>
+                        <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">Objective</p>
+                        <p className="text-sm text-gray-700">{contentBrief.objective}</p>
+                      </div>
+                      <div>
+                        <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">Key Messages</p>
+                        <ul className="space-y-1">
+                          {(contentBrief.key_messages || []).map((msg, i) => (
+                            <li key={i} className="text-sm text-gray-700 flex gap-2">
+                              <span className="text-teal-500 mt-0.5">•</span>{msg}
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                      <div>
+                        <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">Recommended Sections</p>
+                        <div className="flex flex-wrap gap-2">
+                          {(contentBrief.recommended_sections || []).map((s, i) => (
+                            <Badge key={i} variant="outline" className="text-gray-700 border-gray-300 text-xs">{s}</Badge>
+                          ))}
+                        </div>
+                      </div>
+                      <div>
+                        <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">Tone & Style</p>
+                        <p className="text-sm text-gray-700">{contentBrief.tone_and_style}</p>
+                      </div>
+                      <div>
+                        <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">AI Visibility Tips</p>
+                        <ul className="space-y-1">
+                          {(contentBrief.ai_visibility_tips || []).map((tip, i) => (
+                            <li key={i} className="text-sm text-gray-700 flex gap-2">
+                              <Zap className="w-3.5 h-3.5 text-teal-500 mt-0.5 flex-shrink-0" />{tip}
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    </CardContent>
+                  </Card>
+                )}
+              </div>
+
+              {/* Right: Content Editor */}
+              <div>
+                <div className="flex items-center justify-between mb-3">
+                  <h3 className="text-sm font-semibold text-gray-700">Content Editor</h3>
+                  {editorContent && (
+                    <Button variant="ghost" size="sm" className="text-gray-500 hover:text-gray-900" onClick={handleCopy}>
+                      {copied ? <><Check className="w-4 h-4 mr-1" />Copied!</> : <><Copy className="w-4 h-4 mr-1" />Copy</>}
+                    </Button>
                   )}
-                </CardContent>
-              </Card>
+                </div>
+
+                <Card className="bg-white border-gray-200">
+                  <CardContent className="p-4 space-y-4">
+                    {!draftContent && !isGeneratingDraft && (
+                      <div className="text-center py-10">
+                        <AlignLeft className="w-10 h-10 mx-auto mb-3 text-gray-300" />
+                        <p className="text-sm text-gray-500 mb-4">Your draft will appear here</p>
+                        <Button
+                          className="bg-gradient-to-r from-teal-500 to-cyan-500 hover:from-teal-600 hover:to-cyan-600"
+                          onClick={handleCreateDraft}
+                          disabled={!contentBrief}
+                        >
+                          <FileText className="w-4 h-4 mr-2" />
+                          Create 1st Draft
+                        </Button>
+                      </div>
+                    )}
+
+                    {isGeneratingDraft && (
+                      <div className="text-center py-10">
+                        <Loader2 className="w-10 h-10 text-teal-500 animate-spin mx-auto mb-4" />
+                        <p className="text-gray-600">Writing your 1st draft...</p>
+                      </div>
+                    )}
+
+                    {draftContent && !isGeneratingDraft && (
+                      <>
+                        <Textarea
+                          value={editorContent}
+                          onChange={(e) => {
+                            setEditorContent(e.target.value);
+                            setRescoreResult(null);
+                          }}
+                          className="min-h-[400px] text-sm text-gray-800 border-gray-200 bg-gray-50 resize-none leading-relaxed"
+                        />
+
+                        {rescoreResult && (
+                          <div className="space-y-4">
+                            <div className="rounded-lg border border-gray-200 bg-white p-5">
+                              <p className="text-sm font-semibold text-gray-700 mb-3">Overall Retrievability Score</p>
+                              <div className="flex items-start gap-4">
+                                <span className="text-5xl font-bold text-teal-600 leading-none">{rescoreResult.retrieval_score}</span>
+                                <div className="flex-1 pt-1">
+                                  <div className="w-full bg-gray-100 rounded-full h-3 mb-2">
+                                    <div
+                                      className="h-3 rounded-full bg-gradient-to-r from-teal-600 to-teal-500 transition-all duration-700"
+                                      style={{ width: `${rescoreResult.retrieval_score}%` }}
+                                    />
+                                  </div>
+                                  <p className="text-xs text-gray-500">
+                                    Original: 0 &nbsp;|&nbsp; Current: {rescoreResult.retrieval_score} &nbsp;|&nbsp;
+                                    <span className="text-teal-600 font-semibold">Change: +{rescoreResult.retrieval_score}</span>
+                                  </p>
+                                  <p className="text-xs text-gray-400 mt-1">
+                                    <span className="inline-block w-2 h-2 rounded-full bg-teal-600 mr-1" />Dark green = improvement&nbsp;&nbsp;
+                                    <span className="inline-block w-2 h-2 rounded-full bg-red-500 mr-1" />red = decrease vs original
+                                  </p>
+                                </div>
+                              </div>
+                              {rescoreResult.summary && (
+                                <p className="text-xs text-gray-500 mt-3 border-t border-gray-100 pt-3">{rescoreResult.summary}</p>
+                              )}
+                            </div>
+                            {(rescoreResult.per_prompt_scores || []).length > 0 && (
+                              <div className="rounded-lg border border-gray-200 bg-white p-5">
+                                <p className="text-sm font-semibold text-gray-700 mb-1">Per-Prompt Scores</p>
+                                <p className="text-xs text-gray-400 mb-4">Scores for related prompts affected by this content</p>
+                                <div className="space-y-4">
+                                  {rescoreResult.per_prompt_scores.map((item, i) => (
+                                    <div key={i} className="border-b border-gray-100 pb-4 last:border-0 last:pb-0">
+                                      <p className="text-sm text-gray-700 mb-2">{item.prompt}</p>
+                                      <div className="w-full bg-gray-100 rounded-full h-2.5 mb-1.5">
+                                        <div className="h-2.5 rounded-full bg-teal-600 transition-all duration-700" style={{ width: `${item.score}%` }} />
+                                      </div>
+                                      <p className="text-xs text-gray-500">
+                                        Original: 0 &nbsp;|&nbsp; Current: {item.score} &nbsp;|&nbsp;
+                                        <span className="text-teal-600 font-semibold">Change: +{item.score}</span>
+                                      </p>
+                                    </div>
+                                  ))}
+                                </div>
+                              </div>
+                            )}
+                          </div>
+                        )}
+
+                        <Button className="w-full" variant="outline" onClick={handleRescore} disabled={isRescoring}>
+                          {isRescoring ? (
+                            <><Loader2 className="w-4 h-4 mr-2 animate-spin" />Rescoring...</>
+                          ) : (
+                            <><RotateCcw className="w-4 h-4 mr-2" />Rescore Draft</>
+                          )}
+                        </Button>
+                      </>
+                    )}
+                  </CardContent>
+                </Card>
+              </div>
             </div>
           </div>
         )}
