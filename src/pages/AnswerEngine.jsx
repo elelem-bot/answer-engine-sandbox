@@ -367,6 +367,17 @@ Answer the question directly and conversationally.`,
         .replace(/https?:\/\/[^\s]+/g, '')
         .replace(/\[([^\]]+)\]\([^\)]+\)/g, '$1');
 
+      // Stream the response word by word
+      setStreamingText("");
+      const words = cleanedResponse.split(" ");
+      let displayed = "";
+      for (let i = 0; i < words.length; i++) {
+        displayed += (i === 0 ? "" : " ") + words[i];
+        setStreamingText(displayed);
+        await new Promise(resolve => setTimeout(resolve, 30));
+      }
+      setStreamingText("");
+
       const assistantMessage = { role: "assistant", content: cleanedResponse };
       setMessages(prev => [...prev, assistantMessage]);
 
