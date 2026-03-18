@@ -322,7 +322,7 @@ Be accurate - only list brands you actually mentioned in your response.`,
           {activeTab === "overview" && (
           <div className="flex flex-col gap-4">
             <div className="flex items-center gap-3">
-              <span className={`text-sm ${text-gray-600}`}>Unbranded</span>
+              <span className="text-sm text-gray-600">Unbranded</span>
               <Switch
                 checked={promptType === "branded"}
                 onCheckedChange={(checked) => setPromptType(checked ? "branded" : "unbranded")}
