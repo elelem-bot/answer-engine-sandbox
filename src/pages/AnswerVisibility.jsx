@@ -571,7 +571,7 @@ Be accurate - only list brands you actually mentioned in your response.`,
               ))}
 
               {prompts.filter(p => p.gemini_response).length === 0 && (
-                <p className={`text-center py-8 ${text-gray-600}`}>No responses available for this funnel stage yet.</p>
+                <p className="text-center py-8 text-gray-600">No responses available for this funnel stage yet.</p>
               )}
             </div>
           </CardContent>
