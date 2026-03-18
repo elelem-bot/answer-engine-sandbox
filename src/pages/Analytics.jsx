@@ -46,8 +46,6 @@ export default function Analytics() {
     }
   };
 
-  const isDark = theme === 'dark';
-
   // Calculate analytics metrics
   const totalQuestions = questions.length;
   const totalAnswers = questions.filter(q => q.answer).length;
