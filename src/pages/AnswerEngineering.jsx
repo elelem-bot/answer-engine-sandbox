@@ -352,7 +352,7 @@ Be realistic with scores - good content typically scores 60-85.`,
                         <th className="text-center text-sm font-medium p-4 text-gray-600">Search Signal</th>
                         <th className="text-center text-sm font-medium p-4 text-gray-600">Cluster Size</th>
                         <th className="text-center text-sm font-medium p-4 text-gray-600">Share of Citations</th>
-                        <th className="text-center text-sm font-medium p-4 text-gray-600">elelem Score</th>
+
                       </tr>
                     </thead>
                     <tbody>
