@@ -16,8 +16,10 @@ import {
   Bell,
   Folder,
   Check,
-  User
+  User,
+  HelpCircle
 } from "lucide-react";
+import { GuidanceProvider, useGuidance } from "@/lib/GuidanceContext";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import {
