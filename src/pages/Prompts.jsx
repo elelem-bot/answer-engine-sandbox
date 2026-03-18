@@ -158,11 +158,9 @@ export default function Prompts() {
     }
   };
 
-  const isDark = theme === 'dark';
-
   if (isLoading) {
     return (
-      <div className={`min-h-screen flex items-center justify-center ${isDark ? 'bg-slate-950' : 'bg-gray-50'}`}>
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
         <div className="text-center">
           <Loader2 className="w-12 h-12 text-teal-500 animate-spin mx-auto mb-4" />
           <p className={isDark ? 'text-slate-400' : 'text-gray-600'}>Loading prompts...</p>

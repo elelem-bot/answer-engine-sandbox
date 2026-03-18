@@ -45,9 +45,6 @@ export default function AnswerVisibility() {
   const [selectedPrompt, setSelectedPrompt] = useState(null);
   const [activeTab, setActiveTab] = useState("overview");
   const [trackedPrompts, setTrackedPrompts] = useState([]);
-  const [theme, setTheme] = useState(() => {
-    return localStorage.getItem('elelem-theme') || 'dark';
-  });
   const [visibilityData, setVisibilityData] = useState({
     totalVisibility: 0,
     shareOfCitations: 0,
