@@ -433,6 +433,13 @@ Be realistic with scores - good content typically scores 60-85.`,
                                 <span className="font-semibold text-blue-600">{((i * 11 + 5) % 20) + 3}</span>
                               </td>
                               <td className="p-4 text-center">
+                                {(() => {
+                                  const score = getSeoScore(i);
+                                  const color = score >= 70 ? "text-green-600" : score >= 50 ? "text-amber-500" : "text-red-500";
+                                  return <span className={`font-semibold ${color}`}>{score}/100</span>;
+                                })()}
+                              </td>
+                              <td className="p-4 text-center">
                                 <span className="text-teal-600 font-semibold">{page.relevance_score}/100</span>
                               </td>
                             </tr>
