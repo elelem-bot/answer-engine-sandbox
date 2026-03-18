@@ -641,13 +641,13 @@ Be accurate - only list brands you actually mentioned in your response.`,
                               </Badge>
                             )}
                           </div>
-                          <CardTitle className={`text-lg ${text-gray-900}`}>
+                          <CardTitle className="text-lg text-gray-900">
                             {prompt.prompt}
                           </CardTitle>
                           <div className="flex items-center gap-4 mt-3 text-sm">
                             <div className="flex items-center gap-1">
-                              <MessageSquare className={`w-4 h-4 ${text-gray-500}`} />
-                              <span className={text-gray-600}>
+                              <MessageSquare className="w-4 h-4 text-gray-500" />
+                              <span className="text-gray-600">
                                 Started: {prompt.tracked_date ? new Date(prompt.tracked_date).toLocaleDateString() : 'N/A'}
                               </span>
                             </div>
