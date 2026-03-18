@@ -193,7 +193,7 @@ export default function Prompts() {
             <Button 
               variant="ghost" 
               size="icon"
-              className={text-gray-900 hover:bg-gray-100}
+              className="text-gray-900 hover:bg-gray-100"
               onClick={() => navigate(createPageUrl("Setup"))}
             >
               <Settings className="w-5 h-5" />

@@ -525,7 +525,7 @@ Focus on:
             <Button
               variant="ghost"
               onClick={() => setOptimizationResult(null)}
-              className={text-gray-600 hover:text-gray-900}
+              className="text-gray-600 hover:text-gray-900"
             >
               <ArrowLeft className="w-4 h-4 mr-2" />
               Back to Prompts
@@ -627,7 +627,7 @@ Focus on:
             <Button
               variant="ghost"
               onClick={() => setNewPageResult(null)}
-              className={text-gray-600 hover:text-gray-900}
+              className="text-gray-600 hover:text-gray-900"
             >
               <ArrowLeft className="w-4 h-4 mr-2" />
               Back to Prompts

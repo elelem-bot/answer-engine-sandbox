@@ -186,7 +186,7 @@ export default function Analytics() {
             <p className={text-gray-600}>Track performance and user engagement</p>
           </div>
           <Select value={timeRange} onValueChange={setTimeRange}>
-            <SelectTrigger className={`w-[180px] ${bg-white border-gray-300}`}>
+            <SelectTrigger className="w-[180px] bg-white border-gray-300">
               <SelectValue placeholder="Time Range" />
             </SelectTrigger>
             <SelectContent>

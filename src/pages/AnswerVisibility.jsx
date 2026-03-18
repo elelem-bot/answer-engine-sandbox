@@ -310,7 +310,7 @@ Be accurate - only list brands you actually mentioned in your response.`,
               </Select>
               <Button 
                 variant="outline" 
-                className={border-gray-300 text-gray-700}
+                className="border-gray-300 text-gray-700"
                 onClick={() => company && analyzePrompts(allPrompts, company)}
                 disabled={isAnalyzing}
               >
@@ -320,7 +320,7 @@ Be accurate - only list brands you actually mentioned in your response.`,
               <Button 
                 variant="outline" 
                 size="icon"
-                className={border-gray-300 text-gray-700}
+                className="border-gray-300 text-gray-700"
                 onClick={() => navigate(createPageUrl("Setup"))}
               >
                 <Settings className="w-4 h-4" />
@@ -534,7 +534,7 @@ Be accurate - only list brands you actually mentioned in your response.`,
                       variant="outline"
                       size="sm"
                       onClick={() => setSelectedPrompt(selectedPrompt?.id === prompt.id ? null : prompt)}
-                      className={border-gray-300 text-gray-700}
+                      className="border-gray-300 text-gray-700"
                     >
                       {selectedPrompt?.id === prompt.id ? "Hide" : "View"} Response
                     </Button>
