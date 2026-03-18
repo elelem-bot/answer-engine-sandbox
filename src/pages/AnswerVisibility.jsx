@@ -461,7 +461,7 @@ Be accurate - only list brands you actually mentioned in your response.`,
 
             <Card className="bg-white border-gray-200">
               <CardHeader>
-                <CardTitle className={`text-lg ${text-gray-900}`}>Mention Trend Over Time</CardTitle>
+                <CardTitle className="text-lg text-gray-900">Mention Trend Over Time</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="h-64">
