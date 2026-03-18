@@ -429,7 +429,7 @@ Be accurate - only list brands you actually mentioned in your response.`,
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
             <Card className="bg-white border-gray-200">
               <CardHeader>
-                <CardTitle className={`text-lg ${text-gray-900}`}>Citation Trend Over Time</CardTitle>
+                <CardTitle className="text-lg text-gray-900">Citation Trend Over Time</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="h-64">
