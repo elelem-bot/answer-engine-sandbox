@@ -1016,9 +1016,9 @@ Consider buyer intent when determining funnel stage.`,
                                     href={page.url}
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    className="rounded-lg border border-slate-200 hover:border-slate-300 hover:shadow-sm transition-all group overflow-hidden flex flex-col"
+                                    className="rounded-lg border border-slate-200 hover:border-slate-300 hover:shadow-sm transition-all group overflow-hidden flex flex-row"
                                   >
-                                    <div className="w-full h-24 overflow-hidden bg-slate-100 flex-shrink-0">
+                                    <div className="w-16 h-16 flex-shrink-0 overflow-hidden bg-slate-100">
                                       <img
                                         src={page.image_url || "https://media.base44.com/images/public/69ba7d4eda2cee069990407c/ef8b1937e_hubledigital_logo.jpeg"}
                                         alt={page.title}
@@ -1026,7 +1026,7 @@ Consider buyer intent when determining funnel stage.`,
                                         onError={(e) => { e.target.src = "https://media.base44.com/images/public/69ba7d4eda2cee069990407c/ef8b1937e_hubledigital_logo.jpeg"; }}
                                       />
                                     </div>
-                                    <div className="p-3">
+                                    <div className="p-3 flex flex-col justify-center">
                                       <p className="text-xs font-semibold text-slate-900 line-clamp-1 group-hover:text-teal-600 transition-colors mb-1">
                                         {page.title}
                                       </p>
