@@ -411,6 +411,7 @@ Be realistic with scores - good content typically scores 60-85.`,
                             <th className="text-left text-sm font-medium p-4 text-gray-600">Pages</th>
                             <th className="text-center text-sm font-medium p-4 text-gray-600">Topical Similarity</th>
                             <th className="text-center text-sm font-medium p-4 text-gray-600">Citations</th>
+                            <th className="text-center text-sm font-medium p-4 text-gray-600">SEO Score</th>
                             <th className="text-center text-sm font-medium p-4 text-gray-600">Retrieval Score</th>
                           </tr>
                         </thead>
