@@ -19,25 +19,10 @@ import { LineChart, Line, BarChart, Bar, PieChart, Pie, Cell, XAxis, YAxis, Cart
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 export default function Analytics() {
-  const [theme, setTheme] = useState(() => {
-    return localStorage.getItem('elelem-theme') || 'dark';
-  });
   const [loading, setLoading] = useState(true);
   const [timeRange, setTimeRange] = useState("30");
   const [questions, setQuestions] = useState([]);
   const [company, setCompany] = useState(null);
-
-  useEffect(() => {
-    const handleThemeChange = () => {
-      setTheme(localStorage.getItem('elelem-theme') || 'dark');
-    };
-    window.addEventListener('storage', handleThemeChange);
-    const interval = setInterval(handleThemeChange, 100);
-    return () => {
-      window.removeEventListener('storage', handleThemeChange);
-      clearInterval(interval);
-    };
-  }, []);
 
   useEffect(() => {
     loadAnalyticsData();

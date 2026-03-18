@@ -49,9 +49,6 @@ export default function AnswerEngine() {
   const [askedQuestions, setAskedQuestions] = useState([]);
   const [company, setCompany] = useState(null);
   const [isLoadingQuestions, setIsLoadingQuestions] = useState(false);
-  const [theme, setTheme] = useState(() => {
-    return localStorage.getItem('elelem-theme') || 'dark';
-  });
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [selectedTime, setSelectedTime] = useState(null);
   const [bookingEmail, setBookingEmail] = useState("");
@@ -73,18 +70,6 @@ export default function AnswerEngine() {
   const [buttonSize, setButtonSize] = useState("sm");
   const [buttonShape, setButtonShape] = useState("rounded");
   const [ctaButtonText, setCtaButtonText] = useState("Book Demo");
-
-  React.useEffect(() => {
-    const handleThemeChange = () => {
-      setTheme(localStorage.getItem('elelem-theme') || 'dark');
-    };
-    window.addEventListener('storage', handleThemeChange);
-    const interval = setInterval(handleThemeChange, 100);
-    return () => {
-      window.removeEventListener('storage', handleThemeChange);
-      clearInterval(interval);
-    };
-  }, []);
 
   React.useEffect(() => {
     const loadCompanyUrl = async () => {
