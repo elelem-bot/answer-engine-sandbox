@@ -184,6 +184,7 @@ export default function Layout({ children, currentPageName }) {
 
         {/* Right: project switcher + notifications + user */}
         <div className="flex items-center gap-2">
+          <GuidanceToggle />
 
           {/* Project Switcher */}
           <DropdownMenu>
