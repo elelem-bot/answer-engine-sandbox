@@ -231,26 +231,34 @@ Write a complete, polished article (600-900 words). Use plain text, no markdown 
     setRescoreResult(null);
 
     try {
+      // Generate 3-4 related prompts from the same cluster for per-prompt scoring
       const result = await base44.integrations.Core.InvokeLLM({
-        prompt: `You are an AI visibility expert. Score this content for how well it would be retrieved by an AI engine when answering: "${selectedPrompt.prompt}"
+        prompt: `You are an AI visibility expert. Score this content for retrievability.
 
-Content to score:
+Target prompt: "${selectedPrompt.prompt}"
+
+Content:
 ${editorContent}
 
-Score on a scale of 0-100 based on:
-- Direct relevance to the prompt
-- Semantic clarity
-- Structured information
-- Specificity and depth
-- Natural language flow
+1. Give an overall retrieval score (0-100) for the target prompt.
+2. Generate 4 related prompts that a buyer might also ask on this topic, and score each (0-100) based on how well this content would answer them too.
 
-Return a score and 2-3 specific suggestions for further improvement.`,
+Be realistic with scores - good content typically scores 60-85.`,
         response_json_schema: {
           type: "object",
           properties: {
             retrieval_score: { type: "number" },
             summary: { type: "string" },
-            suggestions: { type: "array", items: { type: "string" } }
+            per_prompt_scores: {
+              type: "array",
+              items: {
+                type: "object",
+                properties: {
+                  prompt: { type: "string" },
+                  score: { type: "number" }
+                }
+              }
+            }
           }
         }
       });
