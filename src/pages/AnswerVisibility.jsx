@@ -250,7 +250,7 @@ Be accurate - only list brands you actually mentioned in your response.`,
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
         <div className="text-center">
           <Loader2 className="w-12 h-12 text-teal-500 animate-spin mx-auto mb-4" />
-          <p className={isDark ? 'text-slate-400' : 'text-gray-600'}>Loading visibility data...</p>
+          <p className="text-gray-600">Loading visibility data...</p>
         </div>
       </div>
     );
