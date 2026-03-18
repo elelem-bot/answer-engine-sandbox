@@ -453,7 +453,8 @@ Be realistic with scores - good content typically scores 60-85.`,
                     </div>
                     <div className="p-4">
                       <Button
-                        className="w-full bg-gradient-to-r from-teal-500 to-cyan-500 hover:from-teal-600 hover:to-cyan-600"
+                        className="w-full"
+                        style={{ background: "linear-gradient(to right, #2DC6FE, #81FBEF)", color: "#082D35", border: "none", borderRadius: "9999px" }}
                         onClick={handleAction}
                         disabled={isGeneratingBrief}
                       >
