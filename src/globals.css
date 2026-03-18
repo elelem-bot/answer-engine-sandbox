@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Google+Sans:ital,wght@0,400;0,500;0,700;1,400&display=swap');
 
 :root {
   --brand-primary: #2DC6FE;
@@ -7,17 +7,47 @@
   --brand-white: #FFFFFF;
 }
 
+/* Google Sans font everywhere */
 *, *::before, *::after {
   font-family: 'Google Sans', 'Product Sans', ui-sans-serif, system-ui, sans-serif !important;
 }
 
-/* Brand gradient utility */
-.bg-brand-gradient {
-  background: linear-gradient(to right, #2DC6FE, #81FBEF);
+/* Override all teal/cyan gradient buttons with brand gradient */
+[class*="from-teal-500"][class*="to-cyan-500"],
+[class*="from-teal-600"][class*="to-cyan-600"] {
+  background: linear-gradient(to right, #2DC6FE, #81FBEF) !important;
+  color: #082D35 !important;
 }
 
-/* Override teal/cyan primary buttons app-wide */
-.bg-gradient-to-r.from-teal-500.to-cyan-500,
-.bg-gradient-to-r.from-teal-500\/20 {
-  background: linear-gradient(to right, #2DC6FE, #81FBEF) !important;
+/* Teal text → brand primary */
+[class*="text-teal-500"],
+[class*="text-teal-600"] {
+  color: #2DC6FE !important;
+}
+
+/* Teal bg fills */
+[class*="bg-teal-500"]:not([class*="bg-teal-500/"]) {
+  background-color: #2DC6FE !important;
+}
+
+/* Teal borders */
+[class*="border-teal-500"] {
+  border-color: #2DC6FE !important;
+}
+
+/* Teal transparent bg (badges etc) */
+[class*="bg-teal-500/20"] {
+  background-color: rgba(45, 198, 254, 0.15) !important;
+}
+[class*="text-teal-400"] {
+  color: #2DC6FE !important;
+}
+[class*="border-teal-500/30"] {
+  border-color: rgba(45, 198, 254, 0.35) !important;
+}
+
+/* Cyan accents */
+[class*="text-cyan-500"],
+[class*="text-cyan-400"] {
+  color: #81FBEF !important;
 }
