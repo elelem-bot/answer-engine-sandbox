@@ -410,7 +410,7 @@ Be accurate - only list brands you actually mentioned in your response.`,
 
         {/* Mention Insights */}
         <div className="mb-8">
-          <h2 className={`text-lg font-semibold mb-4 ${text-gray-900}`}>Mention Insights</h2>
+          <h2 className="text-lg font-semibold mb-4 text-gray-900">Mention Insights</h2>
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <CitationChart 
               data={visibilityData.brandMentionsBreakdown} 
