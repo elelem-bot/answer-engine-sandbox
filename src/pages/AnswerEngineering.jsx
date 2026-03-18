@@ -563,7 +563,7 @@ Be realistic with scores - good content typically scores 60-85.`,
                         <AlignLeft className="w-10 h-10 mx-auto mb-3 text-gray-300" />
                         <p className="text-sm text-gray-500 mb-4">Your draft will appear here</p>
                         <Button
-                          className="bg-gradient-to-r from-teal-500 to-cyan-500 hover:from-teal-600 hover:to-cyan-600"
+                          style={{ background: "linear-gradient(to right, #2DC6FE, #81FBEF)", color: "#082D35", border: "none", borderRadius: "9999px" }}
                           onClick={handleCreateDraft}
                           disabled={!contentBrief}
                         >
