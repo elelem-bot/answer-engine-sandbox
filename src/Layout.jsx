@@ -134,20 +134,8 @@ const platformPages = ["AnswerEngine", "Prompts", "AnswerEngineering", "AnswerVi
           })}
         </nav>
 
-        <div className={`p-4 border-t ${isDark ? 'border-slate-800' : 'border-gray-200'} space-y-4`}>
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <Sun className={`w-4 h-4 ${isDark ? 'text-slate-500' : 'text-yellow-500'}`} />
-              <Label className={`text-sm cursor-pointer ${isDark ? 'text-slate-400' : 'text-gray-600'}`}>
-                {theme === 'dark' ? 'Dark' : 'Light'}
-              </Label>
-            </div>
-            <Switch 
-              checked={theme === 'dark'}
-              onCheckedChange={(checked) => setTheme(checked ? 'dark' : 'light')}
-            />
-          </div>
-          <Button variant="ghost" className={`w-full justify-start ${isDark ? 'text-slate-400 hover:text-white hover:bg-slate-800' : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'}`}>
+        <div className="p-4 border-t border-gray-200">
+          <Button variant="ghost" className="w-full justify-start text-gray-600 hover:text-gray-900 hover:bg-gray-100">
             <LogOut className="w-5 h-5 mr-3" />
             Logout
           </Button>
@@ -252,20 +240,7 @@ const platformPages = ["AnswerEngine", "Prompts", "AnswerEngineering", "AnswerVi
                   );
                 })}
               </nav>
-              <div className={`p-4 border-t ${isDark ? 'border-slate-800' : 'border-gray-200'} space-y-4`}>
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <Sun className={`w-4 h-4 ${isDark ? 'text-slate-500' : 'text-yellow-500'}`} />
-                    <Label className={`text-sm ${isDark ? 'text-slate-400' : 'text-gray-600'}`}>
-                      {theme === 'dark' ? 'Dark' : 'Light'}
-                    </Label>
-                  </div>
-                  <Switch 
-                    checked={theme === 'dark'}
-                    onCheckedChange={(checked) => setTheme(checked ? 'dark' : 'light')}
-                  />
-                </div>
-              </div>
+              <div className="p-4 border-t border-gray-200"></div>
             </SheetContent>
           </Sheet>
         </div>
