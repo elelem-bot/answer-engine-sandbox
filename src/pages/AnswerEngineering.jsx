@@ -57,6 +57,21 @@ export default function AnswerEngineering() {
     setFilteredPrompts(filtered);
   };
 
+  const togglePromptSort = (col) => {
+    setPromptSort(prev => prev.col === col ? { col, dir: prev.dir === "asc" ? "desc" : "asc" } : { col, dir: "desc" });
+  };
+
+  const togglePageSort = (col) => {
+    setPageSort(prev => prev.col === col ? { col, dir: prev.dir === "asc" ? "desc" : "asc" } : { col, dir: "desc" });
+  };
+
+  const SortIcon = ({ col, sort }) => {
+    if (sort.col !== col) return <ChevronDownIcon className="w-3 h-3 opacity-30 inline ml-0.5" />;
+    return sort.dir === "asc"
+      ? <ChevronUp className="w-3 h-3 inline ml-0.5 text-teal-500" />
+      : <ChevronDownIcon className="w-3 h-3 inline ml-0.5 text-teal-500" />;
+  };
+
   const loadData = async () => {
     try {
       const companies = await base44.entities.Company.list();
