@@ -877,28 +877,25 @@ Consider buyer intent when determining funnel stage.`,
                   </div>
                 ) : (
                   messages.map((msg, i) => (
-                    <motion.div
-                      key={i}
-                      initial={{ opacity: 0, y: 10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}
-                    >
-                      <div
-                        className={`max-w-[75%] rounded-2xl px-5 py-3 ${
-                          msg.role === "user"
-                            ? "shadow-sm"
-                            : "shadow-sm"
-                        }`}
-                        style={{
-                          backgroundColor: msg.role === "user" 
-                            ? brandColor
-                            : '#f1f5f9',
-                          color: msg.role === "user" ? '#ffffff' : '#1e293b'
-                        }}
-                      >
-                        <p className="whitespace-pre-wrap leading-relaxed">{msg.content}</p>
-                      </div>
-                    </motion.div>
+                  <motion.div
+                  key={i}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}
+                  >
+                  {msg.role === "user" ? (
+                  <div
+                  className="max-w-[75%] rounded-2xl px-5 py-3 shadow-sm"
+                  style={{ backgroundColor: '#f1f5f9', color: '#1e293b' }}
+                  >
+                  <p className="whitespace-pre-wrap leading-relaxed">{msg.content}</p>
+                  </div>
+                  ) : (
+                  <div className="w-full px-2 py-1">
+                  <p className="whitespace-pre-wrap leading-relaxed text-slate-800 text-[15px]">{msg.content}</p>
+                  </div>
+                  )}
+                  </motion.div>
                   ))
                 )}
                       </AnimatePresence>
