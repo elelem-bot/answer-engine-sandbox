@@ -431,81 +431,70 @@ Focus on:
                   Best Matching Pages
                 </CardTitle>
               </CardHeader>
-              <CardContent className="space-y-4">
+              <CardContent className="p-0">
                 {selectedPrompt ? (
                   <>
-                    <p className="text-sm mb-4 text-gray-600">{selectedPrompt.prompt}</p>
-                    <div className="space-y-3">
-                      {getMatchingPages(selectedPrompt).map((page, i) => (
-                        <div 
-                          key={i} 
-                          className={`p-3 rounded-lg cursor-pointer transition-colors border ${selectedPage?.url === page.url ? "bg-gray-100 border-teal-500/50" : "bg-gray-50 border-transparent hover:border-teal-500/30 hover:bg-gray-100"}`}
-                          onClick={() => setSelectedPage(page)}
-                        >
-                          <div className="font-medium text-sm mb-1 text-gray-900">{page.title}</div>
-                          <div className="text-xs mb-2 truncate text-gray-500">{page.url}</div>
-                          <div className="flex items-center justify-between gap-2 flex-wrap">
-                            <div className="flex items-center gap-1">
-                              <span className="text-xs text-gray-600">Citations:</span>
-                              <Badge className="bg-blue-500/20 text-blue-600 border-blue-500/30 text-xs">
-                                {((i * 11 + 5) % 20) + 3}
-                              </Badge>
-                            </div>
-                            <div className="flex items-center gap-1">
-                              <span className="text-xs text-gray-600">Retrieval:</span>
-                              <Badge className="bg-teal-500/20 text-teal-400 border-teal-500/30 text-xs">
-                                {page.relevance_score}/100
-                              </Badge>
-                            </div>
-                          </div>
-                        </div>
-                      ))}
+                    <div className="overflow-x-auto">
+                      <table className="w-full">
+                        <thead>
+                          <tr className="border-b border-gray-200">
+                            <th className="text-left text-sm font-medium p-4 text-gray-600">Page</th>
+                            <th className="text-center text-sm font-medium p-4 text-gray-600">Citations</th>
+                            <th className="text-center text-sm font-medium p-4 text-gray-600">Retrieval Score</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {getMatchingPages(selectedPrompt).map((page, i) => (
+                            <tr
+                              key={i}
+                              onClick={() => setSelectedPage(page)}
+                              className={`border-b last:border-0 cursor-pointer transition-colors border-gray-200 ${selectedPage?.url === page.url ? "bg-teal-500/10" : "hover:bg-gray-50"}`}
+                            >
+                              <td className="p-4">
+                                <div className="font-medium text-sm text-gray-900 mb-0.5">{page.title}</div>
+                                <div className="text-xs text-gray-500 truncate max-w-[200px]">{page.url}</div>
+                              </td>
+                              <td className="p-4 text-center">
+                                <span className="font-semibold text-blue-600">{((i * 11 + 5) % 20) + 3}</span>
+                              </td>
+                              <td className="p-4 text-center">
+                                <span className="text-teal-600 font-semibold">{page.relevance_score}/100</span>
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
                     </div>
-                    <>
+                    <div className="p-4 space-y-2">
                       {selectedPage && (
-                        <Button 
-                          className="w-full bg-gradient-to-r from-teal-500 to-cyan-500 hover:from-teal-600 hover:to-cyan-600 mt-4"
+                        <Button
+                          className="w-full bg-gradient-to-r from-teal-500 to-cyan-500 hover:from-teal-600 hover:to-cyan-600"
                           onClick={handleOptimize}
                           disabled={isOptimizing}
                         >
                           {isOptimizing ? (
-                            <>
-                              <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                              Optimizing...
-                            </>
+                            <><Loader2 className="w-4 h-4 mr-2 animate-spin" />Optimizing...</>
                           ) : (
-                            <>
-                              <Zap className="w-4 h-4 mr-2" />
-                              Optimize Page
-                            </>
+                            <><Zap className="w-4 h-4 mr-2" />Optimize Page</>
                           )}
                         </Button>
                       )}
-                      <Button 
-                        className="w-full mt-2"
-                        style={{
-                          background: 'linear-gradient(to right, #bbeb02, #a0d000)',
-                          color: '#000'
-                        }}
+                      <Button
+                        className="w-full"
+                        style={{ background: 'linear-gradient(to right, #bbeb02, #a0d000)', color: '#000' }}
                         onClick={handleCreateNew}
                         disabled={isCreatingNew}
                       >
                         {isCreatingNew ? (
-                          <>
-                            <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                            Creating...
-                          </>
+                          <><Loader2 className="w-4 h-4 mr-2 animate-spin" />Creating...</>
                         ) : (
-                          <>
-                            <FileText className="w-4 h-4 mr-2" />
-                            Create New Page
-                          </>
+                          <><FileText className="w-4 h-4 mr-2" />Create New Page</>
                         )}
                       </Button>
-                    </>
+                    </div>
                   </>
                 ) : (
-                  <div className="text-center py-8">
+                  <div className="text-center py-12">
                     <FileText className="w-12 h-12 mx-auto mb-3 text-gray-400" />
                     <p className="text-sm text-gray-500">Select a prompt to see best matching pages</p>
                   </div>
