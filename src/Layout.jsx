@@ -53,16 +53,11 @@ const platformPages = ["AnswerEngine", "Prompts", "AnswerEngineering", "AnswerVi
   return (
     <div className={`min-h-screen flex ${isDark ? 'bg-slate-950' : 'bg-gray-50'}`}>
       <style>{`
-      @import url('https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;700&display=swap');
-      *, *::before, *::after { font-family: 'Google Sans', 'Product Sans', ui-sans-serif, system-ui, sans-serif !important; }
       .nav-active {
         background: linear-gradient(to right, rgba(45,198,254,0.15), rgba(129,251,239,0.15)) !important;
         color: #082D35 !important;
         border-color: rgba(45,198,254,0.4) !important;
-      }
-      .btn-primary {
-        background: linear-gradient(to right, #2DC6FE, #81FBEF) !important;
-        color: #082D35 !important;
+        font-weight: 600 !important;
       }
       `}</style>
       {/* Desktop Sidebar */}
