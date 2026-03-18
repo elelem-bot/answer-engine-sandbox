@@ -96,7 +96,7 @@ const platformPages = ["AnswerEngine", "Prompts", "AnswerEngineering", "AnswerVi
                       }}
                       className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-all ${
                         isActive || hasActiveChild
-                          ? "bg-gradient-to-r from-teal-500/20 to-cyan-500/20 text-teal-600 border border-teal-500/30"
+                          ? "nav-active border"
                           : isDark 
                             ? "text-slate-400 hover:text-white hover:bg-slate-800"
                             : "text-gray-600 hover:text-gray-900 hover:bg-gray-100"
