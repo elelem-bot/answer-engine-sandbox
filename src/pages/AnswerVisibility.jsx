@@ -496,7 +496,7 @@ Be accurate - only list brands you actually mentioned in your response.`,
         {/* AI Responses with Citations */}
         <Card className="bg-white border-gray-200" mb-8>
           <CardHeader>
-            <CardTitle className={`text-lg ${text-gray-900}`}>AI Responses for {funnelStage.charAt(0).toUpperCase() + funnelStage.slice(1)} of Funnel Prompts</CardTitle>
+            <CardTitle className="text-lg text-gray-900">AI Responses for {funnelStage.charAt(0).toUpperCase() + funnelStage.slice(1)} of Funnel Prompts</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
