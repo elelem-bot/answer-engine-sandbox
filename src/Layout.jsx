@@ -135,16 +135,7 @@ export default function Layout({ children, currentPageName }) {
 
   const SidebarContent = ({ mobile = false }) => (
     <>
-      <div className="p-5 border-b border-gray-200">
-        <Link to={createPageUrl("Home")}>
-          <img
-            src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/6943f2bf67610e14801b112b/de87d19e0_elelem2025logoPrimary.png"
-            alt="elelem"
-            className="h-7"
-          />
-        </Link>
-      </div>
-      <nav className="flex-1 p-3 space-y-0.5 overflow-y-auto">
+      <nav className="flex-1 p-3 space-y-0.5 overflow-y-auto pt-3">
         {navItems.map(item => <NavLink key={item.name} item={item} mobile={mobile} />)}
       </nav>
     </>
