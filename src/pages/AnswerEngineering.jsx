@@ -364,6 +364,8 @@ Focus on:
                       <tr className="border-b border-gray-200">
                         <th className="text-left text-sm font-medium p-4 text-gray-600">Prompt</th>
                         <th className="text-center text-sm font-medium p-4 text-gray-600">Search Signal</th>
+                        <th className="text-center text-sm font-medium p-4 text-gray-600">Cluster Size</th>
+                        <th className="text-center text-sm font-medium p-4 text-gray-600">Share of Citations</th>
                         <th className="text-center text-sm font-medium p-4 text-gray-600">elelem Score</th>
                       </tr>
                     </thead>
@@ -403,6 +405,12 @@ Focus on:
                             </div>
                           </td>
                           <td className="p-4 text-center">
+                            <span className="font-semibold text-blue-600">{((i * 7 + 12) % 20) + 8}</span>
+                          </td>
+                          <td className="p-4 text-center">
+                            <span className="font-semibold text-purple-600">{((i * 13 + 18) % 35) + 10}%</span>
+                          </td>
+                          <td className="p-4 text-center">
                             <span className="text-teal-600 font-semibold">{prompt.elelem_score || Math.floor(Math.random() * 30) + 60}/100</span>
                           </td>
                         </tr>
@@ -436,11 +444,19 @@ Focus on:
                         >
                           <div className="font-medium text-sm mb-1 text-gray-900">{page.title}</div>
                           <div className="text-xs mb-2 truncate text-gray-500">{page.url}</div>
-                          <div className="flex items-center justify-between">
-                            <span className="text-xs text-gray-600">Match</span>
-                            <Badge className="bg-teal-500/20 text-teal-400 border-teal-500/30">
-                              {page.relevance_score}%
-                            </Badge>
+                          <div className="flex items-center justify-between gap-2 flex-wrap">
+                            <div className="flex items-center gap-1">
+                              <span className="text-xs text-gray-600">Citations:</span>
+                              <Badge className="bg-blue-500/20 text-blue-600 border-blue-500/30 text-xs">
+                                {((i * 11 + 5) % 20) + 3}
+                              </Badge>
+                            </div>
+                            <div className="flex items-center gap-1">
+                              <span className="text-xs text-gray-600">Retrieval:</span>
+                              <Badge className="bg-teal-500/20 text-teal-400 border-teal-500/30 text-xs">
+                                {page.relevance_score}/100
+                              </Badge>
+                            </div>
                           </div>
                         </div>
                       ))}
