@@ -55,7 +55,7 @@ export default function Tracking() {
         </div>
 
         {trackedPrompts.length === 0 ? (
-          <Card className={isDark ? 'bg-slate-800/50 border-slate-700/50' : 'bg-white border-gray-200'}>
+          <Card className={bg-white border-gray-200}>
             <CardContent className="py-12">
               <div className="text-center">
                 <Target className={`w-16 h-16 mx-auto mb-4 ${isDark ? 'text-slate-600' : 'text-gray-400'}`} />
@@ -77,7 +77,7 @@ export default function Tracking() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: i * 0.1 }}
               >
-                <Card className={isDark ? 'bg-slate-800/50 border-slate-700/50' : 'bg-white border-gray-200'}>
+                <Card className={bg-white border-gray-200}>
                   <CardHeader>
                     <div className="flex items-start justify-between gap-4">
                       <div className="flex-1">

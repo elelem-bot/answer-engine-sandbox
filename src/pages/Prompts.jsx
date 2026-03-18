@@ -236,13 +236,13 @@ export default function Prompts() {
 
         {/* Stats */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-          <Card className={isDark ? 'bg-slate-800/50 border-slate-700/50' : 'bg-white border-gray-200'}>
+          <Card className={bg-white border-gray-200}>
             <CardContent className="pt-6">
               <div className={`text-sm mb-1 ${isDark ? 'text-slate-400' : 'text-gray-600'}`}>Total Prompts</div>
               <div className={`text-3xl font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>{filteredPrompts.length}</div>
             </CardContent>
           </Card>
-          <Card className={isDark ? 'bg-slate-800/50 border-slate-700/50' : 'bg-white border-gray-200'}>
+          <Card className={bg-white border-gray-200}>
             <CardContent className="pt-6">
               <div className={`text-sm mb-1 ${isDark ? 'text-slate-400' : 'text-gray-600'}`}>Top of Funnel</div>
               <div className={`text-3xl font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>
@@ -250,7 +250,7 @@ export default function Prompts() {
               </div>
             </CardContent>
           </Card>
-          <Card className={isDark ? 'bg-slate-800/50 border-slate-700/50' : 'bg-white border-gray-200'}>
+          <Card className={bg-white border-gray-200}>
             <CardContent className="pt-6">
               <div className={`text-sm mb-1 ${isDark ? 'text-slate-400' : 'text-gray-600'}`}>Middle of Funnel</div>
               <div className={`text-3xl font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>
@@ -258,7 +258,7 @@ export default function Prompts() {
               </div>
             </CardContent>
           </Card>
-          <Card className={isDark ? 'bg-slate-800/50 border-slate-700/50' : 'bg-white border-gray-200'}>
+          <Card className={bg-white border-gray-200}>
             <CardContent className="pt-6">
               <div className={`text-sm mb-1 ${isDark ? 'text-slate-400' : 'text-gray-600'}`}>Bottom of Funnel</div>
               <div className={`text-3xl font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>
@@ -269,7 +269,7 @@ export default function Prompts() {
         </div>
 
         {/* Prompts List */}
-        <Card className={isDark ? 'bg-slate-800/50 border-slate-700/50' : 'bg-white border-gray-200'}>
+        <Card className={bg-white border-gray-200}>
           <CardHeader>
             <CardTitle className={isDark ? 'text-white' : 'text-gray-900'}>All Prompts</CardTitle>
           </CardHeader>

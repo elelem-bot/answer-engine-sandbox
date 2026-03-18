@@ -437,7 +437,7 @@ Be accurate - only list brands you actually mentioned in your response.`,
         {/* Trend Charts - Only show when we have trend data */}
         {visibilityData.trendData.length > 0 && (
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-            <Card className={isDark ? 'bg-slate-800/50 border-slate-700/50' : 'bg-white border-gray-200'}>
+            <Card className={bg-white border-gray-200}>
               <CardHeader>
                 <CardTitle className={`text-lg ${isDark ? 'text-white' : 'text-gray-900'}`}>Citation Trend Over Time</CardTitle>
               </CardHeader>
@@ -469,7 +469,7 @@ Be accurate - only list brands you actually mentioned in your response.`,
               </CardContent>
             </Card>
 
-            <Card className={isDark ? 'bg-slate-800/50 border-slate-700/50' : 'bg-white border-gray-200'}>
+            <Card className={bg-white border-gray-200}>
               <CardHeader>
                 <CardTitle className={`text-lg ${isDark ? 'text-white' : 'text-gray-900'}`}>Mention Trend Over Time</CardTitle>
               </CardHeader>
@@ -504,7 +504,7 @@ Be accurate - only list brands you actually mentioned in your response.`,
         )}
 
         {/* AI Responses with Citations */}
-        <Card className={isDark ? 'bg-slate-800/50 border-slate-700/50' : 'bg-white border-gray-200'} mb-8>
+        <Card className={bg-white border-gray-200} mb-8>
           <CardHeader>
             <CardTitle className={`text-lg ${isDark ? 'text-white' : 'text-gray-900'}`}>AI Responses for {funnelStage.charAt(0).toUpperCase() + funnelStage.slice(1)} of Funnel Prompts</CardTitle>
           </CardHeader>
@@ -588,7 +588,7 @@ Be accurate - only list brands you actually mentioned in your response.`,
         </Card>
 
         {/* Top Topics */}
-        <Card className={isDark ? 'bg-slate-800/50 border-slate-700/50' : 'bg-white border-gray-200'}>
+        <Card className={bg-white border-gray-200}>
           <CardHeader>
             <CardTitle className={`text-lg ${isDark ? 'text-white' : 'text-gray-900'}`}>Top Topics in Responses</CardTitle>
           </CardHeader>
@@ -612,7 +612,7 @@ Be accurate - only list brands you actually mentioned in your response.`,
         // Tracking Tab
         <div>
           {trackedPrompts.length === 0 ? (
-            <Card className={isDark ? 'bg-slate-800/50 border-slate-700/50' : 'bg-white border-gray-200'}>
+            <Card className={bg-white border-gray-200}>
               <CardContent className="py-12">
                 <div className="text-center">
                   <TrendingUp className={`w-16 h-16 mx-auto mb-4 ${isDark ? 'text-slate-600' : 'text-gray-400'}`} />
@@ -634,7 +634,7 @@ Be accurate - only list brands you actually mentioned in your response.`,
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: i * 0.1 }}
                 >
-                  <Card className={isDark ? 'bg-slate-800/50 border-slate-700/50' : 'bg-white border-gray-200'}>
+                  <Card className={bg-white border-gray-200}>
                     <CardHeader>
                       <div className="flex items-start justify-between gap-4">
                         <div className="flex-1">
