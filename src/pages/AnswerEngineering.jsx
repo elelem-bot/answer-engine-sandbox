@@ -40,6 +40,8 @@ export default function AnswerEngineering() {
   const [isRescoring, setIsRescoring] = useState(false);
   const [rescoreResult, setRescoreResult] = useState(null);
   const [copied, setCopied] = useState(false);
+  const [promptSort, setPromptSort] = useState({ col: null, dir: "desc" });
+  const [pageSort, setPageSort] = useState({ col: null, dir: "desc" });
 
   useEffect(() => { loadData(); }, []);
   useEffect(() => { filterPrompts(); }, [prompts, searchTerm, funnelStage]);
