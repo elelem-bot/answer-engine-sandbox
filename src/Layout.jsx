@@ -48,7 +48,7 @@ const platformPages = ["AnswerEngine", "Prompts", "AnswerEngineering", "AnswerVi
     return <>{children}</>;
   }
 
-  const isDark = theme === 'dark';
+  const isDark = false;
 
   return (
     <div className={`min-h-screen flex ${isDark ? 'bg-slate-950' : 'bg-gray-50'}`}>
