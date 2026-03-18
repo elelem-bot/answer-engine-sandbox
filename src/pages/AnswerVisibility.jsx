@@ -57,17 +57,7 @@ export default function AnswerVisibility() {
     trendData: []
   });
 
-  useEffect(() => {
-    const handleThemeChange = () => {
-      setTheme(localStorage.getItem('elelem-theme') || 'dark');
-    };
-    window.addEventListener('storage', handleThemeChange);
-    const interval = setInterval(handleThemeChange, 100);
-    return () => {
-      window.removeEventListener('storage', handleThemeChange);
-      clearInterval(interval);
-    };
-  }, []);
+  const isDark = false;
 
   useEffect(() => {
     loadData();
