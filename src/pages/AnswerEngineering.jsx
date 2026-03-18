@@ -366,7 +366,10 @@ Be realistic with scores - good content typically scores 60-85.`,
 
         {/* Funnel Stage Filter */}
         <div className="flex items-center gap-3 mb-6">
-          <span className="text-sm text-gray-600">Funnel Stage:</span>
+          <span className="text-sm text-gray-600">
+            Funnel Stage:
+            <GuidanceDot tip="Top = awareness prompts. Middle = consideration. Bottom = decision. Start with Bottom to win the highest-intent buyers first." position="right" />
+          </span>
           <div className="flex gap-2">
             {["top", "middle", "bottom"].map((stage) => (
               <Button
