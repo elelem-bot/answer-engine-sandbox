@@ -314,7 +314,11 @@ Be realistic with scores - good content typically scores 60-85.`,
                 key={stage}
                 onClick={() => setFunnelStage(stage)}
                 size="sm"
-                className={funnelStage === stage ? "bg-teal-500 hover:bg-teal-600 text-white" : "bg-white text-gray-700 hover:bg-gray-100 border border-gray-300"}
+                style={funnelStage === stage
+                  ? { background: "linear-gradient(to right, #2DC6FE, #81FBEF)", color: "#082D35", border: "none", borderRadius: "9999px" }
+                  : { background: "#fff", color: "#374151", border: "1px solid #d1d5db", borderRadius: "9999px" }
+                }
+                className=""
               >
                 {stage.charAt(0).toUpperCase() + stage.slice(1)}
               </Button>
