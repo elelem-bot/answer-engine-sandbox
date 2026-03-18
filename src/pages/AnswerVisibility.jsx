@@ -327,7 +327,7 @@ Be accurate - only list brands you actually mentioned in your response.`,
                 checked={promptType === "branded"}
                 onCheckedChange={(checked) => setPromptType(checked ? "branded" : "unbranded")}
               />
-              <span className={`text-sm ${text-gray-600}`}>Branded</span>
+              <span className="text-sm text-gray-600">Branded</span>
             </div>
 
             <div className="flex flex-col sm:flex-row sm:items-center gap-3">
