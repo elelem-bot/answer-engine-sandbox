@@ -91,6 +91,11 @@ export default function AnswerEngineering() {
     }
   };
 
+  const getSeoScore = (index) => {
+    // Deterministic pseudo-random SEO score per page index
+    return ((index * 17 + 43) % 35) + 45;
+  };
+
   const getMatchingPages = (prompt) => {
     if (!prompt.best_pages || prompt.best_pages.length === 0) {
       return pages.slice(0, 5).map((page, i) => ({
