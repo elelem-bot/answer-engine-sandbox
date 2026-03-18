@@ -594,7 +594,7 @@ Focus on:
                   </CardHeader>
                   <CardContent>
                     <div className="prose prose-sm max-w-none">
-                      <pre className={`whitespace-pre-wrap text-xs p-4 rounded-lg max-h-[600px] overflow-y-auto ${text-gray-700 bg-gray-50}`}>
+                      <pre className="whitespace-pre-wrap text-xs p-4 rounded-lg max-h-[600px] overflow-y-auto text-gray-700 bg-gray-50">
                         {optimizationResult.original}
                       </pre>
                     </div>
@@ -610,7 +610,7 @@ Focus on:
                   </CardHeader>
                   <CardContent>
                     <div className="prose prose-sm max-w-none">
-                      <pre className={`whitespace-pre-wrap text-xs p-4 rounded-lg max-h-[600px] overflow-y-auto ${text-gray-700 bg-gray-50}`}>
+                      <pre className="whitespace-pre-wrap text-xs p-4 rounded-lg max-h-[600px] overflow-y-auto text-gray-700 bg-gray-50">
                         {optimizationResult.optimized}
                       </pre>
                     </div>
@@ -713,7 +713,7 @@ Focus on:
                 </CardHeader>
                 <CardContent>
                   <div className="prose prose-sm max-w-none">
-                    <pre className={`whitespace-pre-wrap text-xs p-4 rounded-lg max-h-[600px] overflow-y-auto ${text-gray-700 bg-gray-50}`}>
+                    <pre className="whitespace-pre-wrap text-xs p-4 rounded-lg max-h-[600px] overflow-y-auto text-gray-700 bg-gray-50">
                       {cleanContentForDisplay(newPageResult.content)}
                     </pre>
                   </div>
