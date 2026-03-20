@@ -94,7 +94,7 @@ export default function Tracking() {
                             </Badge>
                           )}
                         </div>
-                        <CardTitle className={`text-lg ${text-gray-900}`}>
+                        <CardTitle className="text-lg text-gray-900">
                           {prompt.prompt}
                         </CardTitle>
                         <div className="flex items-center gap-4 mt-3 text-sm">
