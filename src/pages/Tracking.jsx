@@ -62,7 +62,7 @@ export default function Tracking() {
                 <h3 className="text-lg font-semibold mb-2 text-gray-900">
                   No Tracked Prompts Yet
                 </h3>
-                <p className={text-gray-600}>
+                <p className="text-gray-600">
                   Start tracking prompts from the Answer Engineering page to monitor their performance over time.
                 </p>
               </div>
