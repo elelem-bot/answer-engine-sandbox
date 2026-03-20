@@ -409,25 +409,50 @@ Return exactly 2 indices. JSON: { "page_indices": [n, n] }`,
             <AnimatePresence>
               {showRecommendations && recommendedPages.length > 0 && (
                 <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }}
-                  className="border-t border-gray-200 bg-gray-50 overflow-hidden">
-                  <div className="px-4 py-2 flex items-center gap-2">
-                    <span className="text-xs text-gray-500 font-medium whitespace-nowrap">You might like:</span>
-                    <div className="flex gap-2 flex-1 overflow-hidden">
-                      {recommendedPages.map((page, i) => (
+                  className="border-t border-gray-200 bg-white overflow-hidden">
+                  <div className="px-4 py-3 flex items-start gap-3">
+                    <span className="text-xs text-gray-600 font-medium pt-3 whitespace-nowrap">You might also like:</span>
+                    <div className="flex-1 grid grid-cols-3 gap-3">
+                      {recommendedPages.slice(0, 2).map((page, i) => (
                         <a key={i} href={page.url} target="_blank" rel="noopener noreferrer"
-                          className="flex items-center gap-2 bg-white border border-gray-200 rounded-lg px-2 py-1.5 hover:border-teal-300 transition-all text-xs flex-1 overflow-hidden">
-                          <div className="font-medium text-gray-900 truncate">{page.title}</div>
+                          className="rounded-lg border border-gray-200 hover:border-gray-300 hover:shadow-sm transition-all group overflow-hidden flex flex-row">
+                          <div className="w-16 self-stretch flex-shrink-0 overflow-hidden bg-gray-100">
+                            <img
+                              src={page.image_url || "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=80&h=80&fit=crop"}
+                              alt={page.title}
+                              className="w-full h-full object-cover"
+                              onError={(e) => { e.target.src = "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=80&h=80&fit=crop"; }}
+                            />
+                          </div>
+                          <div className="p-2 flex flex-col justify-center">
+                            <p className="text-xs font-semibold text-gray-900 line-clamp-1 group-hover:text-teal-600 transition-colors mb-1">{page.title}</p>
+                            <p className="text-xs text-gray-500 line-clamp-2 leading-relaxed">{page.description}</p>
+                          </div>
                         </a>
                       ))}
+                      <div className="p-2 rounded-lg bg-gray-50 border border-gray-200 flex flex-col items-center justify-center gap-1.5">
+                        <span className="text-xs text-gray-700 font-medium text-center leading-snug line-clamp-2">{bookingCta}</span>
+                        <button
+                          onClick={() => setShowBookingPanel(true)}
+                          className="text-xs font-semibold px-3 py-1.5 rounded-full whitespace-nowrap text-white"
+                          style={{ backgroundColor: brandColor }}
+                        >
+                          {ctaButtonText}
+                        </button>
+                      </div>
                     </div>
-                    <button className="text-xs text-teal-600 flex items-center gap-1 whitespace-nowrap" onClick={() => setShowBookingPanel(true)}>
-                      {bookingCta} →
-                    </button>
-                    <button onClick={() => setShowRecommendations(false)}><X className="w-3.5 h-3.5 text-gray-400" /></button>
+                    <button onClick={() => setShowRecommendations(false)} className="flex-shrink-0 mt-1"><X className="w-3.5 h-3.5 text-gray-400" /></button>
                   </div>
                 </motion.div>
               )}
             </AnimatePresence>
+            {!showRecommendations && recommendedPages.length > 0 && (
+              <div className="px-4 py-1.5 border-t border-gray-200 bg-gray-50">
+                <button onClick={() => setShowRecommendations(true)} className="w-full text-xs text-gray-500 hover:text-gray-800 flex items-center justify-center gap-1">
+                  <ChevronUp className="w-3.5 h-3.5" /> Show Recommendations
+                </button>
+              </div>
+            )}
           </div>
 
           {/* Booking Panel */}
