@@ -60,6 +60,11 @@ const AuthenticatedApp = () => {
           }
         />
       ))}
+      <Route path="/Sandbox" element={
+        <LayoutWrapper currentPageName="Sandbox">
+          <Sandbox />
+        </LayoutWrapper>
+      } />
       <Route path="*" element={<PageNotFound />} />
     </Routes>
   );
