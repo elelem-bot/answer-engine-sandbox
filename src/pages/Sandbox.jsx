@@ -333,6 +333,7 @@ function SandboxAnalytics({ questions }) {
 
 // ── Main Sandbox Page ─────────────────────────────────────────────────────────
 export default function Sandbox() {
+  const navigate = useNavigate();
   const [company, setCompany] = useState(null);
   const [questions, setQuestions] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
