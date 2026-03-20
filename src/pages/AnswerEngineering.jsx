@@ -303,6 +303,8 @@ Be realistic with scores - good content typically scores 60-85.`,
   };
 
   const rawMatchingPages = selectedPrompt ? getMatchingPages(selectedPrompt) : [];
+
+  const sortedPrompts = useMemo(() => {
     if (!promptSort.col) return filteredPrompts;
     return [...filteredPrompts].sort((a, b) => {
       let av, bv;
