@@ -50,8 +50,8 @@ export default function Tracking() {
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="mb-8">
-          <h1 className={`text-2xl font-bold mb-2 ${text-gray-900}`}>Tracked Prompts</h1>
-          <p className={text-gray-600}>Monitor the performance and ROI of your engineered content</p>
+          <h1 className="text-2xl font-bold mb-2 text-gray-900">Tracked Prompts</h1>
+          <p className="text-gray-600">Monitor the performance and ROI of your engineered content</p>
         </div>
 
         {trackedPrompts.length === 0 ? (
