@@ -17,7 +17,8 @@ import {
   Folder,
   Check,
   User,
-  HelpCircle
+  HelpCircle,
+  FlaskConical
 } from "lucide-react";
 import { GuidanceProvider, useGuidance } from "@/lib/GuidanceContext";
 import { Button } from "@/components/ui/button";
