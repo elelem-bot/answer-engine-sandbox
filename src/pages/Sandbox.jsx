@@ -1,12 +1,15 @@
 import React, { useState, useEffect, useRef } from "react";
 import { base44 } from "@/api/base44Client";
+import { useNavigate } from "react-router-dom";
+import { createPageUrl } from "@/utils";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Loader2, Send, MessageSquare, ThumbsUp, ThumbsDown,
   Flag, CheckCircle, BarChart3, Eye, ChevronDown, ChevronUp,
   AlertCircle, Target, Clock, TrendingUp, Users, FileText, Zap,
-  ArrowUp, ArrowDown, X, Edit3, Save
+  ArrowUp, ArrowDown, X, Edit3, Save, Settings
 } from "lucide-react";
+import AnswerEngineChat from "@/components/AnswerEngineChat";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
