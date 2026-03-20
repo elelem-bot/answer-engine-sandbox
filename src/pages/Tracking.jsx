@@ -169,7 +169,7 @@ export default function Tracking() {
                     {/* Keywords */}
                     {prompt.keywords && prompt.keywords.length > 0 && (
                       <div className="mt-4 pt-4 border-t border-slate-700/50">
-                        <div className={`text-xs font-semibold mb-2 ${text-gray-600}`}>
+                        <div className="text-xs font-semibold mb-2 text-gray-600">
                           Target Keywords:
                         </div>
                         <div className="flex flex-wrap gap-2">
