@@ -416,24 +416,9 @@ export default function Sandbox() {
       {activeTab === "engine" ? (
         /* ── Engine + Feedback Side-by-side ── */
         <div className="flex flex-1 overflow-hidden" style={{ height: "calc(100vh - 73px)" }}>
-          {/* Desktop-width iframe */}
-          <div className="flex-1 bg-white border-r border-gray-200 overflow-hidden">
-            {company?.website_url ? (
-              <iframe
-                src={company.website_url}
-                className="w-full h-full"
-                title="Website Preview"
-                style={{ minWidth: "1280px", transform: "scale(1)", transformOrigin: "top left" }}
-              />
-            ) : (
-              <div className="flex items-center justify-center h-full text-gray-500">
-                <div className="text-center">
-                  <Eye className="w-12 h-12 mx-auto mb-3 text-gray-300" />
-                  <p className="font-medium text-gray-700">No website configured</p>
-                  <p className="text-sm">Complete setup first to preview your website here.</p>
-                </div>
-              </div>
-            )}
+          {/* Answer Engine Chat */}
+          <div className="flex-1 overflow-hidden">
+            <AnswerEngineChat onQuestionSaved={(q) => setQuestions(prev => [q, ...prev])} />
           </div>
 
           {/* Feedback Panel */}
