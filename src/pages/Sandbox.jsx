@@ -402,6 +402,14 @@ export default function Sandbox() {
             <BarChart3 className="w-4 h-4 mr-1.5" />
             Analytics
           </Button>
+          <Button
+            onClick={() => navigate(createPageUrl("AnswerEngine"))}
+            size="sm"
+            style={{ background: "#fff", color: "#374151", border: "1px solid #d1d5db", borderRadius: "9999px" }}
+          >
+            <Settings className="w-4 h-4 mr-1.5" />
+            Setup
+          </Button>
         </div>
       </div>
 
