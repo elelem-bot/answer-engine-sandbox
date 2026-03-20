@@ -341,17 +341,18 @@ Be realistic with scores - good content typically scores 60-85.`,
   const matchingPages = sortedPages;
   const showWorkspace = !!contentBrief || isGeneratingBrief;
 
-  return (
-    <>
-    {isLoading && (
+  if (isLoading) {
+    return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
         <div className="text-center">
           <Loader2 className="w-12 h-12 text-teal-500 animate-spin mx-auto mb-4" />
           <p className="text-gray-600">Loading optimization data...</p>
         </div>
       </div>
-    )}
-    {!isLoading && (
+    );
+  }
+
+  return (
     <div className="min-h-screen p-6 lg:p-8 bg-gray-50">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
