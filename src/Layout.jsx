@@ -30,7 +30,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
-const platformPages = ["AnswerEngine", "Prompts", "AnswerEngineering", "AnswerVisibility", "Analytics", "Tracking", "PromptResearch"];
+const platformPages = ["AnswerEngine", "Prompts", "AnswerEngineering", "AnswerVisibility", "Analytics", "Tracking", "PromptResearch", "Sandbox"];
 
 // Mock projects — in a real app these would come from the Company entity
 const PROJECTS = ["PlayStation", "Acme Corp", "Demo Project"];
