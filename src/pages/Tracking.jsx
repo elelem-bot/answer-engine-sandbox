@@ -59,7 +59,7 @@ export default function Tracking() {
             <CardContent className="py-12">
               <div className="text-center">
                 <Target className="w-16 h-16 mx-auto mb-4 text-gray-400" />
-                <h3 className={`text-lg font-semibold mb-2 ${text-gray-900}`}>
+                <h3 className="text-lg font-semibold mb-2 text-gray-900">
                   No Tracked Prompts Yet
                 </h3>
                 <p className={text-gray-600}>
