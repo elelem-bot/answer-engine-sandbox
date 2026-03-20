@@ -99,6 +99,7 @@ export default function Layout({ children, currentPageName }) {
       { name: "PromptResearch", label: "Prompt Research", icon: Search }
     ]},
     { name: "Prompts", label: "Prompts", icon: MessageSquare },
+    { name: "Sandbox", label: "Sandbox", icon: FlaskConical },
   ];
 
   if (!showPlatformNav) {
