@@ -744,7 +744,5 @@ Be realistic with scores - good content typically scores 60-85.`,
         )}
       </div>
     </div>
-    )}
-    </>
   );
 }
