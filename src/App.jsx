@@ -9,6 +9,9 @@ import PageNotFound from './lib/PageNotFound';
 import { AuthProvider, useAuth } from '@/lib/AuthContext';
 import UserNotRegisteredError from '@/components/UserNotRegisteredError';
 import Sandbox from './pages/Sandbox';
+import Page1 from './pages/Page1';
+import Page2 from './pages/Page2';
+import Page3 from './pages/Page3';
 
 const { Pages, Layout, mainPage } = pagesConfig;
 const mainPageKey = mainPage ?? Object.keys(Pages)[0];
@@ -63,6 +66,21 @@ const AuthenticatedApp = () => {
       <Route path="/Sandbox" element={
         <LayoutWrapper currentPageName="Sandbox">
           <Sandbox />
+        </LayoutWrapper>
+      } />
+      <Route path="/Page1" element={
+        <LayoutWrapper currentPageName="Page1">
+          <Page1 />
+        </LayoutWrapper>
+      } />
+      <Route path="/Page2" element={
+        <LayoutWrapper currentPageName="Page2">
+          <Page2 />
+        </LayoutWrapper>
+      } />
+      <Route path="/Page3" element={
+        <LayoutWrapper currentPageName="Page3">
+          <Page3 />
         </LayoutWrapper>
       } />
       <Route path="*" element={<PageNotFound />} />
