@@ -18,7 +18,8 @@ import {
   Check,
   User,
   HelpCircle,
-  FlaskConical
+  FlaskConical,
+  Settings
 } from "lucide-react";
 import { GuidanceProvider, useGuidance } from "@/lib/GuidanceContext";
 import { Button } from "@/components/ui/button";
@@ -31,7 +32,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
-const platformPages = ["AnswerEngine", "Prompts", "AnswerEngineering", "AnswerVisibility", "Analytics", "Tracking", "PromptResearch", "Sandbox"];
+const platformPages = ["AnswerEngine", "Prompts", "AnswerEngineering", "AnswerVisibility", "Analytics", "Tracking", "PromptResearch", "Sandbox", "SandboxSettings"];
 
 // Mock projects — in a real app these would come from the Company entity
 const PROJECTS = ["PlayStation", "Acme Corp", "Demo Project"];
@@ -100,6 +101,7 @@ export default function Layout({ children, currentPageName }) {
     ]},
     { name: "Prompts", label: "Prompts", icon: MessageSquare },
     { name: "Sandbox", label: "Sandbox", icon: FlaskConical },
+    { name: "SandboxSettings", label: "Sandbox Settings", icon: Settings },
   ];
 
   if (!showPlatformNav) {
