@@ -292,7 +292,7 @@ Return JSON format:
         </div>
       </div>
 
-      {/* Form */
+      {/* Form */}
       <div className="max-w-4xl mx-auto px-6 py-12">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
