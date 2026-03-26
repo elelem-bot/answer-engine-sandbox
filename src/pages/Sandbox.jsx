@@ -335,6 +335,7 @@ function SandboxAnalytics({ questions }) {
 export default function Sandbox() {
   const navigate = useNavigate();
   const [company, setCompany] = useState(null);
+  const [showPopup, setShowPopup] = useState(false);
   const [questions, setQuestions] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [activeTab, setActiveTab] = useState("engine");
@@ -416,9 +417,79 @@ export default function Sandbox() {
       {activeTab === "engine" ? (
         /* ── Engine + Feedback Side-by-side ── */
         <div className="flex flex-1 overflow-hidden" style={{ height: "calc(100vh - 73px)" }}>
-          {/* Answer Engine Chat */}
-          <div className="flex-1 overflow-hidden">
-            <AnswerEngineChat onQuestionSaved={(q) => setQuestions(prev => [q, ...prev])} />
+          {/* iframe background + floating button */}
+          <div className="flex-1 relative overflow-hidden">
+            <div className="absolute inset-0">
+              {company?.website_url ? (
+                <iframe
+                  src={company.website_url}
+                  className="w-full h-full"
+                  title="Website Preview"
+                />
+              ) : (
+                <div className="w-full h-full flex items-center justify-center bg-gray-100">
+                  <p className="text-gray-400 text-sm">No website URL configured — go to Setup first</p>
+                </div>
+              )}
+            </div>
+
+            {/* Floating Ask AI Button */}
+            {!showPopup && (
+              <motion.div
+                initial={{ scale: 0.8, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                className="absolute top-4 right-4 z-10"
+              >
+                <Button
+                  onClick={() => setShowPopup(true)}
+                  className="shadow-lg"
+                  style={{ background: "linear-gradient(to right,#2DC6FE,#81FBEF)", color: "#082D35", border: "none", borderRadius: "9999px" }}
+                >
+                  <MessageSquare className="w-4 h-4 mr-2" />
+                  Ask AI
+                </Button>
+              </motion.div>
+            )}
+
+            {/* Popup Modal */}
+            <AnimatePresence>
+              {showPopup && (
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  className="absolute inset-0 z-20 flex items-center justify-center p-6 bg-black/30"
+                  onClick={() => setShowPopup(false)}
+                >
+                  <motion.div
+                    initial={{ scale: 0.9, opacity: 0 }}
+                    animate={{ scale: 1, opacity: 1 }}
+                    exit={{ scale: 0.9, opacity: 0 }}
+                    onClick={(e) => e.stopPropagation()}
+                    className="w-full h-full max-w-4xl max-h-[85vh] rounded-2xl overflow-hidden shadow-2xl bg-white flex flex-col"
+                  >
+                    {/* Header */}
+                    <div className="px-6 py-4 border-b border-gray-200 flex items-center justify-between bg-white flex-shrink-0">
+                      <span className="text-lg font-semibold text-gray-900">
+                        {company?.name || "Answer Engine"}
+                      </span>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => setShowPopup(false)}
+                        className="text-gray-400 hover:text-gray-900"
+                      >
+                        <X className="w-5 h-5" />
+                      </Button>
+                    </div>
+                    {/* Chat */}
+                    <div className="flex-1 overflow-hidden">
+                      <AnswerEngineChat onQuestionSaved={(q) => setQuestions(prev => [q, ...prev])} />
+                    </div>
+                  </motion.div>
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
 
           {/* Feedback Panel */}
