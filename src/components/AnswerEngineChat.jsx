@@ -47,6 +47,8 @@ export default function AnswerEngineChat({ onQuestionSaved }) {
   const [isBooking, setIsBooking] = useState(false);
   const [ctaButtonText, setCtaButtonText] = useState("Book Demo");
   const [isSetupCollapsed, setIsSetupCollapsed] = useState(false);
+  const [prompts, setPrompts] = useState([]);
+  const [showPromptDropdown, setShowPromptDropdown] = useState(false);
 
   useEffect(() => {
     const load = async () => {
@@ -63,6 +65,19 @@ export default function AnswerEngineChat({ onQuestionSaved }) {
       }
     };
     load();
+  }, []);
+
+  useEffect(() => {
+    const loadPrompts = async () => {
+      try {
+        const companies = await base44.entities.Company.list();
+        if (companies.length > 0) {
+          const ps = await base44.entities.PromptAnalysis.filter({ company_id: companies[0].id });
+          setPrompts(ps);
+        }
+      } catch (e) {}
+    };
+    loadPrompts();
   }, []);
 
   const handleCrawl = async () => {
@@ -380,8 +395,40 @@ Return exactly 2 indices. JSON: { "page_indices": [n, n] }`,
                   ))}
                 </div>
               )}
+              {/* Prompts Dropdown */}
+              {showPromptDropdown && prompts.length > 0 && (
+                <div className="mb-2 bg-white border border-gray-200 rounded-xl shadow-lg overflow-hidden max-h-52 overflow-y-auto">
+                  {prompts.map((p, i) => (
+                    <button
+                      key={i}
+                      type="button"
+                      onClick={() => { setQuestion(p.prompt); setShowPromptDropdown(false); }}
+                      className="w-full text-left px-4 py-2.5 text-sm text-gray-800 hover:bg-gray-50 border-b border-gray-100 last:border-0 flex items-center gap-2"
+                    >
+                      <span className="text-xs px-1.5 py-0.5 rounded bg-gray-100 text-gray-500 flex-shrink-0">{p.funnel_stage || 'top'}</span>
+                      <span className="line-clamp-1">{p.prompt}</span>
+                    </button>
+                  ))}
+                </div>
+              )}
               <form onSubmit={handleAskQuestion}>
-                <input type="file" multiple accept="image/*,.pdf,.txt" onChange={handleFileUpload} className="hidden" id="ae-file-upload" />
+              <div className="flex items-center bg-white border border-gray-200 rounded-full px-3 gap-2 shadow-sm mb-2">
+                  <button
+                    type="button"
+                    onClick={() => setShowPromptDropdown(v => !v)}
+                    title="Browse prompts"
+                    className="text-gray-400 hover:text-gray-700 text-xs font-medium px-1"
+                  >
+                    Prompts ▾
+                  </button>
+                  <Input
+                    placeholder="Search prompts..."
+                    value=""
+                    readOnly
+                    onClick={() => setShowPromptDropdown(v => !v)}
+                    className="flex-1 border-0 bg-transparent text-xs text-gray-400 cursor-pointer focus-visible:ring-0 focus-visible:ring-offset-0 px-1"
+                  />
+              </div>
                 <div className="flex items-center bg-white border border-gray-300 rounded-full px-3 gap-2 shadow-sm">
                   <button type="button" onClick={() => document.getElementById("ae-file-upload").click()} className="text-gray-400 hover:text-gray-700">
                     <Plus className="w-4 h-4" />
