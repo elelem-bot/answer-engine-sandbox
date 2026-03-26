@@ -278,21 +278,21 @@ Return JSON format:
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950">
+    <div className="min-h-screen bg-gray-50">
       {/* Header */}
-      <div className="border-b border-slate-800 bg-slate-950/80 backdrop-blur-xl sticky top-0 z-10">
+      <div className="border-b border-gray-200 bg-white sticky top-0 z-10">
         <div className="max-w-4xl mx-auto px-6 py-6">
           <div className="flex items-center">
             <img 
               src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/6943f2bf67610e14801b112b/de87d19e0_elelem2025logoPrimary.png"
               alt="elelem"
-              className="h-8 brightness-0 invert"
+              className="h-8"
             />
           </div>
         </div>
       </div>
 
-      {/* Form */}
+      {/* Form */
       <div className="max-w-4xl mx-auto px-6 py-12">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -300,37 +300,37 @@ Return JSON format:
           transition={{ duration: 0.5 }}
         >
           <div className="text-center mb-10">
-            <h1 className="text-3xl font-bold text-white mb-3">Let's Generate Your Prompts & Dashboard</h1>
-            <p className="text-slate-400 max-w-2xl mx-auto">
+            <h1 className="text-3xl font-bold text-gray-900 mb-3">Let's Generate Your Prompts & Dashboard</h1>
+            <p className="text-gray-500 max-w-2xl mx-auto">
               Start by entering your website URL - we'll analyze it and help fill in the rest.
             </p>
           </div>
 
           <form onSubmit={handleSubmit}>
             {/* Step 1: Website URL */}
-            <Card className="bg-gradient-to-br from-teal-500/10 to-cyan-500/10 border-teal-500/30 mb-8">
+            <Card className="bg-white border-gray-200 mb-8">
               <CardHeader>
                 <div className="flex items-center gap-3">
                   <div className="w-8 h-8 rounded-full bg-teal-500 text-white flex items-center justify-center font-bold">
                     1
                   </div>
-                  <CardTitle className="text-white">Enter Your Company URL</CardTitle>
+                  <CardTitle className="text-gray-900">Enter Your Company URL</CardTitle>
                 </div>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="space-y-2">
-                  <Label className="text-slate-300">Website URL *</Label>
+                  <Label className="text-gray-700">Website URL *</Label>
                   <Input
                     type="url"
                     value={formData.website_url}
                     onChange={(e) => handleChange("website_url", e.target.value)}
-                    className="bg-slate-900 border-slate-700 text-white"
+                    className="bg-white border-gray-300 text-gray-900"
                     placeholder="https://example.com"
                     required
                   />
                 </div>
                 {isAutoFilling && (
-                  <div className="flex items-center gap-2 text-teal-400 bg-teal-500/10 rounded-lg p-3 border border-teal-500/30">
+                  <div className="flex items-center gap-2 text-teal-600 bg-teal-50 rounded-lg p-3 border border-teal-200">
                     <Loader2 className="w-4 h-4 animate-spin" />
                     <span>Analyzing your website and pre-filling the form...</span>
                   </div>
@@ -339,41 +339,41 @@ Return JSON format:
             </Card>
 
             {/* Step 2: Company Details */}
-            <Card className="bg-slate-800/50 border-slate-700/50 mb-6">
+            <Card className="bg-white border-gray-200 mb-6">
               <CardHeader>
                 <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-full bg-slate-700 text-white flex items-center justify-center font-bold">
+                  <div className="w-8 h-8 rounded-full bg-gray-200 text-gray-700 flex items-center justify-center font-bold">
                     2
                   </div>
-                  <CardTitle className="text-white">Company & Product Information</CardTitle>
+                  <CardTitle className="text-gray-900">Company & Product Information</CardTitle>
                 </div>
               </CardHeader>
               <CardContent className="space-y-6">
                 <div className="space-y-2">
-                  <Label className="text-slate-300">Company/Project Name *</Label>
+                  <Label className="text-gray-700">Company/Project Name *</Label>
                   <Input
                     value={formData.name}
                     onChange={(e) => handleChange("name", e.target.value)}
-                    className="bg-slate-900 border-slate-700 text-white"
+                    className="bg-white border-gray-300 text-gray-900"
                     placeholder="Acme Corp"
                     required
                   />
-                  <p className="text-slate-500 text-sm">Your company or project name</p>
+                  <p className="text-gray-500 text-sm">Your company or project name</p>
                 </div>
 
                 <div className="space-y-2">
-                  <Label className="text-slate-300">Key Product Names *</Label>
+                  <Label className="text-gray-700">Key Product Names *</Label>
                   {formData.product_names.length > 0 ? (
                     <div className="space-y-2">
                       <div className="flex flex-wrap gap-2">
                         {formData.product_names.map((prod, i) => (
                           <Badge 
                             key={i}
-                            className="bg-teal-500/20 text-teal-400 border-teal-500/30 text-sm px-3 py-1.5 flex items-center gap-2"
+                            className="bg-teal-500/20 text-teal-600 border-teal-500/30 text-sm px-3 py-1.5 flex items-center gap-2"
                           >
                             {prod}
                             <X 
-                              className="w-3.5 h-3.5 cursor-pointer hover:text-teal-300" 
+                              className="w-3.5 h-3.5 cursor-pointer hover:text-teal-800" 
                               onClick={() => {
                                 setFormData(prev => ({ 
                                   ...prev, 
@@ -396,7 +396,7 @@ Return JSON format:
                             e.target.value = '';
                           }
                         }}
-                        className="bg-slate-900 border-slate-700 text-white"
+                        className="bg-white border-gray-300 text-gray-900"
                         placeholder="Add product name and press Enter"
                       />
                     </div>
@@ -413,27 +413,27 @@ Return JSON format:
                           e.target.value = '';
                         }
                       }}
-                      className="bg-slate-900 border-slate-700 text-white"
+                      className="bg-white border-gray-300 text-gray-900"
                       placeholder="e.g., PlayStation, Gmail, Salesforce CRM - press Enter"
                       required
                     />
                   )}
-                  <p className="text-slate-500 text-sm">Add your product or service names and press Enter</p>
+                  <p className="text-gray-500 text-sm">Add your product or service names and press Enter</p>
                 </div>
 
                 <div className="space-y-2">
-                  <Label className="text-slate-300">Main Commercial Competitors *</Label>
+                  <Label className="text-gray-700">Main Commercial Competitors *</Label>
                   {formData.top_competitors && !isAutoFilling ? (
                     <div className="space-y-2">
                       <div className="flex flex-wrap gap-2">
                         {formData.top_competitors.split(',').map((comp, i) => (
                           <Badge 
                             key={i}
-                            className="bg-teal-500/20 text-teal-400 border-teal-500/30 text-sm px-3 py-1.5 flex items-center gap-2"
+                            className="bg-teal-500/20 text-teal-600 border-teal-500/30 text-sm px-3 py-1.5 flex items-center gap-2"
                           >
                             {comp.trim()}
                             <X 
-                              className="w-3.5 h-3.5 cursor-pointer hover:text-teal-300" 
+                              className="w-3.5 h-3.5 cursor-pointer hover:text-teal-800" 
                               onClick={() => {
                                 const competitors = formData.top_competitors.split(',').filter((_, idx) => idx !== i);
                                 setFormData(prev => ({ ...prev, top_competitors: competitors.join(', ') }));
@@ -454,7 +454,7 @@ Return JSON format:
                             e.target.value = '';
                           }
                         }}
-                        className="bg-slate-900 border-slate-700 text-white"
+                        className="bg-white border-gray-300 text-gray-900"
                         placeholder="Add competitor and press Enter"
                       />
                     </div>
@@ -462,91 +462,91 @@ Return JSON format:
                     <Input
                       value={formData.top_competitors}
                       onChange={(e) => handleChange("top_competitors", e.target.value)}
-                      className="bg-slate-900 border-slate-700 text-white"
+                      className="bg-white border-gray-300 text-gray-900"
                       placeholder="Competitor A, Competitor B, Competitor C"
                       required
                     />
                   )}
-                  <p className="text-slate-500 text-sm">Separate with commas or press Enter to add</p>
+                  <p className="text-gray-500 text-sm">Separate with commas or press Enter to add</p>
                 </div>
 
                 <div className="space-y-2">
-                  <Label className="text-slate-300">ICP Description *</Label>
+                  <Label className="text-gray-700">ICP Description *</Label>
                   <Textarea
                     value={formData.icp_description}
                     onChange={(e) => handleChange("icp_description", e.target.value)}
-                    className="bg-slate-900 border-slate-700 text-white min-h-[100px]"
+                    className="bg-white border-gray-300 text-gray-900 min-h-[100px]"
                     placeholder="e.g., Content Marketers at Enterprise Insurance companies, or Tech-savvy millennials interested in gaming"
                     required
                   />
-                  <p className="text-slate-500 text-sm">Describe your ideal customer profile</p>
+                  <p className="text-gray-500 text-sm">Describe your ideal customer profile</p>
                 </div>
 
                 <div className="space-y-2">
-                  <Label className="text-slate-300">Region *</Label>
+                  <Label className="text-gray-700">Region *</Label>
                   <Input
                     value={formData.region}
                     onChange={(e) => handleChange("region", e.target.value)}
-                    className="bg-slate-900 border-slate-700 text-white"
+                    className="bg-white border-gray-300 text-gray-900"
                     placeholder="e.g., Ireland, UK, EU, Germany, US, California, Japan"
                     required
                   />
-                  <p className="text-slate-500 text-sm">Primary market or region</p>
+                  <p className="text-gray-500 text-sm">Primary market or region</p>
                 </div>
               </CardContent>
             </Card>
 
-            <Card className="bg-slate-800/50 border-slate-700/50 mb-8">
+            <Card className="bg-white border-gray-200 mb-8">
               <CardHeader>
-                <CardTitle className="text-white">Optional Data Upload</CardTitle>
+                <CardTitle className="text-gray-900">Optional Data Upload</CardTitle>
               </CardHeader>
               <CardContent className="space-y-6">
                 <div className="space-y-2">
-                  <Label className="text-slate-300">Search Engine Keywords (CSV)</Label>
+                  <Label className="text-gray-700">Search Engine Keywords (CSV)</Label>
                   <div className="flex items-center gap-3">
                     <Input
                       type="file"
                       accept=".csv"
                       onChange={(e) => handleFileUpload("keywords_file", e.target.files[0])}
-                      className="bg-slate-900 border-slate-700 text-white h-auto py-2.5 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:bg-teal-500 file:text-white file:font-medium file:cursor-pointer hover:file:bg-teal-600 file:transition-colors"
+                      className="bg-white border-gray-300 text-gray-900 h-auto py-2.5 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:bg-teal-500 file:text-white file:font-medium file:cursor-pointer hover:file:bg-teal-600 file:transition-colors"
                     />
                     {formData.keywords_file && (
-                      <FileUp className="w-5 h-5 text-teal-400 flex-shrink-0" />
+                      <FileUp className="w-5 h-5 text-teal-500 flex-shrink-0" />
                     )}
                   </div>
-                  <p className="text-slate-500 text-sm">Upload your SEO keywords for better prompt generation</p>
+                  <p className="text-gray-500 text-sm">Upload your SEO keywords for better prompt generation</p>
                 </div>
 
                 <div className="space-y-2">
-                  <Label className="text-slate-300">Sales Call Logs</Label>
+                  <Label className="text-gray-700">Sales Call Logs</Label>
                   <div className="flex items-center gap-3">
                     <Input
                       type="file"
                       accept=".pdf,.txt,.csv"
                       onChange={(e) => handleFileUpload("sales_logs_file", e.target.files[0])}
-                      className="bg-slate-900 border-slate-700 text-white h-auto py-2.5 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:bg-teal-500 file:text-white file:font-medium file:cursor-pointer hover:file:bg-teal-600 file:transition-colors"
+                      className="bg-white border-gray-300 text-gray-900 h-auto py-2.5 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:bg-teal-500 file:text-white file:font-medium file:cursor-pointer hover:file:bg-teal-600 file:transition-colors"
                     />
                     {formData.sales_logs_file && (
-                      <FileUp className="w-5 h-5 text-teal-400 flex-shrink-0" />
+                      <FileUp className="w-5 h-5 text-teal-500 flex-shrink-0" />
                     )}
                   </div>
-                  <p className="text-slate-500 text-sm">Help us understand real customer questions</p>
+                  <p className="text-gray-500 text-sm">Help us understand real customer questions</p>
                 </div>
 
                 <div className="space-y-2">
-                  <Label className="text-slate-300">Chatbot Conversations</Label>
+                  <Label className="text-gray-700">Chatbot Conversations</Label>
                   <div className="flex items-center gap-3">
                     <Input
                       type="file"
                       accept=".pdf,.txt,.csv"
                       onChange={(e) => handleFileUpload("chatbot_file", e.target.files[0])}
-                      className="bg-slate-900 border-slate-700 text-white h-auto py-2.5 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:bg-teal-500 file:text-white file:font-medium file:cursor-pointer hover:file:bg-teal-600 file:transition-colors"
+                      className="bg-white border-gray-300 text-gray-900 h-auto py-2.5 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:bg-teal-500 file:text-white file:font-medium file:cursor-pointer hover:file:bg-teal-600 file:transition-colors"
                     />
                     {formData.chatbot_file && (
-                      <FileUp className="w-5 h-5 text-teal-400 flex-shrink-0" />
+                      <FileUp className="w-5 h-5 text-teal-500 flex-shrink-0" />
                     )}
                   </div>
-                  <p className="text-slate-500 text-sm">Upload chatbot logs to improve question accuracy</p>
+                  <p className="text-gray-500 text-sm">Upload chatbot logs to improve question accuracy</p>
                 </div>
               </CardContent>
             </Card>
