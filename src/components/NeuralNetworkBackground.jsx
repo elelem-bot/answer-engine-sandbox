@@ -8,105 +8,102 @@ export default function NeuralNetworkBackground() {
     const mount = mountRef.current;
     if (!mount) return;
 
-    // Scene
+    const W = window.innerWidth;
+    const H = window.innerHeight;
+
     const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(60, mount.clientWidth / mount.clientHeight, 0.1, 1000);
+    const camera = new THREE.PerspectiveCamera(60, W / H, 0.1, 1000);
     camera.position.z = 80;
 
     const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-    renderer.setSize(mount.clientWidth, mount.clientHeight);
+    renderer.setSize(W, H);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     renderer.setClearColor(0x000000, 0);
     mount.appendChild(renderer.domElement);
 
     // Nodes
-    const NODE_COUNT = 120;
+    const NODE_COUNT = 100;
     const nodes = [];
-    const nodeGeometry = new THREE.SphereGeometry(0.35, 8, 8);
+    const nodeGeo = new THREE.SphereGeometry(0.4, 8, 8);
 
     for (let i = 0; i < NODE_COUNT; i++) {
       const mat = new THREE.MeshBasicMaterial({
         color: Math.random() > 0.5 ? 0x2DC6FE : 0x81FBEF,
         transparent: true,
-        opacity: Math.random() * 0.6 + 0.3,
+        opacity: Math.random() * 0.5 + 0.3,
       });
-      const mesh = new THREE.Mesh(nodeGeometry, mat);
+      const mesh = new THREE.Mesh(nodeGeo, mat);
       mesh.position.set(
-        (Math.random() - 0.5) * 160,
-        (Math.random() - 0.5) * 90,
+        (Math.random() - 0.5) * 180,
+        (Math.random() - 0.5) * 100,
         (Math.random() - 0.5) * 60
       );
       mesh.userData = {
-        vx: (Math.random() - 0.5) * 0.04,
-        vy: (Math.random() - 0.5) * 0.04,
+        vx: (Math.random() - 0.5) * 0.05,
+        vy: (Math.random() - 0.5) * 0.05,
         vz: (Math.random() - 0.5) * 0.02,
-        pulseOffset: Math.random() * Math.PI * 2,
+        pulse: Math.random() * Math.PI * 2,
       };
       scene.add(mesh);
       nodes.push(mesh);
     }
 
-    // Edges
-    const MAX_DISTANCE = 30;
-    const edgeLines = [];
+    // Edges (LineSegments — much more performant than individual Lines)
+    const MAX_DIST = 32;
+    let edgesMesh = null;
 
-    const buildEdges = () => {
-      edgeLines.forEach(l => scene.remove(l));
-      edgeLines.length = 0;
+    const rebuildEdges = () => {
+      if (edgesMesh) {
+        scene.remove(edgesMesh);
+        edgesMesh.geometry.dispose();
+        edgesMesh.material.dispose();
+      }
+      const positions = [];
+      const colors = [];
+      const c1 = new THREE.Color(0x2DC6FE);
       for (let i = 0; i < nodes.length; i++) {
         for (let j = i + 1; j < nodes.length; j++) {
-          const dist = nodes[i].position.distanceTo(nodes[j].position);
-          if (dist < MAX_DISTANCE) {
-            const opacity = (1 - dist / MAX_DISTANCE) * 0.35;
-            const geo = new THREE.BufferGeometry().setFromPoints([
-              nodes[i].position.clone(),
-              nodes[j].position.clone(),
-            ]);
-            const mat = new THREE.LineBasicMaterial({
-              color: 0x2DC6FE,
-              transparent: true,
-              opacity,
-            });
-            const line = new THREE.Line(geo, mat);
-            scene.add(line);
-            edgeLines.push(line);
+          const d = nodes[i].position.distanceTo(nodes[j].position);
+          if (d < MAX_DIST) {
+            const alpha = (1 - d / MAX_DIST) * 0.4;
+            positions.push(...nodes[i].position.toArray(), ...nodes[j].position.toArray());
+            colors.push(c1.r, c1.g, c1.b, c1.r, c1.g, c1.b);
           }
         }
       }
+      if (positions.length === 0) return;
+      const geo = new THREE.BufferGeometry();
+      geo.setAttribute("position", new THREE.Float32BufferAttribute(positions, 3));
+      const mat = new THREE.LineBasicMaterial({ color: 0x2DC6FE, transparent: true, opacity: 0.25 });
+      edgesMesh = new THREE.LineSegments(geo, mat);
+      scene.add(edgesMesh);
     };
 
-    buildEdges();
+    rebuildEdges();
 
-    let edgeTimer = 0;
-    let animId;
     const clock = new THREE.Clock();
+    let frameCount = 0;
+    let animId;
 
     const animate = () => {
       animId = requestAnimationFrame(animate);
       const t = clock.getElapsedTime();
+      frameCount++;
 
-      // Move nodes
-      nodes.forEach((node) => {
+      nodes.forEach(node => {
         node.position.x += node.userData.vx;
         node.position.y += node.userData.vy;
         node.position.z += node.userData.vz;
-
-        // Bounce
-        if (Math.abs(node.position.x) > 82) node.userData.vx *= -1;
-        if (Math.abs(node.position.y) > 47) node.userData.vy *= -1;
+        if (Math.abs(node.position.x) > 92) node.userData.vx *= -1;
+        if (Math.abs(node.position.y) > 52) node.userData.vy *= -1;
         if (Math.abs(node.position.z) > 32) node.userData.vz *= -1;
-
-        // Pulse opacity
-        node.material.opacity = 0.3 + 0.4 * Math.abs(Math.sin(t * 0.8 + node.userData.pulseOffset));
+        node.material.opacity = 0.25 + 0.45 * Math.abs(Math.sin(t * 0.7 + node.userData.pulse));
       });
 
-      // Rebuild edges every 3 frames
-      edgeTimer++;
-      if (edgeTimer % 3 === 0) buildEdges();
+      if (frameCount % 4 === 0) rebuildEdges();
 
-      // Slow camera drift
-      camera.position.x = Math.sin(t * 0.05) * 8;
-      camera.position.y = Math.cos(t * 0.04) * 4;
+      camera.position.x = Math.sin(t * 0.04) * 6;
+      camera.position.y = Math.cos(t * 0.03) * 3;
       camera.lookAt(0, 0, 0);
 
       renderer.render(scene, camera);
@@ -114,21 +111,22 @@ export default function NeuralNetworkBackground() {
 
     animate();
 
-    const handleResize = () => {
-      if (!mount) return;
-      camera.aspect = mount.clientWidth / mount.clientHeight;
+    const onResize = () => {
+      const w = window.innerWidth, h = window.innerHeight;
+      camera.aspect = w / h;
       camera.updateProjectionMatrix();
-      renderer.setSize(mount.clientWidth, mount.clientHeight);
+      renderer.setSize(w, h);
     };
-    window.addEventListener("resize", handleResize);
+    window.addEventListener("resize", onResize);
 
     return () => {
       cancelAnimationFrame(animId);
-      window.removeEventListener("resize", handleResize);
+      window.removeEventListener("resize", onResize);
+      if (edgesMesh) { edgesMesh.geometry.dispose(); edgesMesh.material.dispose(); }
       renderer.dispose();
       if (mount.contains(renderer.domElement)) mount.removeChild(renderer.domElement);
     };
   }, []);
 
-  return <div ref={mountRef} className="absolute inset-0 w-full h-full" />;
+  return <div ref={mountRef} style={{ position: "absolute", inset: 0, width: "100%", height: "100%" }} />;
 }
