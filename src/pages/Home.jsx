@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import NeuralNetworkBackground from "../components/NeuralNetworkBackground";
 import { useNavigate } from "react-router-dom";
 import { createPageUrl } from "@/utils";
 import { ChevronDown, ChevronUp } from "lucide-react";
@@ -146,44 +147,69 @@ export default function Home() {
       </header>
 
       {/* ── Hero ── */}
-      <section className="max-w-6xl mx-auto px-6 pt-20 pb-16 text-center">
-        <div
-          className="inline-block text-xs font-semibold px-4 py-1.5 rounded-full mb-6"
-          style={{ background: `linear-gradient(to right, ${BRAND.blue}22, ${BRAND.mint}33)`, color: BRAND.dark }}
-        >
-          1st Party Answer Engine that converts AI‑driven buyers for Demand Gen, Growth &amp; Performance Teams
-        </div>
-        <h1 className="text-4xl md:text-6xl font-bold leading-tight mb-6 max-w-3xl mx-auto" style={{ color: BRAND.dark }}>
-          Turn <span style={{ color: BRAND.blue }}>REAL</span> customer questions<br />
-          into more signups, demos, and revenue
-        </h1>
-        <p className="text-lg text-gray-600 max-w-2xl mx-auto mb-10 leading-relaxed">
-          <strong>elelem turns your website into a ChatGPT-style Answer Engine.</strong> Visitors get instant, accurate answers on your key pages, so they stop bouncing, understand your product faster, and convert at up to 6x the rate.
-        </p>
-        <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-          <button
-            onClick={() => navigate(createPageUrl("Setup"))}
-            className="px-8 py-3.5 rounded-full text-base font-bold transition-opacity hover:opacity-90 shadow-lg"
-            style={{ background: `linear-gradient(to right, ${BRAND.blue}, ${BRAND.mint})`, color: BRAND.dark }}
-          >
-            See it in Action
-          </button>
-          <button
-            onClick={() => navigate(createPageUrl("Setup"))}
-            className="px-8 py-3.5 rounded-full text-base font-bold transition-colors"
-            style={{ background: BRAND.dark, color: "#fff" }}
-          >
-            Contact Us
-          </button>
-        </div>
+      <section className="relative min-h-screen flex flex-col items-center justify-center overflow-hidden" style={{ background: "#04161C" }}>
+        {/* Neural network background */}
+        <NeuralNetworkBackground />
 
-        {/* Hero image */}
-        <div className="mt-14 rounded-2xl overflow-hidden shadow-2xl max-w-3xl mx-auto">
-          <img
-            src="https://d2txn9w4uujjus.cloudfront.net/images/019b4019-8642-7b7a-b8ed-ef839bfc4eec/f6a5b8ecb28e1aa57d0a98b8a221fda76969ac9c--960w.jpg"
-            alt="elelem Answer Engine in action"
-            className="w-full object-cover"
-          />
+        {/* Gradient overlays for depth */}
+        <div className="absolute inset-0 pointer-events-none" style={{ background: "radial-gradient(ellipse at center, rgba(4,22,28,0) 30%, rgba(4,22,28,0.85) 100%)" }} />
+        <div className="absolute bottom-0 left-0 right-0 h-32 pointer-events-none" style={{ background: "linear-gradient(to bottom, transparent, #04161C)" }} />
+
+        {/* Content */}
+        <div className="relative z-10 max-w-5xl mx-auto px-6 text-center py-32">
+          {/* Enterprise badge */}
+          <div className="inline-flex items-center gap-2 px-5 py-2 rounded-full mb-8 border text-xs font-semibold tracking-widest uppercase"
+            style={{ background: "rgba(45,198,254,0.08)", borderColor: "rgba(45,198,254,0.3)", color: "#2DC6FE" }}>
+            <span className="w-1.5 h-1.5 rounded-full bg-[#2DC6FE] animate-pulse inline-block" />
+            Enterprise Answer Intelligence Platform
+          </div>
+
+          <h1 className="text-5xl md:text-7xl font-bold leading-tight mb-6 text-white tracking-tight">
+            Turn AI-Driven Buyer&nbsp;
+            <span className="block" style={{ background: "linear-gradient(to right, #2DC6FE, #81FBEF)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text" }}>
+              Questions into Revenue
+            </span>
+          </h1>
+
+          <p className="text-lg md:text-xl max-w-2xl mx-auto mb-4 leading-relaxed" style={{ color: "rgba(255,255,255,0.65)" }}>
+            elelem deploys a branded AI Answer Engine on your highest-intent pages — capturing first-party demand intelligence, closing content gaps, and converting buyers up to <strong className="text-white">6× faster</strong>.
+          </p>
+
+          <p className="text-sm font-semibold mb-10 tracking-wide" style={{ color: "#2DC6FE" }}>
+            Trusted by Netflix · Amazon · Alibaba · Sony · HubSpot and 100+ enterprise teams
+          </p>
+
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-16">
+            <button
+              onClick={() => navigate(createPageUrl("Setup"))}
+              className="px-9 py-4 rounded-full text-base font-bold shadow-2xl transition-all hover:scale-105"
+              style={{ background: `linear-gradient(to right, ${BRAND.blue}, ${BRAND.mint})`, color: BRAND.dark }}
+            >
+              See it in Action →
+            </button>
+            <button
+              onClick={() => navigate(createPageUrl("Setup"))}
+              className="px-9 py-4 rounded-full text-base font-semibold border transition-all hover:bg-white/10"
+              style={{ borderColor: "rgba(255,255,255,0.3)", color: "rgba(255,255,255,0.85)" }}
+            >
+              Book Enterprise Demo
+            </button>
+          </div>
+
+          {/* Stat pills */}
+          <div className="flex flex-wrap items-center justify-center gap-4">
+            {[
+              { value: "6×", label: "Conversion lift" },
+              { value: "100+", label: "Enterprise clients" },
+              { value: "1st party", label: "Demand intelligence" },
+              { value: "Real-time", label: "Buyer question capture" },
+            ].map(s => (
+              <div key={s.label} className="px-5 py-2.5 rounded-full text-sm border"
+                style={{ background: "rgba(255,255,255,0.04)", borderColor: "rgba(255,255,255,0.12)", color: "rgba(255,255,255,0.8)" }}>
+                <span className="font-bold text-white">{s.value}</span> {s.label}
+              </div>
+            ))}
+          </div>
         </div>
       </section>
 
