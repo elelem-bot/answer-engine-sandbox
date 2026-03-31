@@ -3,7 +3,7 @@ import { base44 } from "@/api/base44Client";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Globe, Loader2, Send, Search, CheckCircle, AlertCircle,
-  ChevronUp, ChevronDown, MessageSquare, X, Plus, Mic, Paperclip,
+  ChevronUp, ChevronDown, MessageSquare, X, Plus, Paperclip,
   ArrowRight
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -440,9 +440,7 @@ Return exactly 2 indices. JSON: { "page_indices": [n, n] }`,
                     disabled={isAsking}
                     className="flex-1 border-0 bg-transparent text-sm focus-visible:ring-0 focus-visible:ring-offset-0 px-1"
                   />
-                  <button type="button" onClick={handleVoiceInput} className={`${isRecording ? "text-red-500 animate-pulse" : "text-gray-400 hover:text-gray-700"}`}>
-                    <Mic className="w-4 h-4" />
-                  </button>
+
                   {question.trim() && (
                     <button type="submit" disabled={isAsking} style={{ color: brandColor }}>
                       <Send className="w-4 h-4" />
