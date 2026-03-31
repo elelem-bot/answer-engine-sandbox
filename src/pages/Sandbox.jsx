@@ -346,8 +346,6 @@ export default function Sandbox() {
         const companies = await base44.entities.Company.list();
         if (companies.length > 0) {
           setCompany(companies[0]);
-          const qs = await base44.entities.AnswerEngineQuestion.filter({ company_id: companies[0].id });
-          setQuestions(qs.sort((a, b) => new Date(b.created_date) - new Date(a.created_date)));
         }
       } catch (e) {
         console.error(e);
@@ -358,11 +356,7 @@ export default function Sandbox() {
     load();
   }, []);
 
-  const refreshQuestions = async () => {
-    if (!company) return;
-    const qs = await base44.entities.AnswerEngineQuestion.filter({ company_id: company.id });
-    setQuestions(qs.sort((a, b) => new Date(b.created_date) - new Date(a.created_date)));
-  };
+  const refreshQuestions = () => {};
 
   if (isLoading) {
     return (
