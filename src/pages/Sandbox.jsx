@@ -40,8 +40,18 @@ function FeedbackPanel({ questions, onFeedbackSaved }) {
     setCorrection("");
   };
 
+  const FLAG_REASONS = [
+    "Incorrect information",
+    "Off-brand tone",
+    "Mentioned a competitor",
+    "Too salesy",
+    "Missing key information",
+    "Confusing or unclear",
+  ];
+
   const handleSave = async () => {
     if (!selected) return;
+    if (rating === "flag" && !comment.trim()) return;
     setIsSaving(true);
     try {
       // Store feedback as a note in the question keywords field (lightweight)
@@ -154,13 +164,38 @@ function FeedbackPanel({ questions, onFeedbackSaved }) {
 
                       {/* Comment */}
                       <div>
-                        <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1">Comment</p>
+                        <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1">
+                          Comment {rating === "flag" && <span className="text-red-500">*</span>}
+                        </p>
+                        {rating === "flag" && (
+                          <div className="flex flex-wrap gap-1.5 mb-2">
+                            {FLAG_REASONS.map(reason => (
+                              <button
+                                key={reason}
+                                type="button"
+                                onClick={() => setComment(reason)}
+                                className={`text-xs px-2.5 py-1 rounded-full border transition-all ${
+                                  comment === reason
+                                    ? "bg-amber-500 text-white border-amber-500"
+                                    : "bg-white text-gray-600 border-gray-300 hover:border-amber-400"
+                                }`}
+                              >
+                                {reason}
+                              </button>
+                            ))}
+                          </div>
+                        )}
                         <Textarea
                           value={comment}
                           onChange={(e) => setComment(e.target.value)}
-                          placeholder="What could be improved?"
-                          className="text-xs min-h-[60px] resize-none bg-white border-gray-200"
+                          placeholder={rating === "flag" ? "Required — describe the issue..." : "What could be improved?"}
+                          className={`text-xs min-h-[60px] resize-none bg-white ${
+                            rating === "flag" && !comment.trim() ? "border-red-300" : "border-gray-200"
+                          }`}
                         />
+                        {rating === "flag" && !comment.trim() && (
+                          <p className="text-xs text-red-500 mt-1">Please describe the issue before saving.</p>
+                        )}
                       </div>
 
                       {/* Suggested correction */}
