@@ -420,17 +420,12 @@ export default function Sandbox() {
           {/* iframe background + floating button */}
           <div className="flex-1 relative overflow-hidden">
             <div className="absolute inset-0">
-              {company?.website_url ? (
-                <iframe
-                  src={company.website_url}
-                  className="w-full h-full"
-                  title="Website Preview"
-                />
-              ) : (
-                <div className="w-full h-full flex items-center justify-center bg-gray-100">
-                  <p className="text-gray-400 text-sm">No website URL configured — go to Setup first</p>
-                </div>
-              )}
+              <img
+                src="https://images.unsplash.com/photo-1547658719-da2b51169166?w=1600&h=900&fit=crop"
+                alt="Website preview"
+                className="w-full h-full object-cover"
+              />
+              <div className="absolute inset-0 bg-white/10" />
             </div>
 
             {/* Floating Ask AI Button */}
