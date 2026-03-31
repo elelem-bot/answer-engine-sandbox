@@ -7,7 +7,7 @@ import {
   Loader2, Send, MessageSquare, ThumbsUp, ThumbsDown,
   Flag, CheckCircle, BarChart3, Eye, ChevronDown, ChevronUp,
   AlertCircle, Target, Clock, TrendingUp, Users, FileText, Zap,
-  ArrowUp, ArrowDown, X, Edit3, Save, Settings
+  ArrowUp, ArrowDown, X, Edit3, Save, Settings, RefreshCw
 } from "lucide-react";
 import AnswerEngineChat from "@/components/AnswerEngineChat";
 import { Button } from "@/components/ui/button";
@@ -339,6 +339,12 @@ export default function Sandbox() {
   const [questions, setQuestions] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [activeTab, setActiveTab] = useState("engine");
+  const [sessionKey, setSessionKey] = useState(0);
+
+  const handleNewSession = () => {
+    setSessionKey(k => k + 1);
+    setQuestions([]);
+  };
 
   useEffect(() => {
     const load = async () => {
@@ -440,45 +446,47 @@ export default function Sandbox() {
               </motion.div>
             )}
 
-            {/* Popup Modal */}
-            <AnimatePresence>
-              {showPopup && (
-                <motion.div
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                  className="absolute inset-0 z-20 flex items-center justify-center p-6 bg-black/30"
-                  onClick={() => setShowPopup(false)}
-                >
-                  <motion.div
-                    initial={{ scale: 0.9, opacity: 0 }}
-                    animate={{ scale: 1, opacity: 1 }}
-                    exit={{ scale: 0.9, opacity: 0 }}
-                    onClick={(e) => e.stopPropagation()}
-                    className="w-full h-full max-w-4xl max-h-[85vh] rounded-2xl overflow-hidden shadow-2xl bg-white flex flex-col"
-                  >
-                    {/* Header */}
-                    <div className="px-6 py-4 border-b border-gray-200 flex items-center justify-between bg-white flex-shrink-0">
-                      <span className="text-lg font-semibold text-gray-900">
-                        {company?.name || "Answer Engine"}
-                      </span>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => setShowPopup(false)}
-                        className="text-gray-400 hover:text-gray-900"
-                      >
-                        <X className="w-5 h-5" />
-                      </Button>
-                    </div>
-                    {/* Chat */}
-                    <div className="flex-1 overflow-hidden">
-                      <AnswerEngineChat onQuestionSaved={(q) => setQuestions(prev => [q, ...prev])} />
-                    </div>
-                  </motion.div>
-                </motion.div>
-              )}
-            </AnimatePresence>
+            {/* Popup Modal — always mounted to preserve session */}
+            <div
+              className="absolute inset-0 z-20 flex items-center justify-center p-6 bg-black/30"
+              style={{ display: showPopup ? "flex" : "none" }}
+              onClick={() => setShowPopup(false)}
+            >
+              <div
+                onClick={(e) => e.stopPropagation()}
+                className="w-full h-full max-w-4xl max-h-[85vh] rounded-2xl overflow-hidden shadow-2xl bg-white flex flex-col"
+              >
+                {/* Header */}
+                <div className="px-6 py-4 border-b border-gray-200 flex items-center justify-between bg-white flex-shrink-0">
+                  <span className="text-lg font-semibold text-gray-900">
+                    {company?.name || "Answer Engine"}
+                  </span>
+                  <div className="flex items-center gap-2">
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={handleNewSession}
+                      className="text-xs border-gray-300 text-gray-600"
+                    >
+                      <RefreshCw className="w-3.5 h-3.5 mr-1.5" />
+                      New Session
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => setShowPopup(false)}
+                      className="text-gray-400 hover:text-gray-900"
+                    >
+                      <X className="w-5 h-5" />
+                    </Button>
+                  </div>
+                </div>
+                {/* Chat */}
+                <div className="flex-1 overflow-hidden">
+                  <AnswerEngineChat key={sessionKey} onQuestionSaved={(q) => setQuestions(prev => [q, ...prev])} />
+                </div>
+              </div>
+            </div>
           </div>
 
           {/* Feedback Panel */}
