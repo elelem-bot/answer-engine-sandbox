@@ -10,7 +10,6 @@ import { AuthProvider, useAuth } from '@/lib/AuthContext';
 import UserNotRegisteredError from '@/components/UserNotRegisteredError';
 import Sandbox from './pages/Sandbox';
 import SandboxSettings from './pages/SandboxSettings';
-import AnalyticsGuide from './pages/AnalyticsGuide';
 
 const { Pages, Layout, mainPage } = pagesConfig;
 const mainPageKey = mainPage ?? Object.keys(Pages)[0];
@@ -70,11 +69,6 @@ const AuthenticatedApp = () => {
       <Route path="/SandboxSettings" element={
         <LayoutWrapper currentPageName="SandboxSettings">
           <SandboxSettings />
-        </LayoutWrapper>
-      } />
-      <Route path="/AnalyticsGuide" element={
-        <LayoutWrapper currentPageName="AnalyticsGuide">
-          <AnalyticsGuide />
         </LayoutWrapper>
       } />
       <Route path="*" element={<PageNotFound />} />
